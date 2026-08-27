@@ -26,7 +26,13 @@ const inter = Inter({
  * Numa and every serious operator uses.
  */
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dunslim-apartments.com"),
+  /*
+    The canonical address, with the www. The apex redirects here, so this is
+    the one that should appear in search results, Open Graph cards and any
+    absolute URL the site generates. Changing it later splits link equity
+    between two addresses, so it is set once, deliberately.
+  */
+  metadataBase: new URL("https://www.dunslim-apartments.com"),
   title: {
     default: "Dunslim Apartments — Official Site | Best Rates, Booked Direct",
     template: "%s | Dunslim Apartments",
