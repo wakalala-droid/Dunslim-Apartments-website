@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Dunslim Apartments
+  Colour, type and setting rules from Brand Guidelines Volume One (2026).
+  Structure, spacing and motion from the Elite Builder System design OS.
+*/
+
+:root {
+  --brass: #b28a4a;
+  --navy: #0f2234;
+  --stone: #e7e2d8;
+  --charcoal: #2b2e34;
+
+  /*
+    The fixed header's height in its tall (top-of-page) state. `main` reserves
+    this much room; a full-bleed hero cancels it so the photograph runs up
+    behind the bar. One number, so the two can never drift apart.
+  */
+  --header-h: 85px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: #ffffff;
+    color: var(--charcoal);
+    font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Brand setting rule, p.13 — ranged left, no hyphenation. */
+  p,
+  li,
+  dd {
+    hyphens: none;
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  /*
+    Every interactive element keeps a visible focus state.
+    accessibility_system.md: outline:none is never used without an equal replacement.
+  */
+  :focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* A dark ground needs a focus ring that reads against it. */
+  .on-navy :focus-visible {
+    outline-color: #ffffff;
+  }
+
+  ::selection {
+    background: var(--brass);
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  /*
+    The brass hairline. The brand uses a fine rule as its main dividing device
+    (business card, key card, tariff card). One definition, used everywhere.
+  */
+  .rule-brass {
+    border: 0;
+    border-top: 1px solid var(--brass);
+  }
+
+  .rule-hair {
+    border: 0;
+    border-top: 1px solid rgba(15, 34, 52, 0.12);
+  }
+
+  .on-navy .rule-hair {
+    border-top-color: rgba(255, 255, 255, 0.16);
+  }
+
+  /*
+    Letterspaced caps label. Brand hierarchy p.13: Söhne Kräftig, +20 tracking.
+    Never used for anything longer than a few words.
+  */
+  /*
+    A full-bleed hero cancels the room `main` reserves for the fixed header, so
+    the photograph runs up behind the bar, then puts the space back as padding
+    so its own content still clears it.
+  */
+  .under-header {
+    margin-top: calc(var(--header-h) * -1);
+    padding-top: var(--header-h);
+  }
+
+  /*
+    Letterspaced caps label. Brand hierarchy p.13: Söhne Kräftig, +20 tracking.
+    13px rather than 12 — caps are already harder to scan than lower case, and
+    wide tracking pulls the letters apart, so this is the smallest size that
+    still reads easily at arm's length. Never used for more than a few words.
+  */
+  .label-caps {
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /*
+    Skip link — first tab stop on every page.
+    Hidden by clipping rather than by a negative offset, so it can never widen
+    the page or add a scrollbar.
+  */
+  .skip-link {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    z-index: 100;
+  }
+  .skip-link:focus {
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    left: 16px;
+    top: 16px;
+    padding: 12px 16px;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 6px;
+  }
+}
+
+/*
+  motion_governance.md — every animation has a reduced-motion fallback that
+  replaces movement with an instant or opacity-only change.
+*/
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
