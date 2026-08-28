@@ -92,13 +92,17 @@ export default function Hero({
           },
         };
 
-  /** The etch surfaces to its 40 per cent and no further. */
+  /**
+   * The wrapper only fades and settles. The etch density itself lives on the
+   * image in CSS, so it can differ by breakpoint without a JS media query —
+   * which would either mismatch on hydration or flash at the wrong value.
+   */
   const etch: Variants = reduce
-    ? { hidden: { opacity: 0 }, shown: { opacity: 0.4, transition: { duration: 0.4 } } }
+    ? { hidden: { opacity: 0 }, shown: { opacity: 1, transition: { duration: 0.4 } } }
     : {
         hidden: { opacity: 0, scale: 1.04 },
         shown: {
-          opacity: 0.4,
+          opacity: 1,
           scale: 1,
           transition: { duration: DUR.image * 0.8, ease: EASE_OUT, delay: t.etch },
         },
@@ -124,7 +128,7 @@ export default function Hero({
           practically, it is what keeps white display type legible where it
           crosses the mark. An etch above the scrim puts white on white.
         */}
-        <motion.div variants={photo} className="absolute inset-0 -z-20">
+        <motion.div variants={photo} className="absolute inset-0 -z-30">
           <Figure
             name="hero"
             alt="A Dunslim living room in the late afternoon"
@@ -134,6 +138,24 @@ export default function Hero({
             className="absolute inset-0"
           />
         </motion.div>
+
+        {/*
+          A Deep Navy field washing in from the left.
+
+          This is what the mark stands on. A white etch at 40 per cent has
+          nothing to hold against a photograph of a cream wall in afternoon
+          light — it disappears, which is exactly what happened. Giving it a
+          darkened ground is also the treatment the brand book prescribes when
+          the identity has to meet photography at all (p.12): the mark sits on
+          a Deep Navy field laid over the image, never on the image itself.
+
+          It fades out well before the type column, so it costs the photograph
+          nothing on the right where the headline lives.
+        */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-navy/85 via-navy/45 to-transparent md:via-navy/35 md:to-40%"
+        />
 
 
         {/*
@@ -149,27 +171,41 @@ export default function Hero({
           edge, so the counter of the D sits behind the type without competing
           with it.
         */}
+        {/*
+          The bottom scrim, over the photograph. It carries the intro paragraph
+          where the type crosses the image, and on phones it does most of the
+          work because the type spans the full width.
+        */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-t from-navy/92 via-navy/55 to-navy/25 md:from-navy/85 md:via-navy/30 md:to-navy/10"
+        />
+
+        {/*
+          The etch sits ABOVE both washes, not beneath them — that was the bug.
+          Underneath, the scrim flattened it into the wall behind it.
+
+          It stays at the 40 per cent the guidelines set for a frosted etch,
+          and lower on phones, where the headline crosses the mark rather than
+          sitting beside it in its own column.
+        */}
         <motion.div
           aria-hidden
           variants={etch}
-          className="pointer-events-none absolute inset-y-0 -z-20 left-0 flex items-center"
+          className="pointer-events-none absolute inset-y-0 -z-10 left-0 flex items-center"
         >
           <img
             src="/brand/dunslim-monogram-white.svg"
             alt=""
-            className="h-auto w-[min(78vw,340px)] -translate-x-[26%] md:w-[min(46vw,560px)] md:-translate-x-[18%] lg:w-[min(42vw,660px)]"
+            /*
+              40 per cent is the frosted-etch density the guidelines set for
+              glass. Phones get less: there the headline runs across the mark
+              rather than sitting beside it in its own column, and 40 per cent
+              behind display type starts to cost the reader effort.
+            */
+            className="h-auto w-[min(78vw,340px)] -translate-x-[26%] opacity-[0.24] md:w-[min(46vw,560px)] md:-translate-x-[18%] md:opacity-40 lg:w-[min(42vw,660px)]"
           />
         </motion.div>
-
-        {/*
-          The scrim, over both photograph and etch. Heavier below md, where the
-          type has to sit across the full width of the mark rather than beside
-          it in its own column.
-        */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-navy/92 via-navy/55 to-navy/25 md:from-navy/85 md:via-navy/30 md:to-navy/10"
-        />
 
         {/* The brand grid, left faintly visible exactly as the cover does. */}
         <motion.div
