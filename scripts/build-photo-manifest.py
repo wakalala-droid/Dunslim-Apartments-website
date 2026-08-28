@@ -53,11 +53,11 @@ def main() -> None:
         width, height = image.size
 
         thumb = image.copy()
-        thumb.thumbnail((20, 20))
-        thumb = thumb.filter(ImageFilter.GaussianBlur(0.6))
+        thumb.thumbnail((8, 8))
+        thumb = thumb.filter(ImageFilter.GaussianBlur(0.4))
 
         buffer = io.BytesIO()
-        thumb.save(buffer, format="JPEG", quality=45)
+        thumb.save(buffer, format="JPEG", quality=30)
         blur = base64.b64encode(buffer.getvalue()).decode()
 
         key = os.path.splitext(path)[0]

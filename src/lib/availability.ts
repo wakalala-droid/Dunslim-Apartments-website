@@ -110,6 +110,19 @@ function makeReference(): string {
   return `DA-${stamp}-${rand}`;
 }
 
+/**
+ * Submit a booking request.
+ *
+ * Two destinations, tried in order:
+ *
+ *  1. AI-BOS, when it is connected — the request lands as a `pending` booking
+ *     and holds the dates in the double-booking guard.
+ *  2. The site's own /api/booking-request route, which emails the reservations
+ *     inbox. This is the floor: it always runs when AI-BOS is not connected.
+ *
+ * If both fail, `recorded` comes back false and the confirmation screen says
+ * so plainly. It must never claim a request was received when nobody was told.
+ */
 export async function submitBookingRequest(req: BookingRequest): Promise<BookingOutcome> {
   const reference = makeReference();
 
@@ -122,8 +135,22 @@ export async function submitBookingRequest(req: BookingRequest): Promise<Booking
       });
       if (res.ok) return { reference, recorded: true };
     } catch {
-      /* fall through to the un-recorded path below */
+      /* fall through to the mail path below */
     }
+  }
+
+  try {
+    const res = await fetch("/api/booking-request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...req, reference }),
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { recorded?: boolean };
+      if (data.recorded) return { reference, recorded: true };
+    }
+  } catch {
+    /* fall through */
   }
 
   return { reference, recorded: false };

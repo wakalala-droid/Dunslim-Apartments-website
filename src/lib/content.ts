@@ -340,3 +340,11 @@ export const nav = [
   { href: "/rates", label: "Rates" },
   { href: "/location", label: "Location" },
 ] as const;
+
+/**
+ * Secondary destinations. Kept out of the header, which the brand guidelines
+ * fix at four items, but reachable from the footer and linked in context.
+ */
+export const secondaryNav = [
+  { href: "/long-stays", label: "Long stays" },
+] as const;

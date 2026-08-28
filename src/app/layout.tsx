@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { business } from "@/lib/content";
+import { site } from "@/lib/site";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     absolute URL the site generates. Changing it later splits link equity
     between two addresses, so it is set once, deliberately.
   */
-  metadataBase: new URL("https://www.dunslim-apartments.com"),
+  metadataBase: new URL(site.url),
   title: {
     default: "Dunslim Apartments — Official Site | Best Rates, Booked Direct",
     template: "%s | Dunslim Apartments",
@@ -46,13 +47,37 @@ export const metadata: Metadata = {
     "long stay apartments Lusaka",
     "Dunslim Apartments",
   ],
+  /*
+    The share card. Without an image, a link pasted into WhatsApp — which is how
+    this will actually spread in Lusaka — renders as a bare grey rectangle.
+    The card is the hero photograph with the lockup on a solid Deep Navy panel
+    across the foot, because the brand book (p.12) does not allow the mark to
+    sit directly on a photograph.
+  */
   openGraph: {
     title: "Dunslim Apartments — Official Site",
-    description: business.brandLine,
+    description:
+      "Three serviced apartments on Makeni Road, Lusaka. Backup power, secure parking, and a rate that is always lower booked direct.",
     type: "website",
     locale: "en_ZM",
     siteName: business.name,
+    url: site.url,
+    images: [
+      {
+        url: "/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "A Dunslim living room, with the Dunslim Apartments mark",
+      },
+    ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dunslim Apartments — Official Site",
+    description: "Serviced apartments on Makeni Road, Lusaka. Best rate, booked direct.",
+    images: ["/og-default.jpg"],
+  },
+  alternates: { canonical: "/" },
   /*
     Search engines are locked OUT until someone deliberately opens the door.
     Set NEXT_PUBLIC_ALLOW_INDEXING=true in the Vercel project only once the
@@ -64,12 +89,20 @@ export const metadata: Metadata = {
     business name permanently — which is the exact trust problem the Growth
     Proposal set out to fix, made worse and harder to undo.
   */
-  robots:
-    process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true"
-      ? { index: true, follow: true }
-      : { index: false, follow: false, nocache: true },
+  robots: site.allowIndexing
+    ? { index: true, follow: true }
+    : { index: false, follow: false, nocache: true },
+  /*
+    The .ico is what bookmarks, older browsers and most link-preview crawlers
+    ask for first; the SVG is what modern browsers prefer. Both are served, so
+    the monogram shows up wherever the page is referenced.
+  */
   icons: {
-    icon: [{ url: "/brand/dunslim-monogram-brass.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/brand/dunslim-monogram-brass.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
   },
 };
 

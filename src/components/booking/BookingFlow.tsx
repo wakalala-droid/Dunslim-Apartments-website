@@ -3,7 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Check, CreditCard, Smartphone, Landmark, Banknote } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  AlertTriangle,
+  CreditCard,
+  Smartphone,
+  Landmark,
+  Banknote,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
@@ -96,6 +104,11 @@ export default function BookingFlow() {
   const [availability, setAvailability] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [reference, setReference] = useState("");
+  /**
+   * Whether a person was actually told. The confirmation screen says one thing
+   * or the other based on this — never "we have your request" when nobody does.
+   */
+  const [recorded, setRecorded] = useState(false);
 
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -188,6 +201,7 @@ export default function BookingFlow() {
       totalUsd: quote.totalUsd,
     });
     setReference(outcome.reference);
+    setRecorded(outcome.recorded);
     setSubmitting(false);
   };
 
@@ -196,18 +210,46 @@ export default function BookingFlow() {
     return (
       <Container wide>
         <div className="mx-auto max-w-[720px] py-16 md:py-24">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-navy">
-            <Check size={22} strokeWidth={2} className="text-white" aria-hidden />
+          <div
+            className={cn(
+              "flex h-12 w-12 items-center justify-center rounded-full",
+              recorded ? "bg-navy" : "bg-warning",
+            )}
+          >
+            {recorded ? (
+              <Check size={22} strokeWidth={2} className="text-white" aria-hidden />
+            ) : (
+              <AlertTriangle size={22} strokeWidth={2} className="text-white" aria-hidden />
+            )}
           </div>
 
-          <h1 className="mt-8 text-h1 font-extralight text-navy">
-            Thank you, {firstName}. We have your request.
-          </h1>
-
-          <p className="mt-6 max-w-measure text-lead text-charcoal">
-            Your dates are held. Someone will confirm your booking and send payment instructions
-            within a few hours — sooner during the day.
-          </p>
+          {recorded ? (
+            <>
+              <h1 className="mt-8 text-h1 font-extralight text-navy">
+                Thank you, {firstName}. We have your request.
+              </h1>
+              <p className="mt-6 max-w-measure text-lead text-charcoal">
+                It has reached our reservations inbox. Someone will confirm your booking and send
+                payment instructions within a few hours — sooner during the day.
+              </p>
+            </>
+          ) : (
+            <>
+              {/*
+                The honest branch. Nothing was delivered, so nothing is claimed.
+                Telling a guest their room is held when no one has been told is
+                the worst outcome this form can produce — worse than an error.
+              */}
+              <h1 className="mt-8 text-h1 font-extralight text-navy">
+                {firstName}, this did not send.
+              </h1>
+              <p className="mt-6 max-w-measure text-lead text-charcoal">
+                Your details could not reach us, so no one has seen this request and no dates are
+                held. Nothing is wrong on your end. Please send us the reference below on WhatsApp
+                and we will pick it up straight away.
+              </p>
+            </>
+          )}
 
           <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
             {[
@@ -228,13 +270,33 @@ export default function BookingFlow() {
 
           <div className="mt-12 rounded-md bg-stone p-6">
             <p className="text-body text-charcoal">
-              Quote reference <span className="text-navy">{reference}</span> if you message us. The
-              fastest way to reach a person is WhatsApp.
+              {recorded ? (
+                <>
+                  Quote reference <span className="text-navy">{reference}</span> if you message us.
+                  The fastest way to reach a person is WhatsApp.
+                </>
+              ) : (
+                <>
+                  Send us reference <span className="text-navy">{reference}</span> and your dates.
+                  WhatsApp reaches a person fastest.
+                </>
+              )}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
+                /*
+                  When the send failed, the message carries the whole request —
+                  the guest should not have to type their dates out again
+                  because our form let them down.
+                */
                 href={`https://wa.me/${business.whatsapp}?text=${encodeURIComponent(
-                  `Hello, I have just requested a booking. Reference ${reference}.`,
+                  recorded
+                    ? `Hello, I have just requested a booking. Reference ${reference}.`
+                    : `Hello, I tried to book on your website and it did not go through.\n\n` +
+                      `Reference ${reference}\n` +
+                      `${residence.name}\n` +
+                      `${prettyDate(from)} to ${prettyDate(to)}, ${guests} ${guests === 1 ? "guest" : "guests"}\n` +
+                      `${firstName} ${lastName}`,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -252,8 +314,9 @@ export default function BookingFlow() {
           </div>
 
           <p className="mt-8 text-caption text-charcoal-80">
-            Nothing has been charged. You can cancel free of charge up to{" "}
-            {arrival.cancellationHours} hours before arrival.
+            {recorded
+              ? `Nothing has been charged. You can cancel free of charge up to ${arrival.cancellationHours} hours before arrival.`
+              : "Nothing has been charged, and nothing has been booked. Message us and we will sort it out."}
           </p>
         </div>
       </Container>

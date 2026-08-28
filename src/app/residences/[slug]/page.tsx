@@ -6,6 +6,7 @@ import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
 import { residences, getResidence, rates, arrival } from "@/lib/content";
+import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 
@@ -27,6 +28,15 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
 
   return (
     <>
+      <ResidenceSchema residence={residence} />
+      <BreadcrumbSchema
+        trail={[
+          { name: "Home", path: "/" },
+          { name: "Residences", path: "/residences" },
+          { name, path: `/residences/${slug}` },
+        ]}
+      />
+
       {/* The room, before the words. */}
       <section className="on-navy under-header relative isolate flex min-h-[420px] items-end bg-navy md:min-h-[68vh]">
         <Figure

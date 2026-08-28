@@ -17,6 +17,7 @@ import {
   neighbourhood,
   audience,
 } from "@/lib/content";
+import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 
@@ -25,6 +26,11 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Machine-readable description of the business and its rates, so search
+          can surface the offer rather than guessing at it from prose. */}
+      <LodgingSchema />
+      <BreadcrumbSchema trail={[{ name: "Home", path: "/" }]} />
+
       {/* ---------------------------------------------------------------
           HERO
           A full-bleed photograph with a navy gradient rising from the foot,

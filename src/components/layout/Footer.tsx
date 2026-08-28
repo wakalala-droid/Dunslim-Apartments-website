@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { Container } from "@/components/ui/Layout";
-import { business, nav } from "@/lib/content";
+import { business, nav, secondaryNav } from "@/lib/content";
 
 /**
  * The footer is a Deep Navy field — the brand's ground colour (p.11) — carrying
@@ -62,6 +62,13 @@ export default function Footer() {
             <p className="label-caps text-brass-60">Visit</p>
             <ul className="mt-4 text-body text-navy-20">
               {nav.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="inline-flex min-h-[44px] items-center hover:text-white">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+              {secondaryNav.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className="inline-flex min-h-[44px] items-center hover:text-white">
                     {item.label}
