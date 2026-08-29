@@ -18,24 +18,24 @@ const nextConfig = {
   },
 
   /*
-    Long-lived caching for the brand marks. They are content-addressed by name
-    and only change when the brand custodian issues new artwork, at which point
-    the filename changes too.
+    Caching for the static brand and photo assets.
+
+    NOT `immutable`. These filenames are stable — dunslim-monogram-white.svg
+    keeps its name when the artwork inside it is corrected — and an immutable
+    asset is never re-requested, so a browser that cached a bad version keeps
+    serving it for the full year no matter how many times the page is reloaded.
+    That is exactly what happened here.
+
+    `must-revalidate` means the browser still caches, but checks the ETag
+    before reusing. A corrected file reaches everyone on their next visit.
   */
   async headers() {
+    const revalidate = [
+      { key: "Cache-Control", value: "public, max-age=0, s-maxage=86400, must-revalidate" },
+    ];
     return [
-      {
-        source: "/brand/:file*",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
-      {
-        source: "/photos/:file*",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
+      { source: "/brand/:file*", headers: revalidate },
+      { source: "/photos/:file*", headers: revalidate },
     ];
   },
 };

@@ -19,4 +19,21 @@ export const site = {
    * details to the business name in a way that is hard to undo.
    */
   allowIndexing: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true",
+
+  /**
+   * Cache-buster for the brand artwork.
+   *
+   * The brand files keep stable names on purpose — the guidelines refer to
+   * them by name — so a corrected file arrives at the same URL as the broken
+   * one it replaces. Anything that already cached the old bytes would keep
+   * serving them.
+   *
+   * Bump this whenever a file in /public/brand is regenerated. It is appended
+   * to every brand asset URL, which makes the corrected artwork a different
+   * URL and forces a fresh fetch.
+   */
+  brandVersion: "3",
 } as const;
+
+/** A brand asset URL with the cache-busting version attached. */
+export const brandAsset = (file: string) => `/brand/${file}?v=${site.brandVersion}`;

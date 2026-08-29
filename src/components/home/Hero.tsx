@@ -6,6 +6,7 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Figure } from "@/components/ui/Figure";
 import { Container } from "@/components/ui/Layout";
 import { DUR, EASE_OUT, STAGGER, heroTimeline } from "@/lib/motion";
+import { brandAsset } from "@/lib/site";
 
 /**
  * THE HOMEPAGE HERO
@@ -154,7 +155,7 @@ export default function Hero({
         */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-navy/85 via-navy/45 to-transparent md:via-navy/35 md:to-40%"
+          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-navy/90 from-0% via-navy/55 via-30% to-transparent to-55%"
         />
 
 
@@ -195,15 +196,18 @@ export default function Hero({
           className="pointer-events-none absolute inset-y-0 -z-10 left-0 flex items-center"
         >
           <img
-            src="/brand/dunslim-monogram-white.svg"
+            src={brandAsset("dunslim-monogram-white.svg")}
             alt=""
             /*
-              40 per cent is the frosted-etch density the guidelines set for
-              glass. Phones get less: there the headline runs across the mark
-              rather than sitting beside it in its own column, and 40 per cent
-              behind display type starts to cost the reader effort.
+              Sat closer to the edge and carried heavier than the guidelines'
+              40 per cent glass density. At 40, offset a quarter of its width
+              off the frame, all that showed was a sliver of the stem — a
+              smudge rather than a mark. The whole D and its fan now read.
+
+              Phones stay lighter: there the headline runs across the mark
+              instead of sitting beside it in its own column.
             */
-            className="h-auto w-[min(78vw,340px)] -translate-x-[26%] opacity-[0.24] md:w-[min(46vw,560px)] md:-translate-x-[18%] md:opacity-40 lg:w-[min(42vw,660px)]"
+            className="h-auto w-[min(72vw,320px)] -translate-x-[14%] opacity-[0.34] md:w-[min(40vw,520px)] md:-translate-x-[6%] md:opacity-[0.55]"
           />
         </motion.div>
 

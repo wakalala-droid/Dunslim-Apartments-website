@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { brandAsset } from "@/lib/site";
 import { cn } from "@/lib/cn";
 
 /**
@@ -26,18 +27,18 @@ type Tone = "primary" | "reversed" | "brass";
 
 const FILES: Record<Lockup, Partial<Record<Tone, string>>> = {
   horizontal: {
-    primary: "/brand/dunslim-horizontal-primary.svg",
-    reversed: "/brand/dunslim-horizontal-reversed.svg",
-    brass: "/brand/dunslim-horizontal-brass.svg",
+    primary: brandAsset("dunslim-horizontal-primary.svg"),
+    reversed: brandAsset("dunslim-horizontal-reversed.svg"),
+    brass: brandAsset("dunslim-horizontal-brass.svg"),
   },
   vertical: {
-    primary: "/brand/dunslim-vertical-primary.svg",
-    reversed: "/brand/dunslim-vertical-reversed.svg",
+    primary: brandAsset("dunslim-vertical-primary.svg"),
+    reversed: brandAsset("dunslim-vertical-reversed.svg"),
   },
   monogram: {
-    primary: "/brand/dunslim-monogram-brass.svg",
-    reversed: "/brand/dunslim-monogram-white.svg",
-    brass: "/brand/dunslim-monogram-brass.svg",
+    primary: brandAsset("dunslim-monogram-brass.svg"),
+    reversed: brandAsset("dunslim-monogram-white.svg"),
+    brass: brandAsset("dunslim-monogram-brass.svg"),
   },
 };
 
