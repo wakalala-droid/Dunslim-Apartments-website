@@ -6,7 +6,8 @@ import ResidenceCard from "@/components/residences/ResidenceCard";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
-import { Reveal } from "@/components/ui/Reveal";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { cn } from "@/lib/cn";
 import { RevealRule } from "@/components/ui/RevealText";
 import {
   business,
@@ -244,13 +245,35 @@ export default function HomePage() {
                 intro="Dunslim Apartments is part of the Dunslim Group. Most of our guests are in Lusaka for work and want somewhere that simply works."
               />
             </div>
-            <ul className="grid gap-px self-start bg-navy/10 sm:grid-cols-2 lg:col-span-7">
+            {/*
+              One trigger for the whole grid, held until it is properly on
+              screen, so the reader gets the question on the left before the
+              answers arrive beside it. Each cell then follows the one before it
+              rather than firing on its own position in the viewport.
+            */}
+            <RevealGroup
+              late
+              className="grid gap-px self-start bg-navy/10 sm:grid-cols-2 lg:col-span-7"
+            >
               {audience.map((who, i) => (
-                <Reveal as="li" key={who} delay={i} className="bg-stone p-6">
+                <RevealItem
+                  key={who}
+                  index={i}
+                  className={cn(
+                    "bg-stone p-6",
+                    /*
+                      An odd number of names left the last cell of the grid
+                      empty, and since the hairlines are made by a background
+                      showing through a 1px gap, that empty cell rendered as a
+                      grey block. The last name spans the row instead.
+                    */
+                    i === audience.length - 1 && audience.length % 2 === 1 && "sm:col-span-2",
+                  )}
+                >
                   <span className="text-body text-charcoal">{who}</span>
-                </Reveal>
+                </RevealItem>
               ))}
-            </ul>
+            </RevealGroup>
           </div>
         </Container>
       </Section>

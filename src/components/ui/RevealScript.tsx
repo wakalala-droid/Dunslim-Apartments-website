@@ -15,6 +15,15 @@
  *      static, fully legible document. Failing closed is not an option here.
  *   2. Under prefers-reduced-motion it returns before adding anything, so the
  *      page is again simply static.
+ *   2b. A second, stricter observer serves groups marked `data-reveal-late`,
+ *      which hold until they are 60% on screen so the reader gets to the
+ *      heading first. The sweep and the guard skip those while they are
+ *      legitimately waiting, or a deliberate pause would be treated as a fault
+ *      and, in the guard's case, switch off every animation on the site. They
+ *      use the SAME test the observer does, so the moment a group is on screen
+ *      enough that it should have fired, the safety nets are free to act on it.
+ *      An earlier version protected a late group until it was FULLY visible,
+ *      which would have hidden a group taller than the viewport for good.
  *   3. A MutationObserver picks up blocks that arrive with a client-side
  *      navigation. Without it, every page reached by clicking a link inside
  *      the site would render its content hidden and never reveal it — which is
@@ -52,25 +61,61 @@ try{
   if(!('IntersectionObserver' in window))return;
   root.classList.add('js-motion');
   var seen=new WeakSet();
-  var io=new IntersectionObserver(function(entries){
+  var hit=function(entries,obs){
     for(var i=0;i<entries.length;i++){
       if(entries[i].isIntersecting){
         entries[i].target.classList.add('is-in');
-        io.unobserve(entries[i].target);
+        obs.unobserve(entries[i].target);
       }
     }
-  },{rootMargin:'0px 0px -8% 0px',threshold:0.01});
+  };
+  var io=new IntersectionObserver(hit,{rootMargin:'0px 0px -8% 0px',threshold:0.01});
+  /*
+    "Properly on screen" has to mean either 60% of the block is showing OR the
+    block is filling 60% of the screen. Ratio alone is not enough: a group
+    taller than about 1.6 viewports can never reach a ratio of 0.6, so a plain
+    threshold would leave it waiting for a moment that never comes.
+  */
+  var enough=function(r,vh){
+    var h=r.height||1;
+    var shown=Math.min(vh,r.bottom)-Math.max(0,r.top);
+    if(shown<=0)return false;
+    return shown/h>=0.6||shown>=vh*0.6;
+  };
+  var ioLate=new IntersectionObserver(function(entries,obs){
+    var vh=window.innerHeight;
+    for(var i=0;i<entries.length;i++){
+      if(entries[i].isIntersecting&&enough(entries[i].boundingClientRect,vh)){
+        entries[i].target.classList.add('is-in');
+        obs.unobserve(entries[i].target);
+      }
+    }
+  },{threshold:[0,0.25,0.5,0.6,0.75,1]});
   var scan=function(){
     var els=document.querySelectorAll('.reveal:not(.is-in)');
     for(var i=0;i<els.length;i++){
-      if(!seen.has(els[i])){seen.add(els[i]);io.observe(els[i]);}
+      if(!seen.has(els[i])){
+        seen.add(els[i]);
+        (els[i].hasAttribute('data-reveal-late')?ioLate:io).observe(els[i]);
+      }
     }
+  };
+  /*
+    A late group is SUPPOSED to sit unrevealed while it is partly on screen, so
+    neither the sweep nor the guard may touch it until it is fully in view.
+    Without this the safety nets would read a deliberate pause as a stuck reveal
+    and, in the guard's case, switch off every animation on the site.
+  */
+  var waiting=function(el,r,vh){
+    return el.hasAttribute('data-reveal-late')&&!enough(r,vh);
   };
   var sweep=function(){
     var stuck=document.querySelectorAll('.reveal:not(.is-in)');
+    var vh=window.innerHeight;
     for(var i=0;i<stuck.length;i++){
       var r=stuck[i].getBoundingClientRect();
-      if(r.top<window.innerHeight&&r.bottom>0)stuck[i].classList.add('is-in');
+      if(waiting(stuck[i],r,vh))continue;
+      if(r.top<vh&&r.bottom>0)stuck[i].classList.add('is-in');
     }
   };
   var guardPending=false;
@@ -85,6 +130,7 @@ try{
       if(vh<=0){root.classList.remove('js-motion');return;}
       for(var i=0;i<stuck.length;i++){
         var r=stuck[i].getBoundingClientRect();
+        if(waiting(stuck[i],r,vh))continue;
         if(r.top<vh&&r.bottom>0){root.classList.remove('js-motion');return;}
       }
     },4000);

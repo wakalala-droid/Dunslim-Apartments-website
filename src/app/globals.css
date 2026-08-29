@@ -312,6 +312,22 @@
 }
 
 /*
+  A staggered group: one trigger on the container, the sequence carried by each
+  child's own animation-delay. Same contract as the rest of this file — the
+  children are hidden only inside `.js-motion`, so with no script the group is
+  simply a static list.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .js-motion .reveal-stagger:not(.is-in) .reveal-item {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .reveal-stagger.is-in .reveal-item {
+    animation: hero-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/*
   A brass hairline that draws itself in with whatever block it belongs to.
   It takes its cue from the nearest `.reveal` ancestor instead of carrying its
   own observer, so it can be dropped into any revealed block. Same contract as

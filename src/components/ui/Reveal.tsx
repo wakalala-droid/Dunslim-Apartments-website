@@ -49,3 +49,72 @@ export function Reveal({
     </Tag>
   );
 }
+
+/**
+ * A group whose children arrive one after another off a SINGLE trigger.
+ *
+ * The plain `Reveal` observes each block separately, so a row of items animates
+ * as each one personally crosses into view. That is right for a long page of
+ * independent blocks and wrong for a set that reads as one thing: the items
+ * fire raggedly, in an order set by the viewport rather than by the content.
+ *
+ * Here the container is observed and the children carry their own delay, so the
+ * sequence is deliberate and always runs in written order.
+ *
+ * `late` holds the trigger until the group is properly on screen rather than
+ * firing on its first pixel. Use it where something should be read before the
+ * group answers it — a section heading that poses a question, with the answers
+ * beside it. The observer script gives these a stricter threshold, and both its
+ * sweep and its guard know to leave them alone while they are legitimately
+ * waiting, so a deliberate pause is never mistaken for a stuck reveal.
+ */
+export function RevealGroup({
+  children,
+  className,
+  as = "ul",
+  late = false,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  as?: "ul" | "ol" | "div";
+  /** Wait until the group is well into view before starting the sequence. */
+  late?: boolean;
+}) {
+  const Tag = as;
+  return (
+    <Tag className={cn("reveal reveal-stagger", className)} data-reveal-late={late ? "" : undefined}>
+      {children}
+    </Tag>
+  );
+}
+
+/**
+ * One child of a RevealGroup. `index` sets its place in the sequence.
+ *
+ * `lead` is the beat before the first item moves, which is what stops the
+ * sequence starting the instant the group is judged to be in view.
+ */
+export function RevealItem({
+  children,
+  className,
+  index = 0,
+  as = "li",
+  lead = 220,
+  step = 100,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  index?: number;
+  as?: "li" | "div";
+  /** Milliseconds before the first item moves. */
+  lead?: number;
+  /** Milliseconds between one item and the next. Below ~40 a stagger stops reading. */
+  step?: number;
+}) {
+  const Tag = as;
+  return (
+    <Tag className={cn("reveal-item", className)} style={{ animationDelay: `${lead + index * step}ms` }}>
+      {children}
+    </Tag>
+  );
+}
