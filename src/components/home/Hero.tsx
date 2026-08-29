@@ -1,34 +1,41 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
-
 import { Fragment } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Figure } from "@/components/ui/Figure";
 import { Container } from "@/components/ui/Layout";
-import { DUR, EASE_OUT, STAGGER, heroTimeline } from "@/lib/motion";
 import { brandAsset } from "@/lib/site";
 
 /**
  * THE HOMEPAGE HERO
  * ---------------------------------------------------------------------------
- * Built to the composition of the brand guidelines cover (Volume One, p.1),
- * which is the most considered piece of Dunslim art direction that exists:
+ * Built to the composition of the brand guidelines cover (Volume One, p.1):
+ * a Deep Navy ground, the brand grid faintly visible, the mark offset left and
+ * vertically centred, the type block ranged right against it, and hairline
+ * rules top and bottom carrying letterspaced caps meta.
  *
- *   · a Deep Navy ground
- *   · the twelve-column brand grid left faintly visible
- *   · the mark offset to the left, vertically centred, given room
- *   · the type block ranged right against it
- *   · hairline rules top and bottom carrying letterspaced caps meta
+ * NO JAVASCRIPT. This was a client component driving framer-motion, which meant
+ * every element was server-rendered at opacity:0 and stayed invisible until
+ * React had hydrated and the animation library had booted. Measured on the live
+ * site, that put first paint eight seconds after a 304ms server response — the
+ * page sat blank for almost all of it.
  *
- * The photograph sits underneath all of it. The mark is the full vertical
- * lockup in brass at full strength, on a soft Deep Navy vignette that gives it
- * something to stand on — p.12 requires a Deep Navy ground wherever the
- * identity meets photography. Translucent "etch" versions were tried three
- * times and all read as a smudge on a sunlit wall.
- *
- * Everything animates from one orchestration parent, so the composition builds
- * as a single unhurried movement: rules, then etch, then the type.
+ * It is now a server component with CSS animations. The markup paints as soon
+ * as it arrives, the entrance runs on the compositor, and none of it depends on
+ * JavaScript loading, or loading successfully.
  */
+
+/** The entrance, in milliseconds. One place, so the sequence stays legible. */
+const BEAT = {
+  photo: 0,
+  frame: 80,
+  etch: 200,
+  eyebrow: 260,
+  rule: 320,
+  words: 400,
+  /** Gap between words. Below ~40ms a stagger stops reading as one movement. */
+  wordStep: 45,
+  introAfterWords: 140,
+} as const;
+
 export default function Hero({
   eyebrow,
   headline,
@@ -43,96 +50,23 @@ export default function Hero({
   intro: string;
   /** Top rule, left. The cover carries the place here. */
   metaLeft: string;
-  /** Top rule, right, in brass. The cover carries the volume marker here. */
+  /** Top rule, right. */
   metaRight: string;
   /** Bottom rule. The cover carries the fixed brand line here. */
   footNote: string;
-  /** The search card. Rendered below the band, animated as the last beat. */
+  /** The search card, rendered below the band as the last beat. */
   children?: React.ReactNode;
 }) {
-  const reduce = useReducedMotion();
   const words = headline.split(" ");
-  const t = heroTimeline(words.length);
-
-  const fade = (delay: number, duration = 0.4): Variants => ({
-    hidden: { opacity: 0 },
-    shown: { opacity: 1, transition: { duration, delay: reduce ? delay * 0.4 : delay } },
-  });
-
-  /*
-    Opacity only, deliberately.
-
-    Scaling a full-bleed 2400px photograph makes the compositor resample the
-    whole viewport every frame for the length of the animation. On a mid-range
-    phone that is the single most expensive thing on the page, and it runs
-    while the reader is trying to take in the headline — which is what made
-    the site feel sluggish.
-
-    A fade costs nothing and reads the same at this size.
-  */
-  const photo: Variants = fade(t.image, reduce ? 0.3 : DUR.image);
-
-  /** A hairline that draws itself along the grid rather than fading in. */
-  const rule = (delay: number): Variants =>
-    reduce
-      ? fade(delay)
-      : {
-          hidden: { scaleX: 0 },
-          shown: {
-            scaleX: 1,
-            transition: { duration: DUR.rule, ease: EASE_OUT, delay },
-          },
-        };
-
-  const block = (delay: number): Variants =>
-    reduce
-      ? fade(delay)
-      : {
-          hidden: { opacity: 0, y: 10 },
-          shown: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: DUR.entrance, ease: EASE_OUT, delay },
-          },
-        };
-
-  /**
-   * The wrapper only fades and settles. The etch density itself lives on the
-   * image in CSS, so it can differ by breakpoint without a JS media query —
-   * which would either mismatch on hydration or flash at the wrong value.
-   */
-  const etch: Variants = reduce
-    ? { hidden: { opacity: 0 }, shown: { opacity: 1, transition: { duration: 0.4 } } }
-    : {
-        hidden: { opacity: 0, scale: 1.04 },
-        shown: {
-          opacity: 1,
-          scale: 1,
-          transition: { duration: DUR.image * 0.8, ease: EASE_OUT, delay: t.etch },
-        },
-      };
-
-  const wordGroup: Variants = {
-    hidden: {},
-    shown: { transition: { delayChildren: t.words, staggerChildren: STAGGER.word } },
-  };
-
-  const word: Variants = {
-    hidden: { y: "108%" },
-    shown: { y: 0, transition: { duration: DUR.word, ease: EASE_OUT } },
-  };
+  const introAt = BEAT.words + words.length * BEAT.wordStep + BEAT.introAfterWords;
+  const searchAt = introAt + 120;
+  const ms = (n: number) => ({ animationDelay: `${n}ms` });
 
   return (
-    <motion.div initial="hidden" animate="shown">
+    <>
       <section className="on-navy under-header relative isolate overflow-hidden bg-navy">
-        {/*
-          Layer order matters here: photograph, then the etch, then the scrim
-          over both. Putting the scrim above the etch is what makes it read as
-          etched INTO the image rather than laid on top of it — and, more
-          practically, it is what keeps white display type legible where it
-          crosses the mark. An etch above the scrim puts white on white.
-        */}
-        <motion.div variants={photo} className="absolute inset-0 -z-30">
+        {/* The photograph. */}
+        <div className="a-fade absolute inset-0 -z-30" style={ms(BEAT.photo)}>
           <Figure
             name="hero"
             alt="A Dunslim living room in the late afternoon"
@@ -141,61 +75,53 @@ export default function Hero({
             sizes="100vw"
             className="absolute inset-0"
           />
-        </motion.div>
+        </div>
 
         {/*
-          A soft Deep Navy vignette behind the mark.
-
-          Not a panel — the hard-edged version read as a slab pasted over the
-          photograph. This is an ellipse centred where the lockup sits, so the
-          mark gets a ground to stand on and the room is otherwise untouched.
-          There is no seam to notice.
+          A soft Deep Navy vignette behind the mark. Not a panel — an ellipse
+          centred on the monogram, so there is no seam and the room is
+          otherwise untouched. It is also what lets a 40 per cent white mark
+          read at all against a sunlit wall.
         */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_58%_70%_at_16%_50%,rgba(15,34,52,0.86)_0%,rgba(15,34,52,0.55)_45%,rgba(15,34,52,0)_78%)]"
+          className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_62%_78%_at_18%_50%,rgba(15,34,52,0.88)_0%,rgba(15,34,52,0.58)_45%,rgba(15,34,52,0)_80%)]"
         />
 
-
-        {/*
-          The bottom scrim, over the photograph. It carries the intro paragraph
-          where the type crosses the image, and on phones it does most of the
-          work because the type spans the full width.
-        */}
+        {/* The bottom scrim, carrying the type where it crosses the image. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-t from-navy/92 via-navy/55 to-navy/25 md:from-navy/85 md:via-navy/30 md:to-navy/10"
         />
 
         {/*
-          The mark, at full strength.
+          The monogram. Monogram only — the full lockup already sits on the
+          header bar directly above, and naming the brand twice in one view
+          reads as a template rather than art direction.
 
-          Every translucent version of this failed the same way: a white
-          monogram at 30–55 per cent over a photograph of a cream wall in
-          afternoon light is a smudge, not an identity. Brass at full opacity
-          on the vignette behind it reads immediately, which is the only test
-          that matters.
-
-          Hidden on phones, where it sits in the content flow instead — see
-          the Container below.
+          White at 40 per cent is the frosted-etch density the guidelines set
+          for glass (p.12). It only works at this scale. Earlier attempts had
+          it small and pushed off the frame, so all that showed was a sliver of
+          the stem; at this size it stops being a watermark and becomes the
+          ground the type sits on.
         */}
-        <motion.div
+        <div
           aria-hidden
-          variants={etch}
-          className="pointer-events-none absolute inset-y-0 left-0 -z-10 hidden items-center pl-6 md:flex lg:pl-12"
+          className="a-etch pointer-events-none absolute inset-y-0 left-0 -z-10 flex items-center"
+          style={ms(BEAT.etch)}
         >
           <img
-            src={brandAsset("dunslim-vertical-brass.svg")}
+            src={brandAsset("dunslim-monogram-white.svg")}
             alt=""
-            className="h-auto w-[min(26vw,260px)]"
+            className="h-auto w-[min(96vw,420px)] -translate-x-[18%] opacity-40 md:w-[min(64vw,780px)] md:-translate-x-[12%]"
           />
-        </motion.div>
+        </div>
 
         {/* The brand grid, left faintly visible exactly as the cover does. */}
-        <motion.div
+        <div
           aria-hidden
-          variants={fade(t.frame, 1.2)}
-          className="pointer-events-none absolute inset-0 -z-10 hidden md:block"
+          className="a-fade pointer-events-none absolute inset-0 -z-10 hidden md:block"
+          style={ms(BEAT.frame)}
         >
           <Container wide className="h-full">
             <div className="grid h-full grid-cols-12">
@@ -204,53 +130,33 @@ export default function Hero({
               ))}
             </div>
           </Container>
-        </motion.div>
+        </div>
 
-        <Container
-          wide
-          className="flex min-h-[560px] flex-col justify-between py-8 md:min-h-[82vh]"
-        >
+        <Container wide className="flex min-h-[560px] flex-col justify-between py-8 md:min-h-[82vh]">
           {/* ---- top rule row ---- */}
           <div>
-            <motion.span
-              aria-hidden
-              variants={rule(t.frame)}
-              className="block h-px origin-left bg-white/20"
-            />
+            <span aria-hidden className="a-draw block h-px bg-white/20" style={ms(BEAT.frame)} />
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 pt-4">
-              <motion.p variants={block(t.frame + 0.1)} className="label-caps text-white/75">
+              <p className="a-rise label-caps text-navy-40" style={ms(BEAT.frame + 60)}>
                 {metaLeft}
-              </motion.p>
-              <motion.p variants={block(t.frame + 0.18)} className="label-caps text-brass-40">
+              </p>
+              <p className="a-rise label-caps text-brass-40" style={ms(BEAT.frame + 120)}>
                 {metaRight}
-              </motion.p>
+              </p>
             </div>
           </div>
 
           {/* ---- the type block, ranged right against the mark ---- */}
           <div className="flex justify-end py-16 md:py-12">
-            <div className="w-full md:w-[62%] lg:w-[58%] md:text-right">
-              {/*
-                The mark on a phone. In the flow above the headline rather than
-                behind it — a full-bleed vignette on a narrow screen would sit
-                under the type and muddy both.
-              */}
-              <motion.img
-                variants={block(t.etch)}
-                src={brandAsset("dunslim-vertical-brass.svg")}
-                alt=""
-                aria-hidden
-                className="mb-8 h-auto w-[124px] md:hidden"
-              />
-
-              <motion.p variants={block(t.eyebrow)} className="label-caps text-brass-40">
+            <div className="w-full md:w-[62%] md:text-right lg:w-[58%]">
+              <p className="a-rise label-caps text-brass-40" style={ms(BEAT.eyebrow)}>
                 {eyebrow}
-              </motion.p>
+              </p>
 
-              <motion.span
+              <span
                 aria-hidden
-                variants={rule(t.eyebrow + 0.08)}
-                className="mt-4 block h-px origin-left bg-white/25 md:origin-right"
+                className="a-draw mt-4 block h-px bg-white/25 md:origin-right"
+                style={ms(BEAT.rule)}
               />
 
               <h1 className="mt-8 text-display font-extralight text-white">
@@ -261,35 +167,28 @@ export default function Hero({
                 */}
                 <span className="sr-only">{headline}</span>
 
-                {reduce ? (
-                  <motion.span aria-hidden variants={fade(t.words)}>{headline}</motion.span>
-                ) : (
-                  <motion.span aria-hidden variants={wordGroup} className="inline">
-                    {words.map((w, i) => (
-                      <Fragment key={`${w}-${i}`}>
-                        <span
-                          /*
-                            The box clips the word; the padding keeps descenders
-                            from being shaved, and the equal negative margin
-                            stops that padding adding height to the heading.
-                          */
-                          className="inline-block overflow-hidden pb-[0.14em] -mb-[0.14em] align-bottom"
-                        >
-                          <motion.span data-reveal-word variants={word} className="inline-block">
-                            {w}
-                          </motion.span>
+                <span aria-hidden className="inline">
+                  {words.map((w, i) => (
+                    <Fragment key={`${w}-${i}`}>
+                      {/*
+                        The box clips the word; the padding keeps descenders
+                        from being shaved and the equal negative margin stops
+                        that padding adding height to the heading.
+                      */}
+                      <span className="inline-block -mb-[0.14em] overflow-hidden pb-[0.14em] align-bottom">
+                        <span className="a-word" style={ms(BEAT.words + i * BEAT.wordStep)}>
+                          {w}
                         </span>
-                        {/*
-                          The space lives BETWEEN the clipping boxes, never
-                          inside one. Trailing whitespace inside an inline-block
-                          is trimmed, which ran every word together —
-                          "Aroomthatworks aswellasitlooks."
-                        */}
-                        {i < words.length - 1 ? " " : null}
-                      </Fragment>
-                    ))}
-                  </motion.span>
-                )}
+                      </span>
+                      {/*
+                        The space lives BETWEEN the clipping boxes, never inside
+                        one — trailing whitespace in an inline-block is trimmed,
+                        which ran every word together.
+                      */}
+                      {i < words.length - 1 ? " " : null}
+                    </Fragment>
+                  ))}
+                </span>
               </h1>
 
               {/*
@@ -297,44 +196,35 @@ export default function Hero({
                 a three-line caption right; a full sentence at 21px read by an
                 older guest should not have a moving left edge to find.
               */}
-              <motion.p
-                variants={block(t.intro)}
-                className="mt-8 max-w-[46ch] text-lead text-white/85 md:ml-auto md:text-left"
+              <p
+                className="a-rise mt-8 max-w-[46ch] text-lead text-white/85 md:ml-auto md:text-left"
+                style={ms(introAt)}
               >
                 {intro}
-              </motion.p>
+              </p>
             </div>
           </div>
 
-          {/*
-            ---- bottom rule row ----
-            Desktop only. The cover is a landscape format with room to carry a
-            footer line; on a phone it lands in the few pixels where the search
-            card already overlaps, and the brand line it carries is repeated in
-            the site footer a screen below.
-          */}
-          <div className="hidden md:block">
-            <motion.span
+          {/* ---- bottom rule row ---- */}
+          <div>
+            <span
               aria-hidden
-              variants={rule(t.frame + 0.12)}
-              className="block h-px origin-left bg-white/20"
+              className="a-draw block h-px bg-white/20"
+              style={ms(BEAT.frame + 100)}
             />
-            <motion.p
-              variants={block(t.frame + 0.26)}
-              className="label-caps pt-4 text-white/75"
-            >
+            <p className="a-rise label-caps pt-4 text-navy-40" style={ms(BEAT.frame + 180)}>
               {footNote}
-            </motion.p>
+            </p>
           </div>
         </Container>
       </section>
 
       {/* The search card rides the seam between the photograph and the page. */}
       {children ? (
-        <motion.div variants={block(t.search)} className="relative z-10 -mt-8 md:-mt-12">
+        <div className="a-rise relative z-10 -mt-8 md:-mt-12" style={ms(searchAt)}>
           {children}
-        </motion.div>
+        </div>
       ) : null}
-    </motion.div>
+    </>
   );
 }

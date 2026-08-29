@@ -1,118 +1,76 @@
-"use client";
-
 import { Fragment } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/cn";
-import { DUR, EASE_OUT, STAGGER } from "@/lib/motion";
 
 /**
  * A heading that rises into view a word at a time.
  *
- * Each word sits in its own overflow-hidden box and starts fully below it, so
- * the line appears to be uncovered rather than to fade in. It is the one piece
- * of expressive motion on the site, and it is confined to display headings —
+ * Each word sits in its own overflow-hidden box and starts below it, so the
+ * line appears to be uncovered rather than to fade in. It is the one piece of
+ * expressive motion on the site, and it stays confined to display headings —
  * body copy that animates is body copy you cannot read.
  *
- * Under prefers-reduced-motion the whole thing collapses to a single opacity
- * change, because a reader who asked for less movement should get less
- * movement, not the same movement made faster.
+ * NO JAVASCRIPT. This used framer-motion, which server-rendered every word
+ * translated out of its box and left the heading blank until React hydrated.
+ * On a section heading below the fold that is a hole in the page waiting on a
+ * script. It is now a scroll-driven CSS timeline: compositor-only, no observer,
+ * and visible by default where the browser does not support it.
+ *
+ * The global prefers-reduced-motion rule collapses the duration, which lands
+ * the heading in its end state without movement.
  */
 export function RevealText({
   text,
   className,
   as: Tag = "h2",
   delay = 0,
-  once = true,
 }: {
   text: string;
   className?: string;
   as?: "h1" | "h2" | "h3" | "p" | "span";
-  /** Seconds to wait before the first word. */
+  /** Seconds to wait before the first word. Kept for call-site compatibility. */
   delay?: number;
+  /** Accepted and ignored — a scroll timeline only ever runs on entry. */
   once?: boolean;
 }) {
-  const reduce = useReducedMotion();
   const words = text.split(" ");
-
-  if (reduce) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once, margin: "-80px" }}
-        transition={{ duration: 0.3, delay }}
-      >
-        <Tag className={className}>{text}</Tag>
-      </motion.div>
-    );
-  }
 
   return (
     <Tag className={className}>
       {/*
-        The full string is announced once, and the animated words are hidden
-        from assistive tech — otherwise a screen reader reads the heading one
-        disjointed word at a time.
+        Announced once as a whole. Without this a screen reader reads the
+        heading one disjointed word at a time.
       */}
       <span className="sr-only">{text}</span>
 
-      <motion.span
-        aria-hidden
-        initial="hidden"
-        whileInView="shown"
-        viewport={{ once, margin: "-80px" }}
-        transition={{ staggerChildren: STAGGER.word, delayChildren: delay }}
-        className="inline"
-      >
-        {words.map((word, i) => (
-          <Fragment key={`${word}-${i}`}>
-            <span
-              // The box clips the word; the padding keeps descenders from being
-              // shaved, and the equal negative margin stops that padding from
-              // adding height to the heading.
-              className="inline-block overflow-hidden pb-[0.14em] -mb-[0.14em] align-bottom"
-            >
-              <motion.span
-                data-reveal-word
-                className="inline-block"
-                variants={{
-                  hidden: { y: "108%" },
-                  shown: { y: 0 },
-                }}
-                transition={{ duration: DUR.word, ease: EASE_OUT }}
+      <span aria-hidden className="inline">
+        {words.map((w, i) => (
+          <Fragment key={`${w}-${i}`}>
+            <span className="inline-block -mb-[0.14em] overflow-hidden pb-[0.14em] align-bottom">
+              <span
+                className="a-inview-word"
+                style={{ animationDelay: `${delay * 1000 + i * 45}ms` }}
               >
-                {word}
-              </motion.span>
+                {w}
+              </span>
             </span>
             {/*
-              The space sits BETWEEN the clipping boxes, never inside one.
-              Trailing whitespace inside an inline-block is trimmed, which ran
-              every word together.
+              The space lives BETWEEN the clipping boxes. Trailing whitespace
+              inside an inline-block is trimmed, which runs every word together.
             */}
             {i < words.length - 1 ? " " : null}
           </Fragment>
         ))}
-      </motion.span>
+      </span>
     </Tag>
   );
 }
 
-/**
- * A brass hairline that draws itself in from the left as it enters view.
- * Used where the brand already calls for a rule, so the motion is the rule
- * arriving rather than an effect added on top of it.
- */
-export function RevealRule({ className, delay = 0 }: { className?: string; delay?: number }) {
-  const reduce = useReducedMotion();
-
+/** The short brass rule that draws itself in above a heading. */
+export function RevealRule({ className }: { className?: string; delay?: number }) {
   return (
-    <motion.span
+    <span
       aria-hidden
-      className={cn("block h-px w-12 origin-left bg-brass", className)}
-      initial={reduce ? { opacity: 0 } : { scaleX: 0 }}
-      whileInView={reduce ? { opacity: 1 } : { scaleX: 1 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: DUR.entrance, ease: EASE_OUT, delay }}
+      className={cn("a-inview-rule block h-px w-12 origin-left bg-brass", className)}
     />
   );
 }
