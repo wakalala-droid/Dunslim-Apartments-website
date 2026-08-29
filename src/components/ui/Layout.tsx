@@ -97,7 +97,13 @@ export function Eyebrow({
         className,
       )}
     >
-      {rule ? <span aria-hidden className="h-px w-6 shrink-0 bg-brass" /> : null}
+      {/*
+        The brass hairline draws itself in from the left when the block it sits
+        in arrives. It inherits that from the nearest `.reveal` ancestor rather
+        than carrying its own observer, so a label that is never revealed simply
+        shows a static rule.
+      */}
+      {rule ? <span aria-hidden className="draw-rule h-px w-6 shrink-0 bg-brass" /> : null}
       {children}
     </p>
   );

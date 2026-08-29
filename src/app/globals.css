@@ -161,6 +161,14 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /*
+      Delays too, not just durations. Collapsing the duration alone still makes
+      a staggered element wait out its delay before snapping into place, which
+      for the WhatsApp button meant a reduced-motion guest sat looking at no
+      contact control for 900ms. Reduced motion should mean everything is
+      simply already there.
+    */
+    animation-delay: 0.01ms !important;
   }
 }
 
@@ -301,4 +309,22 @@
 /* The word boxes are inline-block whether or not anything animates them. */
 .reveal-word {
   display: inline-block;
+}
+
+/*
+  A brass hairline that draws itself in with whatever block it belongs to.
+  It takes its cue from the nearest `.reveal` ancestor instead of carrying its
+  own observer, so it can be dropped into any revealed block. Same contract as
+  everything else here: with no script it is simply a drawn rule.
+*/
+.draw-rule {
+  transform-origin: left;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js-motion .reveal:not(.is-in) .draw-rule {
+    transform: scaleX(0);
+  }
+  .reveal.is-in .draw-rule {
+    animation: hero-draw 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 }

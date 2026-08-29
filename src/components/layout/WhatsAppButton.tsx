@@ -21,7 +21,14 @@ export default function WhatsAppButton() {
       href={`https://wa.me/${business.whatsapp}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-navy text-white shadow-2 transition-colors duration-micro hover:bg-navy-80"
+      /*
+        Arrives last, once the page has settled, so it reads as offered rather
+        than as part of the furniture. It is a control and not content, and the
+        animation is plain CSS with no script behind it, so it always appears —
+        instantly under prefers-reduced-motion, which collapses the duration.
+      */
+      style={{ animationDelay: "900ms" }}
+      className="a-rise fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-navy text-white shadow-2 transition-[background-color,transform,box-shadow] duration-micro ease-entrance hover:-translate-y-[2px] hover:bg-navy-80 hover:shadow-3"
       aria-label="Message Dunslim Apartments on WhatsApp"
     >
       <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden focusable="false">

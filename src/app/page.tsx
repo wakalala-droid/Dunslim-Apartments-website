@@ -131,25 +131,37 @@ export default function HomePage() {
       ---------------------------------------------------------------- */}
       <Section ground="navy">
         <Container wide>
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-5">
-              <SectionHead
-                onNavy
-                eyebrow="Why guests stay"
-                title="The things guests ask about first."
-                intro="Before anyone asks about the decor, they ask about power, water and security. So here are our answers."
-              />
+          {/*
+            The heading sits above the row rather than inside the left column.
+            Stacked, the heading plus a 4/5 portrait made that column roughly
+            twice the height of the list beside it, and the list — being
+            `self-start` — left about 550px of empty navy underneath. Moving the
+            heading out leaves the row carrying only the photograph and the
+            list, so the two are free to match: the list sets the height and the
+            photograph, holding no ratio of its own, stretches to meet it.
+          */}
+          <SectionHead
+            onNavy
+            eyebrow="Why guests stay"
+            title="The things guests ask about first."
+            intro="Before anyone asks about the decor, they ask about power, water and security. So here are our answers."
+          />
+
+          <div className="mt-16 grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <Reveal
+              variant="image"
+              className="relative hidden min-h-[260px] overflow-hidden rounded-md lg:col-span-5 lg:block"
+            >
               <Figure
                 name="detail-bath"
                 alt="Bathroom detail"
-                ratio="4 / 5"
-                reveal
-                className="mt-12 hidden rounded-md lg:block"
-                sizes="(max-width: 1024px) 0px, 33vw"
+                cover
+                className="absolute inset-0"
+                sizes="(max-width: 1024px) 0px, 42vw"
               />
-            </div>
+            </Reveal>
 
-            <ul className="grid gap-x-12 gap-y-12 self-start sm:grid-cols-2 lg:col-span-7">
+            <ul className="grid content-between gap-x-12 gap-y-12 sm:grid-cols-2 lg:col-span-7">
               {assurances.map((a, i) => (
                 <Reveal as="li" key={a.title} delay={i}>
                   <RevealRule />
@@ -188,12 +200,13 @@ export default function HomePage() {
               />
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
-                <div className="flex items-baseline justify-between gap-6 py-6">
+                <Reveal as="div" className="flex items-baseline justify-between gap-6 py-6">
                   <dt className="text-body text-charcoal">One to six nights</dt>
                   <dd className="text-h3 font-light text-navy">{rates.directDiscountPct}% off</dd>
-                </div>
+                </Reveal>
                 {rates.longStay.map((band) => (
-                  <div
+                  <Reveal
+                    as="div"
                     key={band.minNights}
                     className="flex items-baseline justify-between gap-6 py-6"
                   >
@@ -202,7 +215,7 @@ export default function HomePage() {
                       {band.discountPct}%
                       <span className="ml-2 text-caption text-charcoal-80">on top</span>
                     </dd>
-                  </div>
+                  </Reveal>
                 ))}
               </dl>
 
