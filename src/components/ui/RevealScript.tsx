@@ -30,6 +30,12 @@
  *      content has lost the site, and this project has spent three attempts
  *      proving which of those actually happens.
  *
+ *      The guard also re-arms on scroll, because otherwise it only ever ran
+ *      against whatever was on screen when the page loaded. Scrolling down to
+ *      content the observer never revealed would not have re-checked anything.
+ *      Where the observer is working this costs nothing: by the time the check
+ *      runs, the block already carries `is-in` and the guard does nothing.
+ *
  * Everything here is debounced with setTimeout and never requestAnimationFrame.
  * That is not a style preference: rAF is PAUSED outright whenever the surface
  * is not rendering — a background tab, a hidden pane — whereas setTimeout is
@@ -67,8 +73,12 @@ try{
       if(r.top<window.innerHeight&&r.bottom>0)stuck[i].classList.add('is-in');
     }
   };
+  var guardPending=false;
   var guard=function(){
+    if(guardPending)return;
+    guardPending=true;
     setTimeout(function(){
+      guardPending=false;
       var stuck=document.querySelectorAll('.reveal:not(.is-in)');
       if(!stuck.length)return;
       var vh=window.innerHeight;
@@ -92,6 +102,9 @@ try{
   guard();
   window.addEventListener('pageshow',queue);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)queue();});
+  window.addEventListener('scroll',function(){
+    if(document.querySelector('.reveal:not(.is-in)'))guard();
+  },{passive:true});
 }catch(e){root.classList.remove('js-motion');}
 })();`;
 
