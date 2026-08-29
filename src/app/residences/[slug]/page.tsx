@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
+import { CoverFlow } from "@/components/ui/CoverFlow";
 import { residences, getResidence, rates, arrival } from "@/lib/content";
 import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
@@ -119,29 +120,30 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         </Container>
       </Section>
 
-      {/* Photographs — the first runs wide, the rest sit two up. */}
-      <Section>
+      {/*
+        The gallery. A coverflow rather than a grid: one room square on at a
+        time with the rest visibly waiting, which is nearer to how someone
+        actually looks through a place they are thinking of staying in. On a
+        dark ground, because the photograph is the whole point of the section
+        and a white page competes with it.
+      */}
+      <Section ground="navy">
         <Container wide>
+          <SectionHead onNavy eyebrow="The rooms" title={`Inside ${name}.`} />
+
           {/* The first photograph is already the page hero, so it is not repeated. */}
-          <div className="grid gap-6 md:grid-cols-2">
-            {photos.slice(1).map((p) => (
-              <figure key={p.id}>
-                <Figure
-                  name={p.id}
-                  alt={`${name} — ${p.caption}`}
-                  ratio="4 / 3"
-                  reveal
-                  className="rounded-md"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <figcaption className="mt-3 text-caption text-charcoal-80">{p.caption}</figcaption>
-              </figure>
-            ))}
-          </div>
+          <CoverFlow
+            className="mt-16"
+            label={`${name}, photographs`}
+            slides={photos.slice(1).map((p) => ({
+              name: p.id,
+              alt: `${name} — ${p.caption}`,
+              caption: p.caption,
+            }))}
+          />
         </Container>
       </Section>
 
-      {/* The apartment, described plainly */}
       <Section ground="stone">
         <Container wide>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
