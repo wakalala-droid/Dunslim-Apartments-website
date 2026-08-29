@@ -32,7 +32,7 @@ export const site = {
    * to every brand asset URL, which makes the corrected artwork a different
    * URL and forces a fresh fetch.
    */
-  brandVersion: "3",
+  brandVersion: "4",
 } as const;
 
 /** A brand asset URL with the cache-busting version attached. */
