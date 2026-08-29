@@ -20,10 +20,11 @@ import { brandAsset } from "@/lib/site";
  *   · the type block ranged right against it
  *   · hairline rules top and bottom carrying letterspaced caps meta
  *
- * The photograph sits underneath all of it. The mark over the image is the
- * monogram only, at 40 per cent — the "frosted etch" density the guidelines
- * specify for glass (p.12). The full lockup is never set on a photograph; it
- * stays on the solid header bar above, per the same page.
+ * The photograph sits underneath all of it. The mark is the full vertical
+ * lockup in brass at full strength, on a soft Deep Navy vignette that gives it
+ * something to stand on — p.12 requires a Deep Navy ground wherever the
+ * identity meets photography. Translucent "etch" versions were tried three
+ * times and all read as a smudge on a sunlit wall.
  *
  * Everything animates from one orchestration parent, so the composition builds
  * as a single unhurried movement: rules, then etch, then the type.
@@ -143,37 +144,19 @@ export default function Hero({
         </motion.div>
 
         {/*
-          A Deep Navy field washing in from the left.
+          A soft Deep Navy vignette behind the mark.
 
-          This is what the mark stands on. A white etch at 40 per cent has
-          nothing to hold against a photograph of a cream wall in afternoon
-          light — it disappears, which is exactly what happened. Giving it a
-          darkened ground is also the treatment the brand book prescribes when
-          the identity has to meet photography at all (p.12): the mark sits on
-          a Deep Navy field laid over the image, never on the image itself.
-
-          It fades out well before the type column, so it costs the photograph
-          nothing on the right where the headline lives.
+          Not a panel — the hard-edged version read as a slab pasted over the
+          photograph. This is an ellipse centred where the lockup sits, so the
+          mark gets a ground to stand on and the room is otherwise untouched.
+          There is no seam to notice.
         */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-navy/90 from-0% via-navy/55 via-30% to-transparent to-55%"
+          className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_58%_70%_at_16%_50%,rgba(15,34,52,0.86)_0%,rgba(15,34,52,0.55)_45%,rgba(15,34,52,0)_78%)]"
         />
 
 
-        {/*
-          The etched monogram — the cover's anchor, offset left and vertically
-          centred. Monogram only, never the full lockup, and never above the
-          40 per cent "frosted etch" density the guidelines set for glass.
-
-          It runs off the left edge deliberately. At this size the mark is
-          architecture rather than a logo placement, which is the reading the
-          cover invites: the identity as a built form, given room.
-
-          On phones it holds the same position but is pulled further off the
-          edge, so the counter of the D sits behind the type without competing
-          with it.
-        */}
         {/*
           The bottom scrim, over the photograph. It carries the intro paragraph
           where the type crosses the image, and on phones it does most of the
@@ -185,31 +168,26 @@ export default function Hero({
         />
 
         {/*
-          The etch sits ABOVE both washes, not beneath them — that was the bug.
-          Underneath, the scrim flattened it into the wall behind it.
+          The mark, at full strength.
 
-          It stays at the 40 per cent the guidelines set for a frosted etch,
-          and lower on phones, where the headline crosses the mark rather than
-          sitting beside it in its own column.
+          Every translucent version of this failed the same way: a white
+          monogram at 30–55 per cent over a photograph of a cream wall in
+          afternoon light is a smudge, not an identity. Brass at full opacity
+          on the vignette behind it reads immediately, which is the only test
+          that matters.
+
+          Hidden on phones, where it sits in the content flow instead — see
+          the Container below.
         */}
         <motion.div
           aria-hidden
           variants={etch}
-          className="pointer-events-none absolute inset-y-0 -z-10 left-0 flex items-center"
+          className="pointer-events-none absolute inset-y-0 left-0 -z-10 hidden items-center pl-6 md:flex lg:pl-12"
         >
           <img
-            src={brandAsset("dunslim-monogram-white.svg")}
+            src={brandAsset("dunslim-vertical-brass.svg")}
             alt=""
-            /*
-              Sat closer to the edge and carried heavier than the guidelines'
-              40 per cent glass density. At 40, offset a quarter of its width
-              off the frame, all that showed was a sliver of the stem — a
-              smudge rather than a mark. The whole D and its fan now read.
-
-              Phones stay lighter: there the headline runs across the mark
-              instead of sitting beside it in its own column.
-            */
-            className="h-auto w-[min(72vw,320px)] -translate-x-[14%] opacity-[0.34] md:w-[min(40vw,520px)] md:-translate-x-[6%] md:opacity-[0.55]"
+            className="h-auto w-[min(26vw,260px)]"
           />
         </motion.div>
 
@@ -252,6 +230,19 @@ export default function Hero({
           {/* ---- the type block, ranged right against the mark ---- */}
           <div className="flex justify-end py-16 md:py-12">
             <div className="w-full md:w-[62%] lg:w-[58%] md:text-right">
+              {/*
+                The mark on a phone. In the flow above the headline rather than
+                behind it — a full-bleed vignette on a narrow screen would sit
+                under the type and muddy both.
+              */}
+              <motion.img
+                variants={block(t.etch)}
+                src={brandAsset("dunslim-vertical-brass.svg")}
+                alt=""
+                aria-hidden
+                className="mb-8 h-auto w-[124px] md:hidden"
+              />
+
               <motion.p variants={block(t.eyebrow)} className="label-caps text-brass-40">
                 {eyebrow}
               </motion.p>
