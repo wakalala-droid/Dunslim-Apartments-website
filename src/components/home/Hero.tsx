@@ -113,7 +113,7 @@ export default function Hero({
           <img
             src={brandAsset("dunslim-monogram-white.svg")}
             alt=""
-            className="h-auto w-[min(96vw,420px)] -translate-x-[18%] opacity-40 md:w-[min(64vw,780px)] md:-translate-x-[12%]"
+            className="h-auto w-[min(48vw,210px)] -translate-x-[18%] opacity-40 md:w-[min(32vw,390px)] md:-translate-x-[12%]"
           />
         </div>
 
