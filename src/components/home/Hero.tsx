@@ -100,11 +100,11 @@ export default function Hero({
   const etch: Variants = reduce
     ? { hidden: { opacity: 0 }, shown: { opacity: 1, transition: { duration: 0.4 } } }
     : {
-        hidden: { opacity: 0, y: 12 },
+        hidden: { opacity: 0, scale: 1.04 },
         shown: {
           opacity: 1,
-          y: 0,
-          transition: { duration: DUR.entrance, ease: EASE_OUT, delay: t.etch },
+          scale: 1,
+          transition: { duration: DUR.image * 0.8, ease: EASE_OUT, delay: t.etch },
         },
       };
 
@@ -140,30 +140,21 @@ export default function Hero({
         </motion.div>
 
         {/*
-          The Deep Navy panel.
+          A Deep Navy field washing in from the left.
 
-          This is the cover, and it is what the brand book actually asks for.
-          p.12 is explicit: where the identity has to meet photography, the mark
-          goes on a solid Deep Navy panel laid over the image — never on the
-          photograph itself, and never as a wash you can see the wall through.
+          This is what the mark stands on. A white etch at 40 per cent has
+          nothing to hold against a photograph of a cream wall in afternoon
+          light — it disappears, which is exactly what happened. Giving it a
+          darkened ground is also the treatment the brand book prescribes when
+          the identity has to meet photography at all (p.12): the mark sits on
+          a Deep Navy field laid over the image, never on the image itself.
 
-          Earlier attempts put a 40 per cent white mark straight onto a picture
-          of a cream wall in afternoon light. There was nothing for it to hold
-          against, so it read as a smudge. A mark worth protecting this
-          carefully deserves a ground, not a filter.
-
-          The panel takes the left columns and stops short of the type, so the
-          photograph still carries the right of the frame.
+          It fades out well before the type column, so it costs the photograph
+          nothing on the right where the headline lives.
         */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 -z-20 hidden bg-navy/90 md:block md:w-[42%] lg:w-[38%]"
-        />
-        {/* A short gradient so the panel meets the photograph rather than
-            butting against it with a hard seam. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 -z-20 hidden bg-gradient-to-r from-navy/90 to-transparent md:block md:left-[42%] md:w-[14%] lg:left-[38%]"
+          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-navy/85 via-navy/45 to-transparent md:via-navy/35 md:to-40%"
         />
 
 
@@ -198,25 +189,21 @@ export default function Hero({
           and lower on phones, where the headline crosses the mark rather than
           sitting beside it in its own column.
         */}
-        {/*
-          The full vertical lockup, brass on Deep Navy, at full strength — as
-          the guidelines cover carries it. Not a watermark: this is the
-          identity, so it is legible or it is not there.
-
-          Only from md up, where the panel gives it a column of its own. On a
-          phone a full-width navy panel would bury the room the photograph is
-          there to show, so the mark moves into the content flow instead — see
-          the Container below.
-        */}
         <motion.div
           aria-hidden
           variants={etch}
-          className="pointer-events-none absolute inset-y-0 left-0 -z-10 hidden items-center justify-center px-6 md:flex md:w-[42%] lg:w-[38%] lg:px-12"
+          className="pointer-events-none absolute inset-y-0 -z-10 left-0 flex items-center"
         >
           <img
-            src="/brand/dunslim-vertical-brass.svg"
+            src="/brand/dunslim-monogram-white.svg"
             alt=""
-            className="h-auto w-[min(30vw,300px)]"
+            /*
+              40 per cent is the frosted-etch density the guidelines set for
+              glass. Phones get less: there the headline runs across the mark
+              rather than sitting beside it in its own column, and 40 per cent
+              behind display type starts to cost the reader effort.
+            */
+            className="h-auto w-[min(78vw,340px)] -translate-x-[26%] opacity-[0.24] md:w-[min(46vw,560px)] md:-translate-x-[18%] md:opacity-40 lg:w-[min(42vw,660px)]"
           />
         </motion.div>
 
@@ -259,20 +246,6 @@ export default function Hero({
           {/* ---- the type block, ranged right against the mark ---- */}
           <div className="flex justify-end py-16 md:py-12">
             <div className="w-full md:w-[62%] lg:w-[58%] md:text-right">
-              {/*
-                The mark on a phone. It sits in the flow above the headline
-                rather than behind it, because a full-width navy panel would
-                cover the room the photograph exists to show. Same lockup, same
-                brass, just doing its job in a single column.
-              */}
-              <motion.img
-                variants={block(t.etch)}
-                src="/brand/dunslim-vertical-brass.svg"
-                alt=""
-                aria-hidden
-                className="mb-10 h-auto w-[132px] md:hidden"
-              />
-
               <motion.p variants={block(t.eyebrow)} className="label-caps text-brass-40">
                 {eyebrow}
               </motion.p>
