@@ -33,7 +33,6 @@
     color: var(--charcoal);
     font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 
   /* Brand setting rule, p.13 — ranged left, no hyphenation. */
@@ -205,47 +204,101 @@
 .a-etch { animation: hero-fade 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /*
-  SCROLL REVEALS — also CSS, also no JavaScript
+  THE HERO PHOTOGRAPH SETTLES
   ---------------------------------------------------------------------------
-  These ran through framer-motion's whileInView, which server-rendered roughly
-  thirty-six elements at opacity:0 across the site. Anything below the fold was
-  invisible until React hydrated, and stayed invisible for good if the script
-  failed.
+  Restored. This was cut while chasing a lag complaint on the theory that
+  scaling a photograph made the compositor resample it every frame. The lag
+  survived the cut, so the cut bought nothing and cost the one piece of motion
+  that made the page feel like a place rather than a template.
 
-  The default here is VISIBLE. The animation is added only where the browser
-  supports scroll-driven timelines, which run on the compositor and never touch
-  the main thread. A browser without support (Firefox, today) simply shows the
-  content — which is the correct fallback for a reveal.
+  It is a single composited layer moving 6% over sixteen seconds, running once
+  and stopping. It is not tied to scroll, so it cannot stutter with the guest's
+  finger, and prefers-reduced-motion collapses it like everything else.
 */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .a-inview {
+@keyframes hero-drift {
+  from { transform: scale(1.06); }
+  to   { transform: scale(1); }
+}
+.a-drift {
+  animation: hero-drift 16s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform;
+}
+
+/*
+  SCROLL REVEALS — one-shot, and visible unless something is actively animating
+  ---------------------------------------------------------------------------
+  Third attempt, so it is worth being exact about what was wrong before.
+
+  Attempt one used framer-motion's whileInView, which server-rendered about
+  thirty-six elements at opacity:0 and left them invisible until React had
+  hydrated.
+
+  Attempt two replaced that with a scroll-driven timeline:
+
       animation: hero-rise 1s linear both;
       animation-timeline: view();
       animation-range: entry 5% entry 55%;
-    }
-    .a-inview-fade {
-      animation: hero-fade 1s linear both;
-      animation-timeline: view();
-      animation-range: entry 5% entry 50%;
-    }
+
+  which read as a fix and was not one. `entry` is measured across the whole
+  distance a subject takes to enter the scrollport — its own height PLUS the
+  viewport height — so `entry 55%` on a tall element is a very long way down
+  the page. Measured on the live homepage: a 536px card in a 720px viewport
+  had to travel roughly 630px before reaching full opacity, which put the card
+  sitting 79px from the top of the screen — the one actually being read — at
+  computed opacity 0.2. Elements that had already scrolled clean past the top
+  were still reporting opacity 0.
+
+  So the content was never slow to arrive. It was being deliberately held
+  almost invisible for most of the time it was on screen, and a guest scrolling
+  through that reads it as a site that cannot keep up. That is the lag. No
+  amount of shrinking the JavaScript bundle was ever going to touch it.
+
+  What it does now:
+
+  1. The resting state is VISIBLE. Nothing in this file hides anything on its
+     own. Elements are hidden only inside `.js-motion`, a class the observer
+     script adds after it has confirmed it is running. No script, a thrown
+     error, an old browser, reduced motion — every one of those paths ends on a
+     static, fully legible page instead of a blank one.
+  2. The entrance PLAYS ONCE and finishes. It is a timed animation triggered by
+     an IntersectionObserver, not a scrub chained to scroll offset, so how fast
+     the guest scrolls has no bearing on whether they can read the page, and
+     stopping mid-scroll can never strand anything half-faded.
+  3. One observer per block rather than per word. A heading animates its own
+     words from its single `is-in` class — 59 scroll-linked animations on the
+     homepage become 12 observed elements.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  /* Hidden ONLY while the script is running and the block has not arrived. */
+  .js-motion .reveal-fade:not(.is-in) {
+    opacity: 0;
+  }
+  .js-motion .reveal-rise:not(.is-in) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .js-motion .reveal-rule:not(.is-in) {
+    transform: scaleX(0);
+  }
+  .js-motion .reveal-words:not(.is-in) .reveal-word {
+    transform: translateY(108%);
+  }
+
+  .reveal-fade.is-in {
+    animation: hero-fade 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .reveal-rise.is-in {
+    animation: hero-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .reveal-rule.is-in {
+    animation: hero-draw 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .reveal-words.is-in .reveal-word {
+    animation: hero-word 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 
-/* Word-by-word heading reveal, and the brass rule above it. Same rules:
-   visible by default, animated only where scroll timelines are supported. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .a-inview-word {
-      display: inline-block;
-      animation: hero-word 1s linear both;
-      animation-timeline: view();
-      animation-range: entry 5% entry 45%;
-    }
-    .a-inview-rule {
-      animation: hero-draw 1s linear both;
-      animation-timeline: view();
-      animation-range: entry 5% entry 45%;
-    }
-  }
+/* The word boxes are inline-block whether or not anything animates them. */
+.reveal-word {
+  display: inline-block;
 }

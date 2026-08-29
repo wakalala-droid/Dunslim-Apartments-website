@@ -6,6 +6,7 @@ import { site } from "@/lib/site";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
+import { RevealScript } from "@/components/ui/RevealScript";
 
 /**
  * Söhne is the brand typeface. Inter is the substitute the brand guidelines
@@ -117,29 +118,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-ZM" className={inter.variable}>
       <body className="font-sans text-body antialiased">
         {/*
-          Everything that animates in is server-rendered in its hidden state —
-          roughly forty elements carry an inline `opacity:0`, and the heading
-          words start translated out of a clipping box. JavaScript is what
-          brings them back, so if scripts never run the page would render
-          permanently blank.
+          Adds `js-motion` before the first paint, which is the only thing that
+          lets the reveal CSS hide anything at all. If it never runs, the page
+          is a plain static document rather than a blank one.
 
-          This undoes every one of those hidden states, so with no JavaScript
-          the site is simply a static, fully legible page. Matching on the
-          inline style is deliberate: it catches any animated element without
-          each one having to remember to opt in.
+          This replaces a <noscript> block that undid inline `opacity:0` styles.
+          Those styles no longer exist — nothing is hidden in the markup any
+          more — so the override had stopped protecting anything.
         */}
-        <noscript>
-          {/* eslint-disable-next-line react/no-danger */}
-          <style
-            dangerouslySetInnerHTML={{
-              // Both spellings, since the serialised style may or may not
-              // carry a space after the colon.
-              __html:
-                '[style*="opacity:0"],[style*="opacity: 0"],[data-reveal-word]' +
-                "{opacity:1!important;transform:none!important}",
-            }}
-          />
-        </noscript>
+        <RevealScript />
 
         <a href="#main" className="skip-link">
           Skip to content

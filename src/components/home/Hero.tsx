@@ -73,7 +73,7 @@ export default function Hero({
             cover
             priority
             sizes="100vw"
-            className="absolute inset-0"
+            className="a-drift absolute inset-0"
           />
         </div>
 
