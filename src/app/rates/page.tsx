@@ -28,8 +28,8 @@ export default function RatesPage() {
           <SectionHead
             as="h1"
             eyebrow="Rates"
-            title="What it costs, in full, before you book."
-            intro="Every figure on this page is what you will actually pay. There is no booking fee, no cleaning fee and no service charge added at the payment step."
+            title="What it costs"
+            intro="Every price here is what you actually pay. No booking fee, no cleaning fee, nothing added at the end."
           />
         </Container>
       </Section>
@@ -124,8 +124,8 @@ export default function RatesPage() {
               <SectionHead
                 onNavy
                 eyebrow="Long stays"
-                title="The longer you stay, the less each night costs."
-                intro="Applied automatically at checkout. Nobody has to ask for it, and there is no code to remember."
+                title="Longer stays cost less per night"
+                intro="It comes off automatically at checkout. You do not need a code and you do not need to ask."
               />
             </div>
 
@@ -182,8 +182,8 @@ export default function RatesPage() {
             <div className="lg:col-span-5">
               <SectionHead
                 eyebrow="Included"
-                title="In the rate, not on the bill."
-                intro="These are not extras. They are part of the nightly rate and they are never itemised at the end."
+                title="What is included"
+                intro="None of this is an extra. It is all in the nightly rate."
               />
               <Figure
                 name="r1-kitchen"
@@ -235,7 +235,7 @@ export default function RatesPage() {
       {/* Questions */}
       <Section>
         <Container wide>
-          <SectionHead eyebrow="Before you book" title="Questions guests actually ask." />
+          <SectionHead eyebrow="Before you book" title="Questions we get asked" />
           <dl className="mt-12 max-w-[860px] divide-y divide-navy/10 border-y border-navy/10">
             {faqs.map((f, i) => (
               <Reveal key={f.q} delay={i} className="py-8">
@@ -246,7 +246,7 @@ export default function RatesPage() {
           </dl>
 
           <p className="mt-12 max-w-measure text-body text-charcoal">
-            Anything else, message us on WhatsApp or call {business.phone}. A person answers.
+            Anything else, message us on WhatsApp or call {business.phone}.
           </p>
 
           <ButtonLink href="/book" size="lg" className="mt-8">

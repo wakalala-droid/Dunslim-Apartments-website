@@ -65,8 +65,8 @@ export default function LocationPage() {
         <Container wide>
           <SectionHead
             eyebrow="Getting here"
-            title="From the airport, and from town."
-            intro="Distances currently disagree across our old listings. These are being re-measured so that one confirmed set of numbers appears everywhere."
+            title="Getting here"
+            intro="Our old listings gave different distances. We are re-measuring these so the numbers are the same everywhere."
           />
 
           <ul className="mt-16 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
@@ -97,11 +97,11 @@ export default function LocationPage() {
               <SectionHead
                 onNavy
                 eyebrow="Arrival"
-                title="Landing late is normal here."
+                title="Arriving late is fine"
                 intro={
                   arrival.selfCheckIn
-                    ? "Access details reach you the day before, so the hour you arrive does not matter."
-                    : "Tell us your flight when you book and someone will be there to hand over, whatever time it lands."
+                    ? "We send your access details the day before, so the hour you land does not matter."
+                    : "Tell us your flight when you book and someone will be there with the keys, whatever time it lands."
                 }
               />
             </div>

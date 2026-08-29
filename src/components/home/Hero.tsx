@@ -58,16 +58,18 @@ export default function Hero({
     shown: { opacity: 1, transition: { duration, delay: reduce ? delay * 0.4 : delay } },
   });
 
-  const photo: Variants = reduce
-    ? fade(t.image)
-    : {
-        hidden: { opacity: 0, scale: 1.06 },
-        shown: {
-          opacity: 1,
-          scale: 1,
-          transition: { duration: DUR.image, ease: EASE_OUT, delay: t.image },
-        },
-      };
+  /*
+    Opacity only, deliberately.
+
+    Scaling a full-bleed 2400px photograph makes the compositor resample the
+    whole viewport every frame for the length of the animation. On a mid-range
+    phone that is the single most expensive thing on the page, and it runs
+    while the reader is trying to take in the headline — which is what made
+    the site feel sluggish.
+
+    A fade costs nothing and reads the same at this size.
+  */
+  const photo: Variants = fade(t.image, reduce ? 0.3 : DUR.image);
 
   /** A hairline that draws itself along the grid rather than fading in. */
   const rule = (delay: number): Variants =>

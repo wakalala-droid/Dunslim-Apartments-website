@@ -36,19 +36,19 @@ export const DUR = {
   /** Hover, press, toggle — should feel instant. */
   micro: 0.16,
   /** Standard entrance for a block of content. */
-  entrance: 1,
+  entrance: 0.5,
   /** A word rising inside its clipping box. */
-  word: 1.15,
+  word: 0.6,
   /** A hairline drawing itself along the grid. */
-  rule: 1.4,
-  /** The hero photograph settling. Long enough to read as arrival, not a zoom. */
-  image: 3.2,
+  rule: 0.7,
+  /** A photograph settling. */
+  image: 1.2,
 } as const;
 
 /** Gap between staggered siblings. Below ~40ms a stagger stops being legible. */
 export const STAGGER = {
-  word: 0.09,
-  item: 0.1,
+  word: 0.045,
+  item: 0.06,
 } as const;
 
 /**
@@ -61,9 +61,9 @@ export const STAGGER = {
  */
 export function heroTimeline(wordCount: number) {
   /** The framing rules draw first — the composition builds before the content. */
-  const frame = 0.2;
-  const eyebrow = 0.62;
-  const words = 0.9;
+  const frame = 0.1;
+  const eyebrow = 0.28;
+  const words = 0.42;
 
   /**
    * Beats overlap rather than queue. Waiting for the headline to finish before
@@ -76,18 +76,18 @@ export function heroTimeline(wordCount: number) {
    * card further down the clock.
    */
   const stagger = Math.max(0, wordCount - 1) * STAGGER.word;
-  const intro = Math.min(words + stagger * 0.55, 1.8);
+  const intro = Math.min(words + stagger * 0.55, 0.85);
 
   return {
     image: 0,
     frame,
     /** The etched monogram surfaces slowly, like something under glass. */
-    etch: frame + 0.25,
+    etch: frame + 0.14,
     eyebrow,
     words,
     intro,
     /** The search card is the payoff — last, but close behind. */
-    search: Math.min(intro + 0.2, 2),
+    search: Math.min(intro + 0.12, 1),
   };
 }
 

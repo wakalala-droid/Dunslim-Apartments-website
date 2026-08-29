@@ -132,14 +132,14 @@ export const residences: Residence[] = [
   {
     slug: "residence-one",
     name: "Residence One",
-    summary: "A one-bedroom apartment for a single traveller on a working stay.",
+    summary: "One bedroom. Suits one person here to work.",
     bedrooms: 1,
     sleeps: 2,
     area: 0,
     nightlyUsd: 57,
     description: [
-      "A one-bedroom apartment arranged for someone who is here to work. A desk with room for a laptop and papers, a bed that is properly dark at night, and a kitchen that can handle more than coffee.",
-      "Housekeeping runs on a fixed schedule so the day is predictable, and the entrance is private.",
+      "Set up for someone here to work. There is a proper desk, the bedroom gets properly dark at night, and the kitchen can handle more than coffee.",
+      "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
     ],
     amenities: [
       "Desk and task chair",
@@ -158,14 +158,14 @@ export const residences: Residence[] = [
   {
     slug: "residence-two",
     name: "Residence Two",
-    summary: "A two-bedroom apartment for a colleague pair or a small family.",
+    summary: "Two bedrooms. Works for two colleagues, or a family.",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
     nightlyUsd: 72,
     description: [
-      "Two bedrooms off a shared living room, which makes it work equally for two colleagues travelling together and for a family returning to Lusaka.",
-      "The second bedroom takes a cot on request. The living room is large enough to hold a meeting in without moving furniture.",
+      "Two bedrooms off a shared living room. It works just as well for two colleagues travelling together as for a family back in Lusaka.",
+      "We can put a cot in the second bedroom if you need one. The living room is big enough to hold a meeting without shifting furniture.",
     ],
     amenities: [
       "Two bedrooms",
@@ -185,14 +185,14 @@ export const residences: Residence[] = [
   {
     slug: "residence-three",
     name: "Residence Three",
-    summary: "A three-bedroom apartment for a delegation or an extended family stay.",
+    summary: "Three bedrooms. Room for a team, or family visiting.",
     bedrooms: 3,
     sleeps: 6,
     area: 0,
     nightlyUsd: 87,
     description: [
-      "The largest of the three. Three bedrooms and a living room that seats a group, which suits a visiting delegation as readily as a family.",
-      "Best suited to longer stays, where the rate ladder makes the most difference.",
+      "The biggest of the three. Three bedrooms and a living room that seats everyone, whether that is a work team or family.",
+      "Best value on a longer stay, where the weekly and monthly rates really start to count.",
     ],
     amenities: [
       "Three bedrooms",
@@ -223,26 +223,26 @@ export const getResidence = (slug: string) => residences.find((r) => r.slug === 
 
 export const assurances = [
   {
-    title: "Power that does not stop",
+    title: "The power stays on",
     // CONFIRM: solar, inverter or generator — and how many hours it actually holds.
-    body: "Backup power covers the apartment through a load-shedding block, so the lights, the Wi-Fi and the work you came here to do all stay on.",
-    detail: "CONFIRM: backup type and hours held",
+    body: "We have backup power. When the grid goes down, the lights, the fridge and the Wi-Fi keep running.",
+    detail: "CONFIRM: what the backup is, and how many hours it lasts",
   },
   {
-    title: "Water on site",
-    body: "Stored water on the property, so a municipal interruption does not reach the shower or the kitchen tap.",
-    detail: "CONFIRM: tank capacity or borehole",
+    title: "We store our own water",
+    body: "There is a tank on the property. If the council supply is cut, you can still shower and cook.",
+    detail: "CONFIRM: tank size, or is it a borehole?",
   },
   {
-    title: "Gated, watched, parked",
-    body: "A gated property with security through the night and parking inside the gate, not on the road.",
-    detail: "CONFIRM: guarding hours and provider",
+    title: "Gated, with a guard at night",
+    body: "The gate is manned overnight and you park inside it, not out on the road.",
+    detail: "CONFIRM: guarding hours, and which company",
   },
   {
-    title: "Wi-Fi that carries a call",
+    title: "Wi-Fi that handles video calls",
     // A number here is worth more than the word "fast". CONFIRM the real figure.
-    body: "A connection specified for video calls rather than for browsing, on every unit.",
-    detail: "CONFIRM: measured download and upload speed",
+    body: "Fast enough for Zoom and Teams, in all three apartments.",
+    detail: "CONFIRM: actual measured speed, up and down",
   },
 ] as const;
 
@@ -301,33 +301,33 @@ export const reviews: Review[] = [];
 export const faqs = [
   {
     q: "What happens if the power goes out?",
-    a: "Backup power covers the apartment. Lights, sockets and Wi-Fi stay on through a load-shedding block. CONFIRM: state the backup type and how many hours it holds.",
+    a: "We have backup power, so the lights, sockets and Wi-Fi stay on. CONFIRM: say what the backup is and how many hours it lasts.",
   },
   {
     q: "How do I get in if I arrive late?",
     a: arrival.selfCheckIn
-      ? "Your access details are sent the day before arrival, so you can let yourself in at any hour."
-      : "Tell us your flight or arrival time when you book and someone will meet you at the apartment to hand over. CONFIRM: the latest arrival that can be met.",
+      ? "We send your access details the day before, so you can let yourself in whatever time you land."
+      : "Tell us your flight or arrival time when you book and someone will meet you at the apartment with the keys. CONFIRM: the latest arrival we can meet.",
   },
   {
     q: "How do I pay?",
-    a: "Visa and Mastercard, MTN Mobile Money, Airtel Money, or bank transfer. You will see the full total before you are asked to pay anything.",
+    a: "Visa, Mastercard, MTN Mobile Money, Airtel Money or bank transfer. You see the full total before you pay anything.",
   },
   {
     q: "Can you arrange an airport pick-up?",
-    a: "CONFIRM: whether an airport transfer is offered, and at what price.",
+    a: "CONFIRM: do we offer an airport pick-up, and what do we charge for it?",
   },
   {
     q: "Is there security at night?",
-    a: "The property is gated with security through the night, and parking is inside the gate. CONFIRM: guarding hours.",
+    a: "Yes. The gate is manned overnight and you park inside it. CONFIRM: the exact guarding hours.",
   },
   {
     q: "Can I stay for a month or longer?",
-    a: "Yes. Rates step down at seven nights and again at twenty-eight. For a stay longer than a month, talk to us directly and we will price it properly.",
+    a: "Yes. The rate drops at seven nights and again at twenty-eight. If you are staying more than a month, just talk to us and we will work something out.",
   },
   {
     q: "Is it cheaper to book here than on Booking.com?",
-    a: `Yes. Booking direct is ${rates.directDiscountPct} per cent below the platform rate, every time, with no booking fee.`,
+    a: `Yes. Booking here is ${rates.directDiscountPct}% cheaper than the platforms, every time, and there is no booking fee.`,
   },
 ] as const;
 

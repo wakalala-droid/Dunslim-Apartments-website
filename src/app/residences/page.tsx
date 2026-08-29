@@ -20,8 +20,8 @@ export default function ResidencesPage() {
           <SectionHead
             as="h1"
             eyebrow="The residences"
-            title="Three apartments, one standard."
-            intro="Every unit is serviced, furnished and run the same way. What changes between them is the amount of room, not the standard of it."
+            title="Three apartments, same standard."
+            intro="All three are furnished, serviced and run the same way. The only real difference is how much space you need."
           />
           <Figure
             name="detail-living"

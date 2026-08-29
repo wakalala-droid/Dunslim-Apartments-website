@@ -44,7 +44,7 @@ export default function HomePage() {
       <Hero
         eyebrow="Serviced residences"
         headline="A room that works as well as it looks."
-        intro="Three serviced apartments for people who came to Lusaka to work. Power that stays on, parking inside the gate, and a rate that is always lower booked here."
+        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate, and it is always cheaper to book with us than through a platform."
         metaLeft={`${business.city} · ${business.country}`}
         metaRight={`${business.street}`}
         /* The fixed brand line, exactly as the cover carries it. The parent
@@ -72,18 +72,18 @@ export default function HomePage() {
             {[
               {
                 icon: BadgeCheck,
-                title: "Best rate, always",
-                body: `Booking here is ${rates.directDiscountPct} per cent below the platform price, every night of the year. No booking fee, and the total you see first is the total you pay.`,
+                title: "Always cheaper here",
+                body: `Book with us and you pay ${rates.directDiscountPct}% less than on Booking.com or Airbnb. No booking fee, and the price you see first is the price you pay.`,
               },
               {
                 icon: ShieldCheck,
                 title: "Free cancellation",
-                body: `Change your mind up to ${arrival.cancellationHours} hours before arrival and it costs you nothing. Plans move; we know.`,
+                body: `Cancel up to ${arrival.cancellationHours} hours before you arrive and it costs you nothing. Plans change.`,
               },
               {
                 icon: Clock,
                 title: "Late checkout, free",
-                body: `Check out at ${arrival.lateCheckOut} instead of ${arrival.checkOut} when you book direct. Useful when your flight is in the afternoon.`,
+                body: `Check out at ${arrival.lateCheckOut} instead of ${arrival.checkOut} when you book with us. Handy if your flight is in the afternoon.`,
               },
             ].map((item, i) => (
               <Reveal as="li" key={item.title} delay={i} className="flex flex-col">
@@ -106,8 +106,8 @@ export default function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-8">
             <SectionHead
               eyebrow="The residences"
-              title="Three apartments, one standard."
-              intro="Each is serviced, furnished and run the same way. Choose by how much room you need, not by how much you are willing to compromise."
+              title="Three apartments, same standard."
+              intro="All three are furnished, serviced and run the same way. The only real difference is how much space you need."
             />
             <ButtonLink href="/residences" variant="secondary">
               All residences
@@ -136,8 +136,8 @@ export default function HomePage() {
               <SectionHead
                 onNavy
                 eyebrow="Why guests stay"
-                title="The things nobody advertises, until they fail."
-                intro="A serviced apartment is only as good as the evening the power goes out. These are the four we hold ourselves to."
+                title="The things guests ask about first."
+                intro="Before anyone asks about the decor, they ask about power, water and security. So here are our answers."
               />
               <Figure
                 name="detail-bath"
@@ -183,8 +183,8 @@ export default function HomePage() {
             <div className="lg:col-span-6">
               <SectionHead
                 eyebrow="Long stays"
-                title="Here for weeks, not nights."
-                intro="Most of our guests are on an engagement rather than a holiday. The rate steps down as the stay gets longer, automatically, without anyone having to ask."
+                title="Staying a few weeks?"
+                intro="Most people who stay with us are here for work, not a holiday. The longer you stay the less you pay per night, and it comes off automatically."
               />
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
@@ -227,8 +227,8 @@ export default function HomePage() {
             <div className="lg:col-span-5">
               <SectionHead
                 eyebrow="Who stays here"
-                title="Built for the working visit."
-                intro="Dunslim is the serviced residence arm of the Dunslim Group. It exists for the guest who arrives on business and expects the room to work as well as it looks."
+                title="Who stays with us"
+                intro="Dunslim Apartments is part of the Dunslim Group. Most of our guests are in Lusaka for work and want somewhere that simply works."
               />
             </div>
             <ul className="grid gap-px self-start bg-navy/10 sm:grid-cols-2 lg:col-span-7">
@@ -252,7 +252,7 @@ export default function HomePage() {
           <SectionHead
             eyebrow="The address"
             title={`${business.street}, ${business.city}.`}
-            intro="Far enough out to be quiet at night, close enough in to make a morning meeting without leaving at dawn."
+            intro="Quiet enough to sleep, close enough that you are not leaving at dawn for a morning meeting."
           />
 
           <Figure
@@ -304,7 +304,7 @@ export default function HomePage() {
               Book direct
             </Eyebrow>
             <h2 className="mt-6 text-h1 font-extralight text-white">
-              Check your dates. It takes a minute.
+              Check your dates
             </h2>
             <p className="mt-6 text-lead text-white/85">
               From {money(directNightly(cheapest))} a night, with free cancellation up to{" "}

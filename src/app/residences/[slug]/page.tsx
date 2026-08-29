@@ -146,7 +146,7 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         <Container wide>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
-              <SectionHead eyebrow="The apartment" title="What it is like to stay here." />
+              <SectionHead eyebrow="The apartment" title="About this apartment" />
               <div className="mt-8 space-y-6">
                 {description.map((para) => (
                   <p key={para} className="max-w-measure text-body text-charcoal">
@@ -183,7 +183,7 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
       {/* The other residences */}
       <Section>
         <Container wide>
-          <SectionHead eyebrow="Also available" title="The other residences." />
+          <SectionHead eyebrow="Also available" title="The other two" />
           <ul className="mt-12 grid gap-px bg-navy/10 sm:grid-cols-2">
             {residences
               .filter((r) => r.slug !== slug)

@@ -37,13 +37,13 @@ export function Reveal({
   const Tag = motion[as];
   const isImage = variant === "image";
 
-  const hidden = reduce
-    ? { opacity: 0 }
-    : isImage
-      ? { opacity: 0, scale: 1.03 }
-      : { opacity: 0, y: 10 };
-
-  const shown = reduce ? { opacity: 1 } : isImage ? { opacity: 1, scale: 1 } : { opacity: 1, y: 0 };
+  /*
+    Images fade rather than scale. Scaling a photograph forces the compositor
+    to resample it every frame, and with several of these on a page it is felt
+    on a mid-range phone. A fade reads the same and costs nothing.
+  */
+  const hidden = reduce || isImage ? { opacity: 0 } : { opacity: 0, y: 10 };
+  const shown = reduce || isImage ? { opacity: 1 } : { opacity: 1, y: 0 };
 
   return (
     <Tag
