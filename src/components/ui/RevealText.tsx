@@ -1,20 +1,25 @@
-import { Fragment } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * A heading that rises into view a word at a time.
+ * A section heading that rises into view.
  *
- * Each word sits in its own overflow-hidden box and starts below it, so the
- * line appears to be uncovered rather than to fade in. It is the one piece of
- * expressive motion on the site, and it stays confined to display headings —
- * body copy that animates is body copy you cannot read.
+ * This used to uncover itself a word at a time, each word in its own
+ * overflow-hidden box, translating up from below it. It was the most
+ * expressive motion on the site and it has been taken off the scrolled
+ * headings, for a measured reason worth writing down.
  *
- * VISIBLE BY DEFAULT, and one observer for the whole heading rather than one
- * per word. The previous version gave every word its own scroll-driven
- * timeline: 21 of them on the homepage inside a total of 59, each one a
- * separate compositor animation, and all of them capable of stranding the
- * heading mid-rise. The heading now carries a single `is-in`, and the words
- * stagger off their own animation-delay once it lands.
+ * Animating a transform inside an `overflow: hidden` box does not merely
+ * promote the element to a compositor layer, it forces Chromium to build a
+ * render surface for the clip — and it does that at the moment the animation
+ * starts, which is to say mid-scroll. Measured on the homepage: 64 animatable
+ * elements, up to 22 of them starting inside a single 900px viewport, and 21 of
+ * those were clipped word spans. The owner's report was scroll judder across
+ * the whole site on desktop Chromium, and that churn is on every page.
+ *
+ * The heading now rises as one block: one layer instead of eight, and about
+ * forty fewer DOM nodes per page. The words-uncovering effect is kept in the
+ * homepage hero, where it runs once at load, above the fold, and costs nothing
+ * during scrolling — which is where it was always doing the most work anyway.
  */
 export function RevealText({
   text,
@@ -25,40 +30,17 @@ export function RevealText({
   text: string;
   className?: string;
   as?: "h1" | "h2" | "h3" | "p" | "span";
-  /** Seconds to wait before the first word. Kept for call-site compatibility. */
+  /** Seconds to wait before the heading moves. Kept for call-site compatibility. */
   delay?: number;
   /** Accepted and ignored — the entrance only ever runs on entry. */
   once?: boolean;
 }) {
-  const words = text.split(" ");
-
   return (
-    <Tag className={cn("reveal reveal-words", className)}>
-      {/*
-        Announced once as a whole. Without this a screen reader reads the
-        heading one disjointed word at a time.
-      */}
-      <span className="sr-only">{text}</span>
-
-      <span aria-hidden className="inline">
-        {words.map((w, i) => (
-          <Fragment key={`${w}-${i}`}>
-            <span className="inline-block -mb-[0.14em] overflow-hidden pb-[0.14em] align-bottom">
-              <span
-                className="reveal-word"
-                style={{ animationDelay: `${delay * 1000 + i * 45}ms` }}
-              >
-                {w}
-              </span>
-            </span>
-            {/*
-              The space lives BETWEEN the clipping boxes. Trailing whitespace
-              inside an inline-block is trimmed, which runs every word together.
-            */}
-            {i < words.length - 1 ? " " : null}
-          </Fragment>
-        ))}
-      </span>
+    <Tag
+      className={cn("reveal reveal-rise", className)}
+      style={delay ? { animationDelay: `${delay * 1000}ms` } : undefined}
+    >
+      {text}
     </Tag>
   );
 }

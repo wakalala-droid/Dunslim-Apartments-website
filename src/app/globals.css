@@ -227,9 +227,21 @@
   and stopping. It is not tied to scroll, so it cannot stutter with the guest's
   finger, and prefers-reduced-motion collapses it like everything else.
 */
+/*
+  A DRIFT, NOT A ZOOM.
+  This was `scale(1.06)` to `scale(1)`. A scale forces the compositor to
+  re-rasterise the layer at a new resolution on every frame it changes, and the
+  layer here is the full-viewport hero photograph — sixteen seconds of
+  continuous re-rastering, landing exactly while the guest is first scrolling.
+  That is what the original note in the handover meant by "resample the full
+  viewport every frame", and re-adding the scale re-added the cost.
+
+  A translate is a matrix update on an already-rasterised layer: free. The
+  photograph still settles; it now slides a little rather than growing.
+*/
 @keyframes hero-drift {
-  from { transform: scale(1.06); }
-  to   { transform: scale(1); }
+  from { transform: translate3d(0, -1.6%, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
 /*
   No `will-change`. It was here to hint the compositor, but it promotes the
@@ -298,28 +310,21 @@
   .js-motion .reveal-rule:not(.is-in) {
     transform: scaleX(0);
   }
-  .js-motion .reveal-words:not(.is-in) .reveal-word {
-    transform: translateY(108%);
-  }
+
 
   .reveal-fade.is-in {
-    animation: hero-fade 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: hero-fade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .reveal-rise.is-in {
-    animation: hero-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: hero-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .reveal-rule.is-in {
     animation: hero-draw 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-  .reveal-words.is-in .reveal-word {
-    animation: hero-word 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
+
 }
 
-/* The word boxes are inline-block whether or not anything animates them. */
-.reveal-word {
-  display: inline-block;
-}
+
 
 /*
   A staggered group: one trigger on the container, the sequence carried by each
@@ -333,7 +338,7 @@
     transform: translateY(14px);
   }
   .reveal-stagger.is-in .reveal-item {
-    animation: hero-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: hero-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 
