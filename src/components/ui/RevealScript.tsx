@@ -61,10 +61,17 @@ try{
   if(!('IntersectionObserver' in window))return;
   root.classList.add('js-motion');
   var seen=new WeakSet();
+  var pending=0;
+  var reveal=function(el){
+    if(el.classList.contains('is-in'))return;
+    el.classList.add('is-in');
+    if(pending>0)pending--;
+    if(pending<=0)unbindScroll();
+  };
   var hit=function(entries,obs){
     for(var i=0;i<entries.length;i++){
       if(entries[i].isIntersecting){
-        entries[i].target.classList.add('is-in');
+        reveal(entries[i].target);
         obs.unobserve(entries[i].target);
       }
     }
@@ -86,7 +93,7 @@ try{
     var vh=window.innerHeight;
     for(var i=0;i<entries.length;i++){
       if(entries[i].isIntersecting&&enough(entries[i].boundingClientRect,vh)){
-        entries[i].target.classList.add('is-in');
+        reveal(entries[i].target);
         obs.unobserve(entries[i].target);
       }
     }
@@ -96,9 +103,11 @@ try{
     for(var i=0;i<els.length;i++){
       if(!seen.has(els[i])){
         seen.add(els[i]);
+        pending++;
         (els[i].hasAttribute('data-reveal-late')?ioLate:io).observe(els[i]);
       }
     }
+    if(pending>0)bindScroll();
   };
   /*
     A late group is SUPPOSED to sit unrevealed while it is partly on screen, so
@@ -115,9 +124,37 @@ try{
     for(var i=0;i<stuck.length;i++){
       var r=stuck[i].getBoundingClientRect();
       if(waiting(stuck[i],r,vh))continue;
-      if(r.top<vh&&r.bottom>0)stuck[i].classList.add('is-in');
+      if(r.top<vh&&r.bottom>0)reveal(stuck[i]);
     }
   };
+  /*
+    The scroll listener re-arms the guard, and it must cost NOTHING per event.
+    The first version of this ran a document-wide querySelector for unrevealed
+    blocks on every scroll event: 33 microseconds a call once everything had been
+    revealed, because the query then has to walk the whole document to return
+    null — so it got MORE expensive the further down the page you were. It was
+    measured at 0.15 to 0.48ms per event on a desktop, several times that on a
+    mid-range phone, and it never stopped, on every page of the site.
+
+    Now the count of unrevealed blocks is kept as a number, the handler is an
+    integer comparison, and the listener takes itself off entirely once there
+    is nothing left to reveal.
+  */
+  var scrollBound=false;
+  var onScroll=function(){
+    if(pending<=0){unbindScroll();return;}
+    guard();
+  };
+  function bindScroll(){
+    if(scrollBound)return;
+    scrollBound=true;
+    window.addEventListener('scroll',onScroll,{passive:true});
+  }
+  function unbindScroll(){
+    if(!scrollBound)return;
+    scrollBound=false;
+    window.removeEventListener('scroll',onScroll);
+  }
   var guardPending=false;
   var guard=function(){
     if(guardPending)return;
@@ -127,11 +164,11 @@ try{
       var stuck=document.querySelectorAll('.reveal:not(.is-in)');
       if(!stuck.length)return;
       var vh=window.innerHeight;
-      if(vh<=0){root.classList.remove('js-motion');return;}
+      if(vh<=0){root.classList.remove('js-motion');pending=0;unbindScroll();return;}
       for(var i=0;i<stuck.length;i++){
         var r=stuck[i].getBoundingClientRect();
         if(waiting(stuck[i],r,vh))continue;
-        if(r.top<vh&&r.bottom>0){root.classList.remove('js-motion');return;}
+        if(r.top<vh&&r.bottom>0){root.classList.remove('js-motion');pending=0;unbindScroll();return;}
       }
     },4000);
   };
@@ -148,9 +185,7 @@ try{
   guard();
   window.addEventListener('pageshow',queue);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)queue();});
-  window.addEventListener('scroll',function(){
-    if(document.querySelector('.reveal:not(.is-in)'))guard();
-  },{passive:true});
+
 }catch(e){root.classList.remove('js-motion');}
 })();`;
 

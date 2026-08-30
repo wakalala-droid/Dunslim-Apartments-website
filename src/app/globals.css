@@ -25,7 +25,14 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
+    /*
+      NOT `scroll-behavior: smooth`. Set globally it does not only affect
+      anchor links: every keyboard scroll — space, Page Down, the arrow keys —
+      and every scrollIntoView glides to its destination instead of going
+      there. That is a page which answers slowly, on purpose, on every screen,
+      and a guest reading a rate card with the space bar feels it constantly.
+      Apply it per call where a glide is actually wanted.
+    */
   }
 
   body {
@@ -152,9 +159,6 @@
   replaces movement with an instant or opacity-only change.
 */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
@@ -227,9 +231,15 @@
   from { transform: scale(1.06); }
   to   { transform: scale(1); }
 }
+/*
+  No `will-change`. It was here to hint the compositor, but it promotes the
+  full-viewport hero photograph to its own layer and HOLDS it there for the
+  life of the page, long after this 16-second animation has finished. Browsers
+  promote an animating transform on their own and release it when the animation
+  ends, which is the behaviour actually wanted.
+*/
 .a-drift {
   animation: hero-drift 16s cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: transform;
 }
 
 /*
