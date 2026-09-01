@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { isoToday, isoPlusDays } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { maxGuests } from "@/lib/content";
 
 /**
  * The date search.
@@ -117,7 +118,7 @@ export default function SearchBar({
             onChange={(e) => setGuests(Number(e.target.value))}
             className={controlCls}
           >
-            {[1, 2, 3, 4, 5, 6].map((n) => (
+            {Array.from({ length: maxGuests }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
                 {n} {n === 1 ? "guest" : "guests"}
               </option>

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
 import Summary from "./Summary";
-import { residences, getResidence, arrival, business, rates } from "@/lib/content";
+import { residences, getResidence, arrival, business, rates, maxGuests } from "@/lib/content";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
 import { money, isoToday, isoPlusDays, prettyDate } from "@/lib/format";
 import {
@@ -421,7 +421,7 @@ export default function BookingFlow() {
                         if (r && r.sleeps < g) setSlug("");
                       }}
                     >
-                      {[1, 2, 3, 4, 5, 6].map((n) => (
+                      {Array.from({ length: maxGuests }, (_, i) => i + 1).map((n) => (
                         <option key={n} value={n}>
                           {n} {n === 1 ? "guest" : "guests"}
                         </option>

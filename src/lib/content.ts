@@ -153,7 +153,7 @@ export type Residence = {
 };
 
 /**
- * CONFIRM: bedroom counts, sleeps, areas, rates and amenities.
+ * CONFIRM: bedroom counts, areas and amenities. Sleeps and rates are confirmed.
  *
  * The names are confirmed: Mandela, Mulima and Kaunda. They replace the
  * placeholder Residence One / Two / Three, and the slugs follow them, so the
@@ -220,7 +220,7 @@ export const residences: Residence[] = [
     name: "Kaunda",
     summary: "Three bedrooms. Room for a team, or family visiting.",
     bedrooms: 3,
-    sleeps: 6,
+    sleeps: 4,
     area: 0,
     directNightlyZmw: 2000,
     description: [
@@ -245,6 +245,17 @@ export const residences: Residence[] = [
 ];
 
 export const getResidence = (slug: string) => residences.find((r) => r.slug === slug);
+
+/**
+ * The largest party the property will take, in any apartment. Four.
+ *
+ * Derived from the apartments rather than written down beside them, so it can
+ * never disagree with them. Every guest selector on the site counts up to this,
+ * which is what stops a guest choosing six, walking through the dates step, and
+ * being told at the end that nothing here sleeps six — a dead end the form used
+ * to allow because its options were hardcoded 1 to 6 in two separate files.
+ */
+export const maxGuests = Math.max(...residences.map((r) => r.sleeps));
 
 // ---------------------------------------------------------------------------
 // What decides the booking
