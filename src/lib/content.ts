@@ -153,7 +153,8 @@ export type Residence = {
 };
 
 /**
- * CONFIRM: bedroom counts, areas and amenities. Sleeps and rates are confirmed.
+ * CONFIRM: areas and amenities. Bedrooms, sleeps and rates are confirmed:
+ * two bedrooms in every apartment, four guests maximum, K2,000 a night direct.
  *
  * The names are confirmed: Mandela, Mulima and Kaunda. They replace the
  * placeholder Residence One / Two / Three, and the slugs follow them, so the
@@ -165,16 +166,17 @@ export const residences: Residence[] = [
   {
     slug: "mandela",
     name: "Mandela",
-    summary: "One bedroom. Suits one person here to work.",
-    bedrooms: 1,
+    summary: "Two bedrooms. Set up for someone here to work.",
+    bedrooms: 2,
     sleeps: 2,
     area: 0,
     directNightlyZmw: 2000,
     description: [
-      "Set up for someone here to work. There is a proper desk, the bedroom gets properly dark at night, and the kitchen can handle more than coffee.",
+      "Set up for someone here to work. There is a proper desk, the bedrooms get properly dark at night, and the kitchen can handle more than coffee.",
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
     ],
     amenities: [
+      "Two bedrooms",
       "Desk and task chair",
       "Full kitchen",
       "Washing machine",
@@ -218,17 +220,17 @@ export const residences: Residence[] = [
   {
     slug: "kaunda",
     name: "Kaunda",
-    summary: "Three bedrooms. Room for a team, or family visiting.",
-    bedrooms: 3,
+    summary: "Two bedrooms. Room for a team, or family visiting.",
+    bedrooms: 2,
     sleeps: 4,
     area: 0,
     directNightlyZmw: 2000,
     description: [
-      "The biggest of the three. Three bedrooms and a living room that seats everyone, whether that is a work team or family.",
+      "Two bedrooms and a living room that seats everyone, whether that is a work team or family.",
       "Best value on a longer stay, where the weekly and monthly rates really start to count.",
     ],
     amenities: [
-      "Three bedrooms",
+      "Two bedrooms",
       "Full kitchen",
       "Washing machine",
       "Air conditioning",

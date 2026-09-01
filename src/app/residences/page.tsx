@@ -9,7 +9,7 @@ import { residences, rates } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Residences",
   description:
-    "Three serviced apartments on Makeni Road, Lusaka — one, two and three bedrooms. Furnished, serviced, and lower booked direct.",
+    "Three serviced apartments on Makeni Road, Lusaka — two bedrooms each. Furnished, serviced, and lower booked direct.",
 };
 
 export default function ResidencesPage() {

@@ -77,16 +77,19 @@ export default function HomePage() {
                 icon: BadgeCheck,
                 title: "Always cheaper here",
                 body: `Book with us and you pay ${rates.directDiscountPct}% less than on Booking.com or Airbnb. No booking fee, and the price you see first is the price you pay.`,
+                note: "",
               },
               {
                 icon: ShieldCheck,
                 title: "Free cancellation",
                 body: `Cancel up to ${arrival.cancellationHours} hours before you arrive and it costs you nothing. Plans change.`,
+                note: "T&Cs apply",
               },
               {
                 icon: Clock,
                 title: "Late checkout, free",
                 body: `Check out at ${arrival.lateCheckOut} instead of ${arrival.checkOut} when you book with us. Handy if your flight is in the afternoon.`,
+                note: "T&Cs apply",
               },
             ].map((item, i) => (
               <Reveal as="li" key={item.title} delay={i} className="flex flex-col">
@@ -95,6 +98,14 @@ export default function HomePage() {
                 <p className="mt-3 max-w-measure text-body text-charcoal">
                   {item.body}
                 </p>
+                {/*
+                  The qualifier sits under the promise it qualifies, quietly.
+                  Two of these three are conditional offers; the direct-rate
+                  promise is not, so it carries nothing.
+                */}
+                {item.note ? (
+                  <p className="mt-3 text-caption text-charcoal-60">{item.note}</p>
+                ) : null}
               </Reveal>
             ))}
           </ul>
