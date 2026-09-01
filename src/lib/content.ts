@@ -168,7 +168,7 @@ export const residences: Residence[] = [
     name: "Mandela",
     summary: "Two bedrooms. Set up for someone here to work.",
     bedrooms: 2,
-    sleeps: 2,
+    sleeps: 4,
     area: 0,
     directNightlyZmw: 2000,
     description: [
