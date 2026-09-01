@@ -6,7 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Figure } from "@/components/ui/Figure";
 import { residences, rates, arrival, faqs, business } from "@/lib/content";
 import { money } from "@/lib/format";
-import { directNightly } from "@/lib/pricing";
+import { directNightly, publishedNightly } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Rates",
@@ -53,7 +53,7 @@ export default function RatesPage() {
                   <div>
                     <dt className="label-caps text-charcoal-60">On platforms</dt>
                     <dd className="mt-1 text-body text-charcoal-60 line-through">
-                      {money(r.nightlyUsd * (1 + rates.platformUpliftPct / 100))}
+                      {money(publishedNightly(r) * (1 + rates.platformUpliftPct / 100))}
                     </dd>
                   </div>
                   <div className="text-right">
@@ -97,7 +97,7 @@ export default function RatesPage() {
                     </th>
                     <td className="py-6 pr-6 text-body text-charcoal">{r.sleeps}</td>
                     <td className="py-6 pr-6 text-body text-charcoal-60 line-through">
-                      {money(r.nightlyUsd * (1 + rates.platformUpliftPct / 100))}
+                      {money(publishedNightly(r) * (1 + rates.platformUpliftPct / 100))}
                     </td>
                     <td className="py-6 text-h3 font-light text-navy">
                       {money(directNightly(r))}
@@ -109,9 +109,9 @@ export default function RatesPage() {
           </div>
 
           <p className="mt-6 max-w-measure text-caption text-charcoal-80">
-            Rates are per night in US dollars and include everything listed below. Kwacha figures
+            Rates are per night in Kwacha and include everything listed below. Dollar figures
             shown elsewhere on the site are approximate, converted at K{rates.zmwPerUsd} to the
-            dollar.
+            dollar; you are charged in Kwacha.
           </p>
         </Container>
       </Section>
@@ -155,12 +155,12 @@ export default function RatesPage() {
                   <Eyebrow tone="onNavy">For example</Eyebrow>
                   <p className="mt-4 text-body text-navy-20">
                     {example.name}, {EXAMPLE_NIGHTS} nights. Published at{" "}
-                    {money(example.nightlyUsd)} a night, that is{" "}
-                    {money(example.nightlyUsd * EXAMPLE_NIGHTS)}. Booked direct with the{" "}
+                    {money(publishedNightly(example))} a night, that is{" "}
+                    {money(publishedNightly(example) * EXAMPLE_NIGHTS)}. Booked direct with the{" "}
                     {band.discountPct} per cent long-stay rate applied, you pay{" "}
                     <span className="text-white">
                       {money(
-                        example.nightlyUsd *
+                        publishedNightly(example) *
                           EXAMPLE_NIGHTS *
                           (1 - rates.directDiscountPct / 100) *
                           (1 - band.discountPct / 100),

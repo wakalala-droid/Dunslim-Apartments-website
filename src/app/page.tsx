@@ -23,7 +23,9 @@ import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 
 export default function HomePage() {
-  const cheapest = residences.reduce((a, b) => (a.nightlyUsd <= b.nightlyUsd ? a : b));
+  const cheapest = residences.reduce((a, b) =>
+    a.directNightlyZmw <= b.directNightlyZmw ? a : b,
+  );
 
   return (
     <>

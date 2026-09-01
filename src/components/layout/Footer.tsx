@@ -120,7 +120,7 @@ export default function Footer() {
           <p>
             © {year} {business.parent}
           </p>
-          <p>Rates shown in US dollars. Kwacha figures are approximate.</p>
+          <p>Rates shown in Kwacha. Dollar figures are approximate.</p>
         </div>
       </Container>
     </footer>

@@ -18,7 +18,7 @@ import { Container } from "@/components/ui/Layout";
 import Summary from "./Summary";
 import { residences, getResidence, arrival, business, rates } from "@/lib/content";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
-import { money, isoToday, isoPlusDays, prettyDate, type Currency } from "@/lib/format";
+import { money, isoToday, isoPlusDays, prettyDate } from "@/lib/format";
 import {
   checkAvailability,
   submitBookingRequest,
@@ -83,7 +83,6 @@ export default function BookingFlow() {
 
   // ---- state -------------------------------------------------------------
   const [step, setStep] = useState<StepIndex>(0);
-  const [currency, setCurrency] = useState<Currency>("USD");
 
   const [from, setFrom] = useState(params.get("from") ?? "");
   const [to, setTo] = useState(params.get("to") ?? "");
@@ -198,7 +197,7 @@ export default function BookingFlow() {
       arrivalTime,
       notes,
       payment,
-      totalUsd: quote.totalUsd,
+      totalZmw: quote.totalZmw,
     });
     setReference(outcome.reference);
     setRecorded(outcome.recorded);
@@ -257,7 +256,7 @@ export default function BookingFlow() {
               ["Residence", residence.name],
               ["Arrive", `${prettyDate(from)}, from ${arrival.checkIn}`],
               ["Depart", `${prettyDate(to)}, by ${arrival.lateCheckOut}`],
-              ["Total", money(quote.totalUsd, currency)],
+              ["Total", money(quote.totalZmw)],
               ["Paying by", PAYMENT_METHODS.find((m) => m.id === payment)?.label ?? "—"],
               ["Confirmation to", email],
             ].map(([k, v]) => (
@@ -492,7 +491,7 @@ export default function BookingFlow() {
                             <span className="flex flex-wrap items-baseline justify-between gap-2">
                               <span className="text-h3 font-light text-navy">{r.name}</span>
                               <span className="text-h3 font-light text-navy">
-                                {q ? money(q.totalUsd, currency) : money(directNightly(r), currency)}
+                                {q ? money(q.totalZmw) : money(directNightly(r))}
                               </span>
                             </span>
                             <span className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
@@ -501,7 +500,7 @@ export default function BookingFlow() {
                                 {r.sleeps}
                               </span>
                               <span className="text-caption text-charcoal-80">
-                                {q ? `${money(q.perNightUsd, currency)} a night, all in` : null}
+                                {q ? `${money(q.perNightZmw)} a night, all in` : null}
                               </span>
                             </span>
                             <span className="mt-3 block max-w-measure text-body text-charcoal">
@@ -748,8 +747,6 @@ export default function BookingFlow() {
               from={from}
               to={to}
               guests={guests}
-              currency={currency}
-              onCurrencyChange={setCurrency}
               className="lg:sticky lg:top-24"
             />
           </div>

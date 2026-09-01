@@ -1,7 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { money, prettyDate, nightLabel, guestLabel, type Currency } from "@/lib/format";
+import { money, prettyDate, nightLabel, guestLabel } from "@/lib/format";
 import { type Quote } from "@/lib/pricing";
 import { rates, arrival, type Residence } from "@/lib/content";
 import { cn } from "@/lib/cn";
@@ -20,8 +20,6 @@ export default function Summary({
   from,
   to,
   guests,
-  currency,
-  onCurrencyChange,
   className,
 }: {
   residence: Residence | null;
@@ -29,8 +27,6 @@ export default function Summary({
   from: string;
   to: string;
   guests: number;
-  currency: Currency;
-  onCurrencyChange: (c: Currency) => void;
   className?: string;
 }) {
   return (
@@ -38,27 +34,7 @@ export default function Summary({
       className={cn("rounded-md bg-stone p-6", className)}
       aria-label="Your stay and what it costs"
     >
-      <div className="flex items-start justify-between gap-4">
-        <h2 className="text-h3 font-light text-navy">Your stay</h2>
-
-        {/* Currency is a display choice. The charge is always in US dollars. */}
-        <div className="flex rounded-sm border border-navy/20 bg-white p-px">
-          {(["USD", "ZMW"] as const).map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => onCurrencyChange(c)}
-              aria-pressed={currency === c}
-              className={cn(
-                "min-h-[44px] min-w-[56px] rounded-[5px] px-3 text-caption transition-colors duration-micro",
-                currency === c ? "bg-navy text-white" : "text-charcoal-80 hover:text-navy",
-              )}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-      </div>
+      <h2 className="text-h3 font-light text-navy">Your stay</h2>
 
       {!residence || !quote ? (
         <p className="mt-6 text-body text-charcoal">
@@ -95,16 +71,16 @@ export default function Summary({
           <dl className="space-y-3 text-body">
             <div className="flex justify-between gap-4">
               <dt className="text-charcoal-80">
-                {money(quote.nightlyUsd, currency)} × {nightLabel(quote.nights)}
+                {money(quote.nightlyZmw)} × {nightLabel(quote.nights)}
               </dt>
-              <dd className="text-charcoal">{money(quote.subtotalUsd, currency)}</dd>
+              <dd className="text-charcoal">{money(quote.subtotalZmw)}</dd>
             </div>
 
             {quote.discounts.map((d) => (
               <div key={d.label} className="flex justify-between gap-4">
                 <dt className="max-w-[26ch] text-caption text-charcoal-80">{d.label}</dt>
                 <dd className="whitespace-nowrap text-success">
-                  &minus;{money(d.amountUsd, currency)}
+                  &minus;{money(d.amountZmw)}
                 </dd>
               </div>
             ))}
@@ -115,22 +91,16 @@ export default function Summary({
           <div className="flex items-baseline justify-between gap-4">
             <p className="text-body text-navy">Total</p>
             <p className="text-h2 font-extralight text-navy">
-              {money(quote.totalUsd, currency)}
+              {money(quote.totalZmw)}
             </p>
           </div>
           <p className="mt-2 text-right text-caption text-charcoal-80">
-            {money(quote.perNightUsd, currency)} a night, all in
+            {money(quote.perNightZmw)} a night, all in
           </p>
-
-          {currency === "ZMW" ? (
-            <p className="mt-3 text-caption text-charcoal-80">
-              Approximate, at K{rates.zmwPerUsd} to the dollar. You are charged in US dollars.
-            </p>
-          ) : null}
 
           <div className="mt-6 rounded-sm bg-white p-4">
             <p className="text-caption text-charcoal-80">
-              That is <span className="text-navy">{money(quote.savingUsd, currency)} less</span>{" "}
+              That is <span className="text-navy">{money(quote.savingZmw)} less</span>{" "}
               than the same stay on a booking platform.
             </p>
           </div>

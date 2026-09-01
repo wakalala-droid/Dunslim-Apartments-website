@@ -40,7 +40,9 @@ const address = {
 
 /** The business itself. Rendered once, on the homepage. */
 export function LodgingSchema() {
-  const cheapest = residences.reduce((a, b) => (a.nightlyUsd <= b.nightlyUsd ? a : b));
+  const cheapest = residences.reduce((a, b) =>
+    a.directNightlyZmw <= b.directNightlyZmw ? a : b,
+  );
 
   return json({
     "@context": "https://schema.org",
@@ -54,7 +56,7 @@ export function LodgingSchema() {
     address,
     ...(CONFIRMED_PHONE ? { telephone: business.phone } : {}),
     priceRange: `$${Math.round(directNightly(cheapest))}+`,
-    currenciesAccepted: "USD, ZMW",
+    currenciesAccepted: "ZMW, USD",
     paymentAccepted: "Visa, Mastercard, MTN Mobile Money, Airtel Money, Bank transfer",
     checkinTime: arrival.checkIn,
     checkoutTime: arrival.lateCheckOut,
@@ -94,13 +96,13 @@ export function ResidenceSchema({ residence }: { residence: Residence }) {
     offers: {
       "@type": "Offer",
       price: directNightly(residence).toFixed(2),
-      priceCurrency: "USD",
+      priceCurrency: "ZMW",
       url: `${site.url}/book?residence=${residence.slug}`,
       availability: "https://schema.org/InStock",
       priceSpecification: {
         "@type": "UnitPriceSpecification",
         price: directNightly(residence).toFixed(2),
-        priceCurrency: "USD",
+        priceCurrency: "ZMW",
         unitCode: "DAY",
       },
     },

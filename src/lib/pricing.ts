@@ -12,17 +12,17 @@ import { rates, type Residence } from "./content";
 export type Quote = {
   nights: number;
   /** Published nightly rate, before any discount. */
-  nightlyUsd: number;
+  nightlyZmw: number;
   /** What the same stay costs on a booking platform, for honest comparison. */
-  platformTotalUsd: number;
+  platformTotalZmw: number;
   /** Sum of nightly rates before discounts. */
-  subtotalUsd: number;
-  discounts: { label: string; pct: number; amountUsd: number }[];
-  totalUsd: number;
+  subtotalZmw: number;
+  discounts: { label: string; pct: number; amountZmw: number }[];
+  totalZmw: number;
   /** What booking direct saves against the platform price. */
-  savingUsd: number;
+  savingZmw: number;
   /** Effective average per night after discounts. */
-  perNightUsd: number;
+  perNightZmw: number;
 };
 
 export const nightsBetween = (from: string, to: string): number => {
@@ -48,52 +48,67 @@ export function quote(residence: Residence, from: string, to: string): Quote | n
   const nights = nightsBetween(from, to);
   if (nights < 1) return null;
 
-  const nightlyUsd = residence.nightlyUsd;
-  const subtotalUsd = nightlyUsd * nights;
+  const nightlyZmw = publishedNightly(residence);
+  const subtotalZmw = nightlyZmw * nights;
 
   const discounts: Quote["discounts"] = [];
 
   // The book-direct promise, applied first and always.
-  const direct = (subtotalUsd * rates.directDiscountPct) / 100;
+  const direct = (subtotalZmw * rates.directDiscountPct) / 100;
   discounts.push({
     label: `Booked direct, ${rates.directDiscountPct}% below platform rate`,
     pct: rates.directDiscountPct,
-    amountUsd: direct,
+    amountZmw: direct,
   });
 
   // The long-stay ladder, applied to what remains.
   const band = longStayBand(nights);
   if (band) {
-    const base = subtotalUsd - direct;
+    const base = subtotalZmw - direct;
     discounts.push({
       label: `${band.label} — ${band.discountPct}% off`,
       pct: band.discountPct,
-      amountUsd: (base * band.discountPct) / 100,
+      amountZmw: (base * band.discountPct) / 100,
     });
   }
 
-  const totalUsd = discounts.reduce((acc, d) => acc - d.amountUsd, subtotalUsd);
-  const platformTotalUsd = subtotalUsd * (1 + rates.platformUpliftPct / 100);
+  const totalZmw = discounts.reduce((acc, d) => acc - d.amountZmw, subtotalZmw);
+  const platformTotalZmw = subtotalZmw * (1 + rates.platformUpliftPct / 100);
 
   return {
     nights,
-    nightlyUsd,
-    platformTotalUsd,
-    subtotalUsd,
+    nightlyZmw,
+    platformTotalZmw,
+    subtotalZmw,
     discounts,
-    totalUsd,
-    savingUsd: platformTotalUsd - totalUsd,
-    perNightUsd: totalUsd / nights,
+    totalZmw,
+    savingZmw: platformTotalZmw - totalZmw,
+    perNightZmw: totalZmw / nights,
   };
 }
 
 /** The lowest nightly rate across all residences, for "from $X" copy. */
 export const fromRate = (list: Residence[]) =>
-  list.reduce((min, r) => Math.min(min, r.nightlyUsd), Infinity);
+  list.reduce((min, r) => Math.min(min, r.directNightlyZmw), Infinity);
 
 /**
  * The nightly rate a guest would see for this residence after the direct discount.
  * Used on cards, where a single number has to be honest on its own.
  */
-export const directNightly = (r: Residence) =>
-  r.nightlyUsd * (1 - rates.directDiscountPct / 100);
+/**
+ * What a guest actually pays per night, booking direct. This is the number the
+ * owner sets, so it is returned as stored rather than calculated.
+ */
+export const directNightly = (r: Residence) => r.directNightlyZmw;
+
+/**
+ * The published rate — the headline the book-direct discount comes off.
+ *
+ * Derived from the direct price rather than stored beside it, and deliberately
+ * left unrounded. Rounding here is what put a three-night stay at K5,999.40
+ * against a nightly rate advertised as K2,000: the discount was being taken off
+ * a rounded headline. Working back from the direct price makes every multiple
+ * land exactly where a guest expects it to.
+ */
+export const publishedNightly = (r: Residence) =>
+  r.directNightlyZmw / (1 - rates.directDiscountPct / 100);

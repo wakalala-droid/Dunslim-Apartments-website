@@ -91,7 +91,7 @@ export type BookingRequest = {
   arrivalTime: string;
   notes: string;
   payment: PaymentMethod;
-  totalUsd: number;
+  totalZmw: number;
 };
 
 export type PaymentMethod = "card" | "mobile-money" | "bank-transfer" | "on-arrival" | "";

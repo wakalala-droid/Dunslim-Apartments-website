@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     ${row("Depart", `${prettyDate(String(body.to))} by ${arrival.lateCheckOut}`)}
     ${row("Nights", q ? nightLabel(q.nights) : "")}
     ${row("Guests", String(body.guests ?? ""))}
-    ${row("Total quoted", q ? money(q.totalUsd) : "")}
+    ${row("Total quoted", q ? money(q.totalZmw) : "")}
     ${row("Paying by", String(body.payment ?? ""))}
     ${row("Reason for stay", String(body.purpose ?? ""))}
     ${row("Arrival time", String(body.arrivalTime ?? ""))}

@@ -1,27 +1,22 @@
 import { rates } from "./content";
 
-export type Currency = "USD" | "ZMW";
-
 /**
- * Currency display.
+ * Money.
  *
- * USD is the base. ZMW is derived at the rate recorded in content.ts and is
- * always labelled as approximate, because it is a stored rate rather than a live
- * one. Showing a converted figure as if it were exact would be a quiet lie.
+ * KWACHA, AND ONLY KWACHA. Every amount in this codebase is Kwacha, because
+ * that is the currency the business prices in and charges in.
+ *
+ * There used to be a USD/ZMW switch here and in the checkout summary. It quoted
+ * in dollars and converted down to Kwacha at a rate stored in content.ts — a
+ * rate recorded in July 2026 and marked as needing confirmation every budgeting
+ * cycle. A stored rate goes stale silently, and a stale one shown beside a real
+ * price is worse than no second currency at all: at K18 to the dollar the
+ * switch would have offered a guest USD 111 for a night that is priced at
+ * K2,000. If a dollar figure is wanted again it needs a live rate, not this.
  */
-export function money(usd: number, currency: Currency = "USD"): string {
-  if (currency === "ZMW") {
-    const zmw = usd * rates.zmwPerUsd;
-    return `K${Math.round(zmw).toLocaleString("en-ZM")}`;
-  }
-  const whole = Math.round(usd);
-  return `$${whole.toLocaleString("en-US")}`;
+export function money(zmw: number): string {
+  return `K${Math.round(zmw).toLocaleString("en-ZM")}`;
 }
-
-export const currencyNote = (currency: Currency) =>
-  currency === "ZMW"
-    ? `Approximate, at K${rates.zmwPerUsd} to the dollar. Charged in US dollars.`
-    : null;
 
 const DATE_FMT = new Intl.DateTimeFormat("en-GB", {
   weekday: "short",

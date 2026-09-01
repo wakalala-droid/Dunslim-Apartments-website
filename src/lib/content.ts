@@ -73,13 +73,22 @@ export const audience = [
 // ---------------------------------------------------------------------------
 
 /**
- * CONFIRM: every rate below is a placeholder.
- * The Growth Proposal found the same unit advertised between USD 57 and USD 87
- * depending on which platform was viewed. One confirmed rate per unit replaces these.
+ * Kwacha is the base currency of this site. Every amount stored anywhere in the
+ * codebase is in Kwacha, because that is what the business sets its prices in.
+ * Dollars are derived for display at the rate below and always labelled as
+ * approximate — a stored rate is not a live one, and showing a converted figure
+ * as though it were exact would be a quiet lie.
+ *
+ * The nightly rate is confirmed: K2,000 a night, booked direct. It replaces
+ * three placeholders (USD 57, 72 and 87) taken from the very platform
+ * inconsistency the Growth Proposal was written to fix.
  */
 export const rates = {
-  currencyBase: "USD" as const,
-  /** Growth Proposal, July 2026. CONFIRM before each budgeting cycle. */
+  currencyBase: "ZMW" as const,
+  /**
+   * Only used to show an approximate dollar figure beside the Kwacha price,
+   * never to set one. CONFIRM before each budgeting cycle.
+   */
   zmwPerUsd: 18,
 
   /** What a guest pays on Booking.com / Airbnb, used to show the direct saving. */
@@ -122,17 +131,17 @@ export type Residence = {
   sleeps: number;
   /** Square metres. 0 = not yet measured. */
   area: number;
-  /** Nightly rate in USD, direct. CONFIRM. */
   /**
-   * The standing rate, in Kwacha. This is the price the business actually sets.
+   * THE PRICE A GUEST PAYS, per night, booking direct, in Kwacha.
+   *
+   * Deliberately the direct price and not the headline one. The owner sets what
+   * a guest actually hands over; the higher published rate that the ten per cent
+   * book-direct discount comes off is derived from this in pricing.ts. Storing
+   * it the other way round meant the round number was the one nobody pays, and
+   * the discount maths landed on K1,999.80 for a night that is advertised at
+   * K2,000.
    */
-  nightlyZmw: number;
-  /**
-   * The same rate in dollars, DERIVED from the Kwacha figure — never typed in.
-   * The pricing engine works in dollars, so this is what it reads, but nobody
-   * edits it: change the Kwacha and the dollars follow.
-   */
-  nightlyUsd: number;
+  directNightlyZmw: number;
   /** Longest-form description. Two or three sentences, plainly written. */
   description: string[];
   amenities: string[];
@@ -152,24 +161,6 @@ export type Residence = {
  * Changing them costs nothing today because the site is still behind noindex
  * and has never been linked publicly; it would be expensive after launch.
  */
-/**
- * Kwacha in, dollars out.
- *
- * The site quotes in dollars because its guests are corporate and diplomatic
- * travellers whose budgets are set in dollars, but the business sets its prices
- * in Kwacha. Storing both by hand guarantees they drift apart the first time one
- * is updated without the other, so only the Kwacha figure is written down and
- * the dollar figure is computed from it through the single exchange rate in
- * `rates.zmwPerUsd`.
- *
- * Rounded to whole dollars: a nightly rate reading $111.11 looks like a
- * conversion artefact rather than a price, which is exactly what it is.
- */
-const atStandingRate = (nightlyZmw: number) => ({
-  nightlyZmw,
-  nightlyUsd: Math.round(nightlyZmw / rates.zmwPerUsd),
-});
-
 export const residences: Residence[] = [
   {
     slug: "mandela",
@@ -178,7 +169,7 @@ export const residences: Residence[] = [
     bedrooms: 1,
     sleeps: 2,
     area: 0,
-    ...atStandingRate(2000),
+    directNightlyZmw: 2000,
     description: [
       "Set up for someone here to work. There is a proper desk, the bedroom gets properly dark at night, and the kitchen can handle more than coffee.",
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
@@ -204,7 +195,7 @@ export const residences: Residence[] = [
     bedrooms: 2,
     sleeps: 4,
     area: 0,
-    ...atStandingRate(2000),
+    directNightlyZmw: 2000,
     description: [
       "Two bedrooms off a shared living room. It works just as well for two colleagues travelling together as for a family back in Lusaka.",
       "We can put a cot in the second bedroom if you need one. The living room is big enough to hold a meeting without shifting furniture.",
@@ -231,7 +222,7 @@ export const residences: Residence[] = [
     bedrooms: 3,
     sleeps: 6,
     area: 0,
-    ...atStandingRate(2000),
+    directNightlyZmw: 2000,
     description: [
       "The biggest of the three. Three bedrooms and a living room that seats everyone, whether that is a work team or family.",
       "Best value on a longer stay, where the weekly and monthly rates really start to count.",
