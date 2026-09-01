@@ -29,6 +29,24 @@ const nextConfig = {
     `must-revalidate` means the browser still caches, but checks the ETag
     before reusing. A corrected file reaches everyone on their next visit.
   */
+  /*
+    The three apartments were named Residence One / Two / Three while the owner
+    confirmed the real ones. They are now Mandela, Mulima and Kaunda, and the
+    addresses moved with them. Anything already sent to someone — a WhatsApp
+    message, an email signature — still points at the old address, so those keep
+    working instead of landing on "not found".
+
+    308, not 302: the move is permanent, and a permanent redirect is the one that
+    passes on any credit the old address had earned.
+  */
+  async redirects() {
+    return [
+      { source: "/residences/residence-one", destination: "/residences/mandela", permanent: true },
+      { source: "/residences/residence-two", destination: "/residences/mulima", permanent: true },
+      { source: "/residences/residence-three", destination: "/residences/kaunda", permanent: true },
+    ];
+  },
+
   async headers() {
     const revalidate = [
       { key: "Cache-Control", value: "public, max-age=0, s-maxage=86400, must-revalidate" },

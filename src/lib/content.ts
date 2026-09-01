@@ -123,6 +123,15 @@ export type Residence = {
   /** Square metres. 0 = not yet measured. */
   area: number;
   /** Nightly rate in USD, direct. CONFIRM. */
+  /**
+   * The standing rate, in Kwacha. This is the price the business actually sets.
+   */
+  nightlyZmw: number;
+  /**
+   * The same rate in dollars, DERIVED from the Kwacha figure — never typed in.
+   * The pricing engine works in dollars, so this is what it reads, but nobody
+   * edits it: change the Kwacha and the dollars follow.
+   */
   nightlyUsd: number;
   /** Longest-form description. Two or three sentences, plainly written. */
   description: string[];
@@ -143,6 +152,24 @@ export type Residence = {
  * Changing them costs nothing today because the site is still behind noindex
  * and has never been linked publicly; it would be expensive after launch.
  */
+/**
+ * Kwacha in, dollars out.
+ *
+ * The site quotes in dollars because its guests are corporate and diplomatic
+ * travellers whose budgets are set in dollars, but the business sets its prices
+ * in Kwacha. Storing both by hand guarantees they drift apart the first time one
+ * is updated without the other, so only the Kwacha figure is written down and
+ * the dollar figure is computed from it through the single exchange rate in
+ * `rates.zmwPerUsd`.
+ *
+ * Rounded to whole dollars: a nightly rate reading $111.11 looks like a
+ * conversion artefact rather than a price, which is exactly what it is.
+ */
+const atStandingRate = (nightlyZmw: number) => ({
+  nightlyZmw,
+  nightlyUsd: Math.round(nightlyZmw / rates.zmwPerUsd),
+});
+
 export const residences: Residence[] = [
   {
     slug: "mandela",
@@ -151,7 +178,7 @@ export const residences: Residence[] = [
     bedrooms: 1,
     sleeps: 2,
     area: 0,
-    nightlyUsd: 57,
+    ...atStandingRate(2000),
     description: [
       "Set up for someone here to work. There is a proper desk, the bedroom gets properly dark at night, and the kitchen can handle more than coffee.",
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
@@ -177,7 +204,7 @@ export const residences: Residence[] = [
     bedrooms: 2,
     sleeps: 4,
     area: 0,
-    nightlyUsd: 72,
+    ...atStandingRate(2000),
     description: [
       "Two bedrooms off a shared living room. It works just as well for two colleagues travelling together as for a family back in Lusaka.",
       "We can put a cot in the second bedroom if you need one. The living room is big enough to hold a meeting without shifting furniture.",
@@ -204,7 +231,7 @@ export const residences: Residence[] = [
     bedrooms: 3,
     sleeps: 6,
     area: 0,
-    nightlyUsd: 87,
+    ...atStandingRate(2000),
     description: [
       "The biggest of the three. Three bedrooms and a living room that seats everyone, whether that is a work team or family.",
       "Best value on a longer stay, where the weekly and monthly rates really start to count.",
