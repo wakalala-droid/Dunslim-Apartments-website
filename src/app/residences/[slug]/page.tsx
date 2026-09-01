@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { Check } from "lucide-react";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
 import { CoverFlow } from "@/components/ui/CoverFlow";
+import { Reveal } from "@/components/ui/Reveal";
+import ResidenceCard from "@/components/residences/ResidenceCard";
 import { residences, getResidence, rates, arrival } from "@/lib/content";
 import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
@@ -182,34 +183,36 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         </Container>
       </Section>
 
-      {/* The other residences */}
+      {/*
+        The other residences.
+
+        These were two rows of text on a hairline grid. They WERE links, but
+        nothing about them looked like one: no photograph, no arrow, no card,
+        nothing to say the row could be tapped. A guest who has just read one
+        apartment in full is exactly the person most likely to look at another,
+        and this was the weakest invitation on the page.
+
+        They now use ResidenceCard — the same component the homepage and
+        /residences use, per the rule that a screen does not invent its own
+        version of something the system already has. It leads with the
+        photograph, which is the real click target, and carries its own
+        "Check dates" action.
+      */}
       <Section>
         <Container wide>
           <SectionHead eyebrow="Also available" title="The other two" />
-          <ul className="mt-12 grid gap-px bg-navy/10 sm:grid-cols-2">
+          <div className="mt-12 grid gap-12 sm:grid-cols-2">
             {residences
               .filter((r) => r.slug !== slug)
               .map((r) => (
-                <li key={r.slug} className="bg-white">
-                  <Link
-                    href={`/residences/${r.slug}`}
-                    className="flex items-baseline justify-between gap-6 p-6 transition-colors duration-micro hover:bg-stone-40"
-                  >
-                    <span>
-                      <span className="block text-h3 font-light text-navy">{r.name}</span>
-                      <span className="mt-1 block text-caption text-charcoal-80">
-                        {r.bedrooms} {r.bedrooms === 1 ? "bedroom" : "bedrooms"} · sleeps {r.sleeps}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-body text-navy">
-                      {money(directNightly(r))}
-                    </span>
-                  </Link>
-                </li>
+                <Reveal key={r.slug}>
+                  <ResidenceCard residence={r} />
+                </Reveal>
               ))}
-          </ul>
+          </div>
         </Container>
       </Section>
+
     </>
   );
 }

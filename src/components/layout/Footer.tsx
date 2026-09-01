@@ -27,9 +27,24 @@ export default function Footer() {
           <div className="lg:col-span-3">
             <p className="label-caps text-brass-60">Contact</p>
             <ul className="mt-4 text-body text-navy-20">
+              {/*
+                Both lines, because a guest who cannot get through on the first
+                one should not have to give up. Each is its own tap target.
+              */}
               <li>
-                <a href={`tel:${business.phone.replace(/\s/g, "")}`} className="inline-flex min-h-[44px] items-center hover:text-white">
+                <a
+                  href={`tel:${business.phone.replace(/\s/g, "")}`}
+                  className="inline-flex min-h-[44px] items-center hover:text-white"
+                >
                   {business.phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`tel:${business.phoneAlt.replace(/\s/g, "")}`}
+                  className="inline-flex min-h-[44px] items-center hover:text-white"
+                >
+                  {business.phoneAlt}
                 </a>
               </li>
               <li>

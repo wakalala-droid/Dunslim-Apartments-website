@@ -27,10 +27,21 @@ export const business = {
   city: "Lusaka",
   country: "Zambia",
 
-  // CONFIRM: guest-facing contact details. `brand@dunslim-apartments.com` in the
-  // brand guidelines is the artwork custodian address, not a reservations inbox.
-  phone: "+260 000 000 000",
-  whatsapp: "260000000000", // digits only, international format, no +
+  /*
+    Confirmed by the owner. Two lines: the first is the one shown, called and
+    used for WhatsApp; the second is listed beside it so a guest who cannot get
+    through has somewhere else to go rather than giving up.
+
+    Written here in international form. Zambian numbers are often given locally
+    as 0XX XXX XXXX; the leading zero is dropped and +260 takes its place, which
+    is what both a `tel:` link and wa.me require.
+  */
+  phone: "+260 77 870 7540",
+  whatsapp: "260778707540", // digits only, international format, no +
+  phoneAlt: "+260 76 760 0735",
+  whatsappAlt: "260767600735",
+  // CONFIRM: the reservations inbox. `brand@dunslim-apartments.com` in the brand
+  // guidelines is the artwork custodian address, not a place to send bookings.
   email: "stay@dunslim-apartments.com",
 
   /** Growth Proposal §2: licence runs through 30 June 2028. */
@@ -124,14 +135,18 @@ export type Residence = {
 };
 
 /**
- * CONFIRM: names, bedroom counts, sleeps, areas, rates and amenities.
- * Named Residence One / Two / Three deliberately — neutral, architectural, and
- * safe to rename once the owner confirms the real configuration of each unit.
+ * CONFIRM: bedroom counts, sleeps, areas, rates and amenities.
+ *
+ * The names are confirmed: Mandela, Mulima and Kaunda. They replace the
+ * placeholder Residence One / Two / Three, and the slugs follow them, so the
+ * addresses read /residences/mandela rather than /residences/residence-one.
+ * Changing them costs nothing today because the site is still behind noindex
+ * and has never been linked publicly; it would be expensive after launch.
  */
 export const residences: Residence[] = [
   {
-    slug: "residence-one",
-    name: "Residence One",
+    slug: "mandela",
+    name: "Mandela",
     summary: "One bedroom. Suits one person here to work.",
     bedrooms: 1,
     sleeps: 2,
@@ -156,8 +171,8 @@ export const residences: Residence[] = [
     ],
   },
   {
-    slug: "residence-two",
-    name: "Residence Two",
+    slug: "mulima",
+    name: "Mulima",
     summary: "Two bedrooms. Works for two colleagues, or a family.",
     bedrooms: 2,
     sleeps: 4,
@@ -183,8 +198,8 @@ export const residences: Residence[] = [
     ],
   },
   {
-    slug: "residence-three",
-    name: "Residence Three",
+    slug: "kaunda",
+    name: "Kaunda",
     summary: "Three bedrooms. Room for a team, or family visiting.",
     bedrooms: 3,
     sleeps: 6,
