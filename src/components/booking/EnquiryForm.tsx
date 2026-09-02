@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { business } from "@/lib/content";
 import { isoToday } from "@/lib/format";
+import { Honeypot } from "@/components/ui/Honeypot";
 
 /**
  * The long-stay enquiry.
@@ -30,6 +31,7 @@ export default function EnquiryForm() {
     people: "",
     invoice: false,
     message: "",
+    company_website: "",
   });
 
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -81,6 +83,7 @@ export default function EnquiryForm() {
 
   return (
     <form onSubmit={submit} className="rounded-md bg-white p-6 shadow-2 ring-1 ring-navy/10 md:p-8">
+      <Honeypot value={f.company_website} onChange={(v) => setF((p) => ({ ...p, company_website: v }))} />
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Your name" htmlFor="eq-name" required error={errors.name}>
           <Input id="eq-name" autoComplete="name" value={f.name} onChange={set("name")} />

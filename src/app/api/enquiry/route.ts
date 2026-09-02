@@ -1,4 +1,13 @@
 import { NextResponse } from "next/server";
+import {
+  rateLimit,
+  clientKey,
+  bodyTooLarge,
+  clamp,
+  FIELD_LIMITS,
+  looksLikeEmail,
+  looksAutomated,
+} from "@/lib/guard";
 
 /**
  * Long-stay and corporate enquiries.
@@ -27,18 +36,48 @@ const row = (k: string, v: string) =>
     : "";
 
 export async function POST(request: Request) {
-  let b: Record<string, unknown>;
+  if (bodyTooLarge(request)) {
+    return NextResponse.json({ sent: false, reason: "too-large" }, { status: 413 });
+  }
+
+  const limit = rateLimit(clientKey(request), { limit: 6, windowMs: 60_000 });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { sent: false, reason: "rate-limited" },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
+  }
+
+  let raw: Record<string, unknown>;
   try {
-    b = await request.json();
+    raw = await request.json();
   } catch {
     return NextResponse.json({ sent: false, reason: "bad-request" }, { status: 400 });
   }
 
-  const missing = (["name", "email", "message"] as const).filter(
-    (k) => !String(b[k] ?? "").trim(),
-  );
+  // Filled trap: not a person. Answer as though it worked.
+  if (looksAutomated(raw)) {
+    return NextResponse.json({ sent: true });
+  }
+
+  const b: Record<string, string> = {
+    name: clamp(raw.name, FIELD_LIMITS.name),
+    email: clamp(raw.email, FIELD_LIMITS.email),
+    phone: clamp(raw.phone, FIELD_LIMITS.phone),
+    organisation: clamp(raw.organisation, FIELD_LIMITS.organisation),
+    people: clamp(raw.people, 16),
+    from: clamp(raw.from, 10),
+    to: clamp(raw.to, 10),
+    message: clamp(raw.message, FIELD_LIMITS.notes),
+  };
+
+  const missing = (["name", "email", "message"] as const).filter((k) => !b[k]);
   if (missing.length) {
     return NextResponse.json({ sent: false, reason: "incomplete" }, { status: 400 });
+  }
+
+  if (!looksLikeEmail(b.email)) {
+    return NextResponse.json({ sent: false, reason: "bad-email" }, { status: 400 });
   }
 
   const key = process.env.RESEND_API_KEY;

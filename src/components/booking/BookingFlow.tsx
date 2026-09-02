@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
+import { Honeypot } from "@/components/ui/Honeypot";
 import Summary from "./Summary";
 import { residences, getResidence, arrival, business, rates, maxGuests } from "@/lib/content";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
@@ -102,6 +103,7 @@ export default function BookingFlow() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [availability, setAvailability] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [trap, setTrap] = useState("");
   const [reference, setReference] = useState("");
   /**
    * Whether a person was actually told. The confirmation screen says one thing
@@ -198,6 +200,7 @@ export default function BookingFlow() {
       notes,
       payment,
       totalZmw: quote.totalZmw,
+      company_website: trap,
     });
     setReference(outcome.reference);
     setRecorded(outcome.recorded);
@@ -325,6 +328,7 @@ export default function BookingFlow() {
   // ---- flow --------------------------------------------------------------
   return (
     <Container wide>
+      <Honeypot value={trap} onChange={setTrap} />
       <div className="py-12 md:py-16">
         {/* Progress. A list, so it reads correctly aloud. */}
         <nav aria-label="Booking progress">

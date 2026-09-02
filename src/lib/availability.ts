@@ -92,6 +92,8 @@ export type BookingRequest = {
   notes: string;
   payment: PaymentMethod;
   totalZmw: number;
+  /** The spam trap. Empty for every real guest; see components/ui/Honeypot. */
+  company_website?: string;
 };
 
 export type PaymentMethod = "card" | "mobile-money" | "bank-transfer" | "on-arrival" | "";

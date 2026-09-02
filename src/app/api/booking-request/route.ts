@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { business, getResidence, arrival } from "@/lib/content";
 import { money, prettyDate, nightLabel } from "@/lib/format";
 import { quote as buildQuote } from "@/lib/pricing";
+import {
+  rateLimit,
+  clientKey,
+  bodyTooLarge,
+  clamp,
+  FIELD_LIMITS,
+  looksLikeEmail,
+  looksAutomated,
+} from "@/lib/guard";
 
 /**
  * WHERE A BOOKING REQUEST ACTUALLY GOES
@@ -54,12 +63,55 @@ const row = (k: string, v: string) =>
     : "";
 
 export async function POST(request: Request) {
-  let body: Payload;
+  if (bodyTooLarge(request)) {
+    return NextResponse.json({ recorded: false, reason: "too-large" }, { status: 413 });
+  }
+
+  /*
+    Six requests a minute from one address. A guest sends one, and might send a
+    second if they change their mind about the dates. Anything past six in a
+    minute is not a person booking an apartment.
+  */
+  const limit = rateLimit(clientKey(request), { limit: 6, windowMs: 60_000 });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { recorded: false, reason: "rate-limited" },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
+  }
+
+  let raw: Record<string, unknown>;
   try {
-    body = await request.json();
+    raw = await request.json();
   } catch {
     return NextResponse.json({ recorded: false, reason: "bad-request" }, { status: 400 });
   }
+
+  /*
+    The trap came back filled, so this was not typed by a person. Answer as
+    though it worked: an error tells the sender which move to change.
+  */
+  if (looksAutomated(raw)) {
+    return NextResponse.json({ recorded: true });
+  }
+
+  // Everything below ends up inside an email, so nothing goes in unclamped.
+  const body: Payload = {
+    reference: clamp(raw.reference, FIELD_LIMITS.short),
+    slug: clamp(raw.slug, FIELD_LIMITS.short),
+    from: clamp(raw.from, 10),
+    to: clamp(raw.to, 10),
+    guests: Number(raw.guests) || undefined,
+    firstName: clamp(raw.firstName, FIELD_LIMITS.name),
+    lastName: clamp(raw.lastName, FIELD_LIMITS.name),
+    email: clamp(raw.email, FIELD_LIMITS.email),
+    phone: clamp(raw.phone, FIELD_LIMITS.phone),
+    organisation: clamp(raw.organisation, FIELD_LIMITS.organisation),
+    purpose: clamp(raw.purpose, FIELD_LIMITS.short),
+    arrivalTime: clamp(raw.arrivalTime, FIELD_LIMITS.short),
+    notes: clamp(raw.notes, FIELD_LIMITS.notes),
+    payment: clamp(raw.payment, FIELD_LIMITS.short),
+  };
 
   // Only the fields we genuinely need to act on the request.
   const missing = (["firstName", "lastName", "email", "phone", "from", "to", "slug"] as const).filter(
@@ -67,6 +119,14 @@ export async function POST(request: Request) {
   );
   if (missing.length) {
     return NextResponse.json({ recorded: false, reason: "incomplete" }, { status: 400 });
+  }
+
+  /*
+    The address is the only way back to this guest — it is the reply-to on the
+    email. A typo here means the request arrives and cannot be answered.
+  */
+  if (!looksLikeEmail(body.email!)) {
+    return NextResponse.json({ recorded: false, reason: "bad-email" }, { status: 400 });
   }
 
   const key = process.env.RESEND_API_KEY;
