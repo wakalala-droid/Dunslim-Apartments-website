@@ -3,13 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X, Phone, ArrowUpRight, MessageCircle } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Layout";
 import { nav, business } from "@/lib/content";
-import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 
 /**
@@ -33,7 +31,6 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const reduce = useReducedMotion();
 
   // The white state begins once the header has cleared its own height.
   useEffect(() => {
@@ -207,32 +204,41 @@ export default function Header() {
         trigger, sized to its content, and scales out of the top-right corner so
         the movement points back at the button that opened it.
       */}
-      <AnimatePresence>
-        {open ? (
-          <div className="fixed inset-0 z-40 lg:hidden">
-            <motion.button
-              type="button"
-              aria-label="Close menu"
-              tabIndex={-1}
-              onClick={() => setOpen(false)}
-              className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: EASE_OUT }}
-            />
+      {/*
+        The menu, in CSS.
 
-            <motion.div
-              id="mobile-nav"
-              className={cn(
-                "absolute right-4 top-[calc(var(--header-h)-8px)] w-[min(19rem,calc(100vw-2rem))]",
-                "origin-top-right overflow-hidden rounded-lg bg-white p-2 shadow-3 ring-1 ring-navy/10",
-              )}
-              initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: -6 }}
-              transition={{ duration: reduce ? 0.2 : 0.42, ease: EASE_OUT }}
-            >
+        This was the last thing on the site using framer-motion, and the library
+        was being downloaded on every page for this one drawer. It is animated
+        here with two classes instead.
+
+        The panel stays mounted and is hidden with `visibility` rather than being
+        added and removed, which is what makes the closing animation possible
+        without a library: an element removed from the DOM cannot animate on its
+        way out. `visibility: hidden` also takes it out of the tab order and away
+        from screen readers, so the links behind the closed menu are not
+        reachable by anyone. The reduced-motion rule in globals.css collapses
+        both durations, as it does everywhere else.
+      */}
+      <div
+        className={cn("fixed inset-0 z-40 lg:hidden", !open && "pointer-events-none")}
+        aria-hidden={!open}
+      >
+        <button
+          type="button"
+          aria-label="Close menu"
+          tabIndex={-1}
+          onClick={() => setOpen(false)}
+          className={cn("menu-scrim absolute inset-0 bg-navy/50", open && "is-open")}
+        />
+
+        <div
+          id="mobile-nav"
+          className={cn(
+            "menu-panel absolute right-4 top-[calc(var(--header-h)-8px)] w-[min(19rem,calc(100vw-2rem))]",
+            "overflow-hidden rounded-lg bg-white p-2 shadow-3 ring-1 ring-navy/10",
+            open && "is-open",
+          )}
+        >
               <nav aria-label="Primary" className="flex flex-col">
                 {nav.map((item, i) => {
                   const active = pathname.startsWith(item.href);
@@ -309,10 +315,8 @@ export default function Header() {
                   </a>
                 </div>
               </div>
-            </motion.div>
-          </div>
-        ) : null}
-      </AnimatePresence>
+        </div>
+      </div>
     </header>
   );
 }

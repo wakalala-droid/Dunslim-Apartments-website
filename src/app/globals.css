@@ -549,3 +549,51 @@
     transform: translateX(calc(86% * var(--cf-dir))) scale(0.86);
   }
 }
+
+/*
+  THE MOBILE MENU
+  ---------------------------------------------------------------------------
+  Replaces framer-motion, which was being downloaded on every page of the site
+  for this one drawer and nothing else.
+
+  Both parts stay mounted and are hidden with `visibility`, because an element
+  removed from the DOM cannot animate on its way out — which is the one thing a
+  library was genuinely buying here. `visibility: hidden` also takes the links
+  out of the tab order and away from screen readers, so a closed menu is closed
+  for everybody, not just for people who can see it.
+
+  The trick that makes it work is the delay on `visibility` when closing: the
+  fade runs first and the element only becomes hidden once it has finished.
+  Opening reverses it, with no delay at all.
+*/
+.menu-scrim,
+.menu-panel {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.menu-scrim {
+  transition:
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.3s;
+}
+
+.menu-panel {
+  transform: scale(0.94) translateY(-10px);
+  transform-origin: top right;
+  transition:
+    opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.42s;
+}
+
+.menu-scrim.is-open,
+.menu-panel.is-open {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.menu-panel.is-open {
+  transform: scale(1) translateY(0);
+}
