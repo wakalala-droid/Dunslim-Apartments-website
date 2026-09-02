@@ -128,6 +128,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         */}
         <RevealScript />
 
+        {/*
+          Web Analytics. Vercel serves this script from the deployment itself,
+          so there is no package and no bundle cost — `@vercel/analytics` is a
+          wrapper around exactly this plus a call to `window.va`, and both are
+          done directly. It sets no cookies and records nothing personal, which
+          is why there is no consent banner for it.
+
+          It has to be switched on for the project in the Vercel dashboard
+          before anything is recorded. Until then this 404s quietly and the site
+          is unaffected.
+        */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script defer src="/_vercel/insights/script.js" />
+
         <a href="#main" className="skip-link">
           Skip to content
         </a>

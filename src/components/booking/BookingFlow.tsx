@@ -26,6 +26,7 @@ import {
   type PaymentMethod,
 } from "@/lib/availability";
 import { cn } from "@/lib/cn";
+import { track, BOOKING_STEP } from "@/lib/analytics";
 
 /**
  * CHECKOUT
@@ -182,6 +183,18 @@ export default function BookingFlow() {
     setStep((s) => Math.max(s - 1, 0) as StepIndex);
   };
 
+  /*
+    The funnel. Which step a guest reached is the only way to see WHERE they
+    give up rather than merely that they did — and "everyone leaves at the
+    payment step" and "nobody gets past choosing dates" call for completely
+    different fixes. Carries the step and the apartment, never a guest's
+    details.
+  */
+  useEffect(() => {
+    const name = [BOOKING_STEP.dates, BOOKING_STEP.residence, BOOKING_STEP.details, BOOKING_STEP.review][step];
+    track(name, { residence: slug || "none" });
+  }, [step, slug]);
+
   const submit = async () => {
     if (!validate(3) || !residence || !quote) return;
     setSubmitting(true);
@@ -205,6 +218,13 @@ export default function BookingFlow() {
     setReference(outcome.reference);
     setRecorded(outcome.recorded);
     setSubmitting(false);
+
+    /*
+      The one event that matters. `recorded` distinguishes a request that
+      reached a person from one that did not, so a run of failures shows up as
+      itself rather than as a sudden drop in bookings.
+    */
+    track("booking_submitted", { residence: slug, nights: quote.nights, recorded: outcome.recorded });
   };
 
   // ---- confirmation ------------------------------------------------------
