@@ -7,7 +7,8 @@ import { Figure } from "@/components/ui/Figure";
 import { CoverFlow } from "@/components/ui/CoverFlow";
 import { Reveal } from "@/components/ui/Reveal";
 import ResidenceCard from "@/components/residences/ResidenceCard";
-import { residences, getResidence, rates, arrival } from "@/lib/content";
+import { residences, getResidence, rates, arrival, business } from "@/lib/content";
+import { site } from "@/lib/site";
 import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
@@ -16,10 +17,52 @@ export function generateStaticParams() {
   return residences.map((r) => ({ slug: r.slug }));
 }
 
+/**
+ * Each apartment gets its own share card and its own canonical address.
+ *
+ * It used to return a title and a description and nothing else, which meant
+ * every apartment link pasted into WhatsApp — the way this spreads in Lusaka,
+ * and the reason the site exists in the form it does — rendered the same
+ * generic photograph of a different room. Somebody sending a friend "look at
+ * this one" was sending a picture of something else.
+ *
+ * The photograph is the apartment's own first image, referenced absolutely,
+ * because a share card is fetched by a crawler that has no page context to
+ * resolve a relative path against.
+ */
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const r = getResidence(params.slug);
   if (!r) return { title: "Residence" };
-  return { title: r.name, description: r.summary };
+
+  const path = `/residences/${r.slug}`;
+  const cover = r.photos[0];
+  const image = cover ? `${site.url}/photos/${cover.id}.jpg` : "/og-default.jpg";
+
+  return {
+    title: r.name,
+    description: r.summary,
+    alternates: { canonical: path },
+    openGraph: {
+      title: `${r.name} — ${business.name}`,
+      description: r.summary,
+      url: path,
+      type: "website",
+      images: [
+        {
+          url: image,
+          width: 1400,
+          height: 1050,
+          alt: `${r.name} — ${cover?.caption ?? "interior"}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${r.name} — ${business.name}`,
+      description: r.summary,
+      images: [image],
+    },
+  };
 }
 
 export default function ResidencePage({ params }: { params: { slug: string } }) {

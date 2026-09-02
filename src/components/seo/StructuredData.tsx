@@ -1,5 +1,6 @@
 import { business, rates, residences, arrival, type Residence } from "@/lib/content";
 import { site } from "@/lib/site";
+import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 
 /**
@@ -55,7 +56,19 @@ export function LodgingSchema() {
     slogan: business.brandLine,
     address,
     ...(CONFIRMED_PHONE ? { telephone: business.phone } : {}),
-    priceRange: `$${Math.round(directNightly(cheapest))}+`,
+    /*
+      Kwacha, with the symbol that matches. This read "$2000+" for a while after
+      the site moved to pricing in Kwacha: the number changed underneath a
+      hardcoded dollar sign, and Google was being told a night here costs two
+      thousand US dollars.
+    */
+    priceRange: `${money(directNightly(cheapest))}+`,
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: business.coords.lat,
+      longitude: business.coords.lng,
+    },
+    hasMap: business.mapsUrl,
     currenciesAccepted: "ZMW, USD",
     paymentAccepted: "Visa, Mastercard, MTN Mobile Money, Airtel Money, Bank transfer",
     checkinTime: arrival.checkIn,

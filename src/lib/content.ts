@@ -52,8 +52,17 @@ export const business = {
     number: "",
   },
 
-  // CONFIRM: exact coordinates of the property for the map + directions link.
-  coords: { lat: -15.4437, lng: 28.2871 },
+  /*
+    Taken from the property's own Google Maps listing, which is where a guest
+    following a link will end up, so the pin on this site and the pin they land
+    on are the same place. The placeholder these replace sat 9.3km away, across
+    Lusaka — a guest driving to it at night would not have found the gate.
+  */
+  coords: { lat: -15.4640271, lng: 28.2024538 },
+  /** The property's listing on Google Maps. */
+  mapsUrl: "https://maps.app.goo.gl/PBRGcWupxdCYe8ys8",
+  /** Plus Code, which works as an address on its own anywhere Maps is used. */
+  plusCode: "G6P2+9XP",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -267,28 +276,37 @@ export const maxGuests = Math.max(...residences.map((r) => r.sleeps));
 // CONFIRM: every claim below must be true of all three units before launch.
 // ---------------------------------------------------------------------------
 
+/**
+ * The four things a guest asks about before anything else.
+ *
+ * All four are CONFIRMED TRUE by the owner. They were written before that and
+ * carried a warning not to publish them unverified, which has now been lifted.
+ *
+ * `detail` is an internal note, never rendered. What it asks for is no longer
+ * whether the claim holds but the specifics behind it, which are worth having
+ * because a number always outsells an adjective: "eight hours of backup" beats
+ * "we have backup power", and a measured speed beats "fast enough".
+ */
 export const assurances = [
   {
     title: "The power stays on",
-    // CONFIRM: solar, inverter or generator — and how many hours it actually holds.
     body: "We have backup power. When the grid goes down, the lights, the fridge and the Wi-Fi keep running.",
-    detail: "CONFIRM: what the backup is, and how many hours it lasts",
+    detail: "Confirmed. Still worth having: what the backup is, and how many hours it holds.",
   },
   {
     title: "We store our own water",
     body: "There is a tank on the property. If the council supply is cut, you can still shower and cook.",
-    detail: "CONFIRM: tank size, or is it a borehole?",
+    detail: "Confirmed. Still worth having: tank size, or whether it is a borehole.",
   },
   {
     title: "Gated, with a guard at night",
     body: "The gate is manned overnight and you park inside it, not out on the road.",
-    detail: "CONFIRM: guarding hours, and which company",
+    detail: "Confirmed. Still worth having: guarding hours, and which company.",
   },
   {
     title: "Wi-Fi that handles video calls",
-    // A number here is worth more than the word "fast". CONFIRM the real figure.
     body: "Fast enough for Zoom and Teams, in all three apartments.",
-    detail: "CONFIRM: actual measured speed, up and down",
+    detail: "Confirmed. Still worth having: the measured speed, up and down.",
   },
 ] as const;
 

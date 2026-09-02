@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default function LocationPage() {
-  const mapsQuery = encodeURIComponent(`${business.street}, ${business.city}, ${business.country}`);
 
   return (
     <>
@@ -42,8 +41,13 @@ export default function LocationPage() {
                   <br />
                   {business.city}, {business.country}
                 </address>
+                {/*
+                  The property's own Maps listing, not a search for the street.
+                  A search dropped the guest on Makeni Road and left them to
+                  find the gate; this is the pin with the name on it.
+                */}
                 <ButtonLink
-                  href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+                  href={business.mapsUrl}
                   variant="secondary"
                   className="mt-6 w-full"
                   target="_blank"
@@ -51,8 +55,18 @@ export default function LocationPage() {
                 >
                   Open in Maps
                 </ButtonLink>
+                <ButtonLink
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${business.coords.lat},${business.coords.lng}`}
+                  variant="secondary"
+                  className="mt-3 w-full"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Directions from where you are
+                </ButtonLink>
                 <p className="mt-4 text-caption text-charcoal-80">
-                  Exact pin and directions are sent with your booking confirmation.
+                  Plus Code {business.plusCode} — that works as an address on its own, anywhere
+                  Maps is used.
                 </p>
               </div>
             </div>
