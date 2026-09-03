@@ -8,12 +8,11 @@ import { business } from "@/lib/content";
  * address got a browser tab (and a bookmark) promising "Best Rates, Booked
  * Direct" over a page saying the page did not exist.
  *
- * Next only honours this export for a not-found rendered by a route that calls
- * `notFound()`, which covers /residences/<anything-wrong>. A completely unmatched
- * address still renders this component under the root metadata, because the
- * framework has no route to attach page metadata to. The dynamic residence route
- * sets its own title for the same reason and between them the addresses a guest
- * is actually likely to mistype are covered.
+ * Verified on a production build: this title is used both for an address that
+ * matches no route at all and for one that reaches a route which then calls
+ * `notFound()`, such as /residences/<anything-wrong>. The dynamic residence
+ * route sets the same title in its own `generateMetadata`, which is what covers
+ * the case where that route resolves far enough to produce metadata first.
  */
 export const metadata: Metadata = {
   title: "Page not found",
