@@ -206,9 +206,18 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                 Who the apartment is named for. A brass rule rather than a
                 boxed-out panel: the brand uses a fine rule as its dividing
                 device, and this is an aside, not a second article.
+
+                `mt-16`, and it has to be a value that exists. This was `mt-10`,
+                which is NOT on the Elite Builder spacing scale in
+                tailwind.config.ts — that scale runs 0, 1, 2, 3, 4, 6, 8, 12,
+                16, 24, 32, 40 and nothing else. An off-scale utility does not
+                fall back to something close; it compiles to nothing at all, so
+                the block had no top margin whatsoever and sat flush against the
+                paragraph above it. Nothing in the markup looks wrong when this
+                happens, which is what makes it worth a comment.
               */}
               {namedAfter ? (
-                <div className="mt-10 border-l-2 border-brass pl-6">
+                <div className="mt-16 border-l-2 border-brass pl-6">
                   <p className="label-caps text-charcoal-60">Named after</p>
                   <p className="mt-3 text-h3 font-light text-navy">
                     {namedAfter.person}{" "}
