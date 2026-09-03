@@ -14,7 +14,22 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="on-navy bg-navy text-white">
+    /*
+      The hairline at the top is doing real work, not decoration.
+
+      The footer is Deep Navy, and so are several of the sections that land
+      directly above it — the arrival band on /location, the closing band on the
+      homepage. Navy meeting navy with nothing between them read as one
+      continuous field, and a guest could not tell where the page ended and the
+      footer began. It looked like the page had simply run on.
+
+      A fine rule is the brand's own dividing device (business card, key card,
+      tariff card), and this is the same weight as the rule above the copyright
+      line further down, so the footer is bounded top and bottom by the same
+      mark. Against a white or stone section the navy already separates itself
+      and the rule simply goes unnoticed.
+    */
+    <footer className="on-navy border-t border-white/[0.16] bg-navy text-white">
       <Container wide>
         <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-12 lg:py-24">
           <div className="sm:col-span-2 lg:col-span-5">
@@ -48,11 +63,30 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                {/*
+                  `break-all` let the address snap anywhere it ran out of
+                  column, which produced "stay@dunslim-apartments.c" on one line
+                  and "om" on the next. An address broken mid-word is one a
+                  guest cannot read back to themselves, let alone type.
+
+                  The break point is now chosen: a <wbr> after the "@" offers
+                  the browser one sensible place to fold, so it either fits on
+                  one line or splits into the name and the domain.
+                */}
                 <a
                   href={`mailto:${business.email}`}
-                  className="inline-flex min-h-[44px] items-center break-all hover:text-white"
+                  className="inline-flex min-h-[44px] items-center hover:text-white"
                 >
-                  {business.email}
+                  {/*
+                    One span, so the address is a single flex item. Left as bare
+                    text it became three of them — name, "@", domain — and a row
+                    of flex items cannot reflow as a sentence does, so it broke
+                    across lines even where there was room for it.
+                  */}
+                  <span>
+                    {business.email.split("@")[0]}@<wbr />
+                    {business.email.split("@")[1]}
+                  </span>
                 </a>
               </li>
               <li>
@@ -109,7 +143,8 @@ export default function Footer() {
                 </>
               ) : null}
               <br />
-              Valid to {business.licence.validUntil}
+              {/* The date holds together: "Valid to 30" over "June 2028" reads as a fragment. */}
+              Valid to <span className="whitespace-nowrap">{business.licence.validUntil}</span>
             </p>
           </div>
         </div>
