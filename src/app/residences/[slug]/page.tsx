@@ -124,10 +124,60 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                   </dd>
                 </div>
               </dl>
+
+              {/*
+                The apartment reads down this column, with the price alongside.
+
+                These paragraphs and the named-after note used to sit in a
+                second two-column section further down the page, which left
+                BOTH rows lopsided: here the summary and three figures ran out
+                after about 180px against a 420px booking card, leaving a
+                quarter of a screen of bare stone, and down there the column
+                had text with nothing beside it. Moving the article up gives
+                this row something to be as tall as, and leaves the section
+                below carrying only the two specification blocks, which are a
+                fair match for each other.
+              */}
+              <div className="mt-12 space-y-6">
+                {description.map((para) => (
+                  <p key={para} className="max-w-measure text-body text-charcoal">
+                    {para}
+                  </p>
+                ))}
+              </div>
+
+              {/*
+                Who the apartment is named for. A brass rule rather than a
+                boxed-out panel: the brand uses a fine rule as its dividing
+                device, and this is an aside, not a second article.
+
+                `mt-16`, and it has to be a value that exists. This was `mt-10`,
+                which is NOT on the Elite Builder spacing scale in
+                tailwind.config.ts — that scale runs 0, 1, 2, 3, 4, 6, 8, 12,
+                16, 24, 32, 40 and nothing else. An off-scale utility does not
+                fall back to something close; it compiles to nothing at all, so
+                the block had no top margin whatsoever and sat flush against the
+                paragraph above it. Nothing in the markup looks wrong when this
+                happens, which is what makes it worth a comment.
+              */}
+              {namedAfter ? (
+                <div className="mt-16 border-l-2 border-brass pl-6">
+                  <p className="label-caps text-charcoal-60">Named after</p>
+                  <p className="mt-3 text-h3 font-light text-navy">
+                    {namedAfter.person}{" "}
+                    <span className="text-body text-charcoal-60">{namedAfter.lived}</span>
+                  </p>
+                  <p className="mt-3 max-w-measure text-body text-charcoal">{namedAfter.note}</p>
+                </div>
+              ) : null}
             </div>
 
-            {/* Booking rail — the action stays in reach the whole way down. */}
-            <div className="lg:col-span-5">
+            {/*
+              Booking rail. `self-start` stops it stretching to the row, and
+              sticky keeps the price and the action in reach the whole way down
+              the article beside it.
+            */}
+            <div className="self-start lg:sticky lg:top-24 lg:col-span-5">
               <div className="rounded-md bg-white p-6 shadow-2 ring-1 ring-navy/10">
                 <p className="text-caption text-charcoal-80">Booked direct</p>
                 <p className="mt-2 text-h2 font-extralight text-navy">
@@ -189,45 +239,18 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         </Container>
       </Section>
 
+      {/*
+        The specification. This section used to carry the article as well, in a
+        left column beside these lists, and the article has moved up to sit
+        against the booking card where it gives that row something to be as tall
+        as. What is left is two blocks of a similar size, which is what a
+        two-column row wants.
+      */}
       <Section ground="stone">
         <Container wide>
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-6">
-              <SectionHead eyebrow="The apartment" title="About this apartment" />
-              <div className="mt-8 space-y-6">
-                {description.map((para) => (
-                  <p key={para} className="max-w-measure text-body text-charcoal">
-                    {para}
-                  </p>
-                ))}
-              </div>
+          <SectionHead eyebrow="The apartment" title={`What you get with ${name}.`} />
 
-              {/*
-                Who the apartment is named for. A brass rule rather than a
-                boxed-out panel: the brand uses a fine rule as its dividing
-                device, and this is an aside, not a second article.
-
-                `mt-16`, and it has to be a value that exists. This was `mt-10`,
-                which is NOT on the Elite Builder spacing scale in
-                tailwind.config.ts — that scale runs 0, 1, 2, 3, 4, 6, 8, 12,
-                16, 24, 32, 40 and nothing else. An off-scale utility does not
-                fall back to something close; it compiles to nothing at all, so
-                the block had no top margin whatsoever and sat flush against the
-                paragraph above it. Nothing in the markup looks wrong when this
-                happens, which is what makes it worth a comment.
-              */}
-              {namedAfter ? (
-                <div className="mt-16 border-l-2 border-brass pl-6">
-                  <p className="label-caps text-charcoal-60">Named after</p>
-                  <p className="mt-3 text-h3 font-light text-navy">
-                    {namedAfter.person}{" "}
-                    <span className="text-body text-charcoal-60">{namedAfter.lived}</span>
-                  </p>
-                  <p className="mt-3 max-w-measure text-body text-charcoal">{namedAfter.note}</p>
-                </div>
-              ) : null}
-            </div>
-
+          <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
               <p className="label-caps text-charcoal-60">In the apartment</p>
               <ul className="mt-6 grid gap-px bg-navy/10 sm:grid-cols-2">
@@ -237,23 +260,25 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                   </li>
                 ))}
               </ul>
+            </div>
 
-              {/*
-                What the rate includes.
+            {/*
+              What the rate includes.
 
-                This was the smallest, faintest thing in the column: 15px — the
-                site's absolute floor — greyed to charcoal-60, and packed into a
-                wrapping row where the items ran together. That is backwards.
-                It is the list of everything a guest gets without paying extra,
-                which makes it the strongest argument on the page for booking
-                direct, and it was being set like a footnote.
+              This was the smallest, faintest thing on the page: 15px — the
+              site's absolute floor — greyed to charcoal-60, and packed into a
+              wrapping row where the items ran together. That is backwards. It
+              is the list of everything a guest gets without paying extra, which
+              makes it the strongest argument on the page for booking direct,
+              and it was being set like a footnote.
 
-                Now 18px, the site's standard body size, at full contrast, one
-                item per line in two columns so each reads as its own promise
-                rather than as a run-on. The white panel lifts it off the stone
-                ground, which is what makes it findable at a glance.
-              */}
-              <div className="mt-16 rounded-md bg-white p-6 ring-1 ring-navy/10 md:p-8">
+              Now 18px, the site's standard body size, at full contrast, one
+              item per line so each reads as its own promise. The white panel
+              lifts it off the stone ground, which is what makes it findable at
+              a glance.
+            */}
+            <div className="lg:col-span-6">
+              <div className="rounded-md bg-white p-6 ring-1 ring-navy/10 md:p-8">
                 <p className="label-caps text-charcoal">Included in the rate</p>
                 <ul className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                   {rates.included.map((inc) => (
