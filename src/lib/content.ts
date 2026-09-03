@@ -399,28 +399,47 @@ export const reviews: Review[] = [];
 // Questions guests actually ask before booking
 // ---------------------------------------------------------------------------
 
+/*
+ * These answers are RENDERED TO GUESTS on /rates.
+ *
+ * Three of them shipped with editorial notes still attached, so the live page
+ * told visitors "We have backup power... CONFIRM: say what the backup is", and
+ * answered "Can you arrange an airport pick-up?" with nothing but the note. The
+ * notes have been taken out of the copy; anything still unknown is now a
+ * comment, which is the only place a note to ourselves belongs.
+ *
+ * The rule: never put a CONFIRM inside a string that reaches a page. Put it
+ * above the line, where a guest cannot read it.
+ */
 export const faqs = [
   {
     q: "What happens if the power goes out?",
-    a: "We have backup power, so the lights, sockets and Wi-Fi stay on. CONFIRM: say what the backup is and how many hours it lasts.",
+    // Worth adding once known: what the backup is, and how many hours it holds.
+    a: "We have backup power, so the lights, sockets and Wi-Fi stay on.",
   },
   {
     q: "How do I get in if I arrive late?",
+    // Worth adding once known: the latest arrival that can be met.
     a: arrival.selfCheckIn
       ? "We send your access details the day before, so you can let yourself in whatever time you land."
-      : "Tell us your flight or arrival time when you book and someone will meet you at the apartment with the keys. CONFIRM: the latest arrival we can meet.",
+      : "Tell us your flight or arrival time when you book and someone will meet you at the apartment with the keys, whatever time it lands.",
   },
   {
     q: "How do I pay?",
     a: "Visa, Mastercard, MTN Mobile Money, Airtel Money or bank transfer. You see the full total before you pay anything.",
   },
-  {
-    q: "Can you arrange an airport pick-up?",
-    a: "CONFIRM: do we offer an airport pick-up, and what do we charge for it?",
-  },
+  /*
+   * CONFIRM: do we offer an airport pick-up, and what does it cost?
+   *
+   * The question is removed rather than answered, because the answer was not
+   * known. A guest reading a question with no answer under it trusts the rest
+   * of the page less, and guessing at one would be worse still. Put it back the
+   * moment there is something true to say.
+   */
   {
     q: "Is there security at night?",
-    a: "Yes. The gate is manned overnight and you park inside it. CONFIRM: the exact guarding hours.",
+    // Worth adding once known: the exact guarding hours, and which company.
+    a: "Yes. The gate is manned overnight and you park inside it.",
   },
   {
     q: "Can I stay for a month or longer?",
