@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Clock, BadgeCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, Clock, BadgeCheck, PlaneLanding, Car, PlaneTakeoff } from "lucide-react";
 import Hero from "@/components/home/Hero";
 import SearchBar from "@/components/booking/SearchBar";
 import ResidenceCard from "@/components/residences/ResidenceCard";
@@ -17,9 +17,11 @@ import {
   arrival,
   neighbourhood,
   audience,
+  fleet,
+  airportMinutes,
 } from "@/lib/content";
 import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
-import { money } from "@/lib/format";
+import { money, inWords } from "@/lib/format";
 import { directNightly, publishedNightly, quote as buildQuote } from "@/lib/pricing";
 import { isoPlusDays, isoToday } from "@/lib/format";
 
@@ -56,7 +58,7 @@ export default function HomePage() {
       <Hero
         eyebrow="Serviced residences"
         headline="A room that works as well as it looks."
-        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate and a rate that is always lower than the platforms."
+        intro={`Three serviced apartments on Makeni Road, each with its own ${fleet.model}. We meet your flight, the car stays with you and the rate is always lower than the platforms.`}
         metaLeft={`${business.city} · ${business.country}`}
         metaRight={`${business.street}`}
         /* The fixed brand line, exactly as the cover carries it. The parent
@@ -67,8 +69,8 @@ export default function HomePage() {
         <Container wide>
           <SearchBar layout="inline" className="shadow-3" />
           <p className="mt-4 text-caption text-charcoal-80">
-            From {money(directNightly(cheapest))} a night · no booking fee · free cancellation up to{" "}
-            {arrival.cancellationHours} hours before arrival
+            From {money(directNightly(cheapest))} a night · a {fleet.model} included · no booking
+            fee · free cancellation up to {arrival.cancellationHours} hours before arrival
           </p>
         </Container>
       </Hero>
@@ -127,6 +129,87 @@ export default function HomePage() {
               </Reveal>
             ))}
           </ul>
+        </Container>
+      </Section>
+
+      {/* ---------------------------------------------------------------
+          THE CAR
+
+          The single biggest reason to book here rather than on a platform, so
+          it gets a band of its own rather than a line in a list. A guest
+          arriving in Lusaka for work has to solve transport before anything
+          else; every competing listing leaves that to them.
+
+          NO PHOTOGRAPH, DELIBERATELY. There is no photograph of the actual
+          cars yet and the rule this whole codebase is built on is that nothing
+          is presented as fact until it is one. A stock saloon here would be the
+          same lie the stock interiors already are, on a claim that is far
+          easier to check. It is set typographically instead, on the brand's own
+          ground, which the navy bands elsewhere on this page already do.
+
+          THE NUMBERS ARE REAL SEQUENCE, not decoration. Landing, the stay and
+          the flight home happen in that order, which is the only thing that
+          licenses numbering a set (see the structure rule in the design notes).
+      ---------------------------------------------------------------- */}
+      <Section ground="navy">
+        <Container wide>
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="self-start lg:sticky lg:top-24 lg:col-span-5">
+              <SectionHead
+                onNavy
+                eyebrow="Every booking"
+                title={`A ${fleet.model}, waiting when you land.`}
+                intro={`All ${inWords(fleet.count)} residences have their own car. It is not a pool and it is not shared: book one apartment and one car is yours until you leave. It is in the nightly rate, like everything else here.`}
+              />
+            </div>
+
+            <div className="lg:col-span-7">
+              <RevealGroup as="ol" className="divide-y divide-white/15 border-y border-white/15">
+                {[
+                  {
+                    icon: PlaneLanding,
+                    title: "We meet the flight",
+                    body: `A driver of ours is at Kenneth Kaunda International whatever time you land, then drives you in. About ${airportMinutes()} minutes by road.`,
+                  },
+                  {
+                    icon: Car,
+                    title: "Then the car is yours",
+                    body: `The ${fleet.model} stays with you for the whole stay and parks inside the gate with you. You drive it yourself, wherever you need to be.`,
+                  },
+                  {
+                    icon: PlaneTakeoff,
+                    title: "And we drive you back",
+                    body: "Tell us your departure and a driver takes you out to the airport. Nothing to arrange and nothing to settle at the end.",
+                  },
+                ].map((step, i) => (
+                  <RevealItem as="li" key={step.title} index={i} className="flex gap-6 py-8">
+                    <span
+                      aria-hidden
+                      className="label-caps shrink-0 pt-1 tabular-nums text-brass"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="flex-1">
+                      <span className="flex items-center gap-3">
+                        <step.icon size={20} strokeWidth={1.5} className="shrink-0 text-brass" aria-hidden />
+                        <span className="text-h3 font-light text-white">{step.title}</span>
+                      </span>
+                      <span className="mt-3 block max-w-measure text-body text-navy-20">
+                        {step.body}
+                      </span>
+                    </span>
+                  </RevealItem>
+                ))}
+              </RevealGroup>
+
+              <Reveal>
+                <p className="mt-8 max-w-measure text-caption text-navy-40">
+                  Give us your flight number when you book. That is the only thing we need from you
+                  to have somebody there.
+                </p>
+              </Reveal>
+            </div>
+          </div>
         </Container>
       </Section>
 

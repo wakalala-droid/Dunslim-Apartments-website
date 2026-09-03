@@ -4,7 +4,7 @@ import ResidenceCard from "@/components/residences/ResidenceCard";
 import { Figure } from "@/components/ui/Figure";
 import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { Reveal } from "@/components/ui/Reveal";
-import { residences, rates } from "@/lib/content";
+import { residences, rates, fleet } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Residences",
@@ -28,7 +28,7 @@ export default function ResidencesPage() {
             as="h1"
             eyebrow="The residences"
             title="Three apartments, same standard."
-            intro="All three are furnished, serviced and run the same way. The only real difference is how much space you need."
+            intro={`All three are furnished, serviced and run the same way. Each one comes with its own ${fleet.model} and a driver to meet your flight. The only real difference between them is how much space you need.`}
           />
           <Figure
             name="detail-living"

@@ -71,6 +71,21 @@ export const isoPlusDays = (iso: string, days: number) => {
   return isoOf(d);
 };
 
+/**
+ * Small numbers, spelled out.
+ *
+ * "All 3 residences have their own car" reads like a spreadsheet. "All three"
+ * reads like a sentence, which is what the brand's setting rules ask for in
+ * running prose. Digits stay where they are being compared or counted: rates,
+ * distances, night counts and anything in a table.
+ */
+const WORDS = [
+  "zero", "one", "two", "three", "four", "five",
+  "six", "seven", "eight", "nine", "ten",
+];
+export const inWords = (n: number) =>
+  Number.isInteger(n) && n >= 0 && n < WORDS.length ? WORDS[n]! : String(n);
+
 /** "3 nights" / "1 night", used everywhere a night count is shown. */
 export const nightLabel = (n: number) => `${n} ${n === 1 ? "night" : "nights"}`;
 export const guestLabel = (n: number) => `${n} ${n === 1 ? "guest" : "guests"}`;

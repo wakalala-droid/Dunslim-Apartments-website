@@ -1,3 +1,5 @@
+import { inWords } from "./format";
+
 /**
  * DUNSLIM APARTMENTS: SINGLE SOURCE OF CONTENT
  * ---------------------------------------------------------------------------
@@ -78,6 +80,68 @@ export const audience = [
 ] as const;
 
 // ---------------------------------------------------------------------------
+// The cars
+// ---------------------------------------------------------------------------
+
+/**
+ * THREE TOYOTA MARK X, ONE PER RESIDENCE.
+ *
+ * Confirmed by the owner, 3 September 2026, with the two details that decide how
+ * it can honestly be described: a driver of ours does the airport runs, the guest
+ * drives it themselves in between and it sits inside the nightly rate rather
+ * than being charged for.
+ *
+ * WHY THIS IS A BLOCK OF DATA AND NOT A LINE OF COPY.
+ *
+ * It has to appear in a dozen places at once: the hero, the residence cards and
+ * pages, the rate card, the checkout summary, the long-stay page, the terms, the
+ * FAQ, the arrival section and the machine-readable description search engines
+ * read. Written by hand into each, the count would eventually say three in one
+ * place and one in another, which is precisely the disagreement across listings
+ * that this site exists to end. Every one of those places reads from here.
+ *
+ * `count` is the FLEET, not what one guest gets. Three apartments, three cars,
+ * one attached to each: a booked guest has a car of their own and never shares
+ * it. Add a fourth apartment and a fourth car has to arrive with it, or
+ * `perResidence` quietly stops being true.
+ *
+ * CONFIRM. Until each of these is answered the site says nothing about it. Every
+ * one is a question a guest will ask before they take the keys and inventing an
+ * answer would be worse than the silence:
+ *   - what licence is needed and whether an international permit is asked for
+ *   - insurance: who is covered and the excess on a claim
+ *   - fuel: handed over full and returned full, or metered
+ *   - any mileage limit, or a boundary outside Lusaka
+ *   - a minimum driver age
+ *   - whether a second guest on the booking may drive it
+ * The terms page carries the same list. Answer them there first.
+ */
+export const fleet = {
+  model: "Toyota Mark X",
+  /** The whole fleet. Three apartments, three cars. */
+  count: 3,
+  /** What a single booking gets. One and it is not shared. */
+  perResidence: 1,
+  /** A driver of ours meets the flight and drives the guest in. */
+  drivenFromAirport: true,
+  /** The guest drives it themselves for the rest of the stay. */
+  selfDriveDuringStay: true,
+  /** Inside the nightly rate. Nothing is added at checkout for it. */
+  included: true,
+} as const;
+
+/**
+ * The car as one line, for a list of amenities or inclusions.
+ *
+ * Singular on purpose. A guest reading their own apartment's page cares that
+ * they get a car, not that the business owns three.
+ */
+export const carLine = `A ${fleet.model}, yours for the stay`;
+
+/** The airport runs, as one line. Separate because it is a different promise. */
+export const transferLine = "Airport pick-up and drop-off, driven by us";
+
+// ---------------------------------------------------------------------------
 // Rates
 // ---------------------------------------------------------------------------
 
@@ -121,6 +185,9 @@ export const rates = {
    * declared here and shown from the first price the guest ever sees.
    */
   included: [
+    // The two that lead are the two no platform listing can offer.
+    carLine,
+    transferLine,
     "Housekeeping",
     "Linen and towels",
     "Water and electricity",
@@ -172,6 +239,15 @@ export type Residence = {
   standout: string;
   /** Longest-form description. Two or three sentences, plainly written. */
   description: string[];
+  /**
+   * What comes with this residence.
+   *
+   * The car and the airport runs lead every one of these lists, because they are
+   * the two things a guest cannot get from a platform listing at any price. They
+   * are written into each residence rather than bolted on in the component so
+   * that the machine-readable description of each apartment carries them too:
+   * search engines read `amenityFeature` per unit, not per business.
+   */
   amenities: string[];
   /**
    * Photo slots. `id` is a key in the photo manifest (src/lib/photos.ts),
@@ -195,7 +271,7 @@ export const residences: Residence[] = [
     slug: "mandela",
     name: "Mandela",
     summary: "Two bedrooms. Set up for someone here to work.",
-    standout: "A proper desk and a bedroom that goes properly dark",
+    standout: `A proper desk, a bedroom that goes properly dark and its own ${fleet.model}`,
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -210,6 +286,8 @@ export const residences: Residence[] = [
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
     ],
     amenities: [
+      carLine,
+      transferLine,
       "Two bedrooms",
       "Desk and task chair",
       "Full kitchen",
@@ -228,7 +306,7 @@ export const residences: Residence[] = [
     slug: "mulima",
     name: "Mulima",
     summary: "Two bedrooms. Works for two colleagues, or a family.",
-    standout: "A cot fits in the second bedroom and the living room holds a meeting",
+    standout: `A cot fits in the second bedroom, the living room holds a meeting and its own ${fleet.model}`,
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -238,6 +316,8 @@ export const residences: Residence[] = [
       "We can put a cot in the second bedroom if you need one. The living room is big enough to hold a meeting without shifting furniture.",
     ],
     amenities: [
+      carLine,
+      transferLine,
       "Two bedrooms",
       "Full kitchen",
       "Washing machine",
@@ -256,7 +336,7 @@ export const residences: Residence[] = [
     slug: "kaunda",
     name: "Kaunda",
     summary: "Two bedrooms. Room for a team, or family visiting.",
-    standout: "A dining table for six and parking for two vehicles",
+    standout: `A dining table for six, parking for two vehicles and its own ${fleet.model}`,
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -271,6 +351,8 @@ export const residences: Residence[] = [
       "Best value on a longer stay, where the weekly and monthly rates really start to count.",
     ],
     amenities: [
+      carLine,
+      transferLine,
       "Two bedrooms",
       "Full kitchen",
       "Washing machine",
@@ -353,12 +435,29 @@ export const arrival = {
   lateCheckOut: "12:00",
   /** Free cancellation window, in hours before check-in. */
   cancellationHours: 48,
-  // CONFIRM: is self check-in actually available, or is it a met-on-arrival handover?
-  // Research shows this is the single biggest anxiety for a late arrival. Do not
-  // claim self check-in until it is genuinely in place.
+  /*
+    CONFIRM: is self check-in available, or is it always a met-on-arrival
+    handover? Less pressing than it was. The real anxiety for a late arrival is
+    getting from the airport to the door at midnight and that is now answered:
+    a driver meets the flight. Do not claim self check-in until it is in place.
+  */
   selfCheckIn: false,
-  airportMinutes: 0, // CONFIRM: real drive time to Kenneth Kaunda International.
 } as const;
+
+/**
+ * Road time from the airport, in minutes.
+ *
+ * Derived from the measured neighbourhood entry rather than stored beside it.
+ * There was an `arrival.airportMinutes: 0` here carrying a CONFIRM while the
+ * real figure sat thirty lines below in `neighbourhood`, measured by road and
+ * already rendered on the location page. Two homes for one number, one of them
+ * a placeholder that would have been read as "we do not know".
+ *
+ * A function rather than a constant because `neighbourhood` is declared after
+ * this point in the file and the value is only ever needed at render time.
+ */
+export const airportMinutes = () =>
+  neighbourhood.find((p) => p.kind === "Airport")?.minutes ?? 0;
 
 // ---------------------------------------------------------------------------
 // The neighbourhood. Growth Proposal §2.1 records that distances currently
@@ -434,22 +533,28 @@ export const faqs = [
   {
     q: "How do I get in if I arrive late?",
     // Worth adding once known: the latest arrival that can be met.
-    a: arrival.selfCheckIn
-      ? "We send your access details the day before, so you can let yourself in whatever time you land."
-      : "Tell us your flight or arrival time when you book and someone will meet you at the apartment with the keys, whatever time it lands.",
+    a: "Give us your flight when you book. A driver meets it, whatever time it lands, then takes you straight to the apartment where someone hands over the keys.",
   },
   {
     q: "How do I pay?",
     a: "Visa, Mastercard, MTN Mobile Money, Airtel Money or bank transfer. You see the full total before you pay anything.",
   },
   /*
-   * CONFIRM: do we offer an airport pick-up and what does it cost?
-   *
-   * The question is removed rather than answered, because the answer was not
-   * known. A guest reading a question with no answer under it trusts the rest
-   * of the page less, while guessing at one would be worse still. Put it back the
-   * moment there is something true to say.
-   */
+    PUT BACK, WITH A REAL ANSWER.
+
+    This question was deleted rather than answered, because nobody knew whether
+    an airport pick-up existed. The note left in its place said to restore it the
+    moment there was something true to say. There is: a driver of ours meets the
+    flight and the car then stays with the guest.
+  */
+  {
+    q: "Can you pick me up from the airport?",
+    a: `Yes and it costs nothing extra. A driver meets your flight at Kenneth Kaunda International and brings you in, about ${airportMinutes()} minutes by road. The ${fleet.model} then stays with you for the rest of your stay and we drive you back out for your flight home.`,
+  },
+  {
+    q: "Do I really get a car?",
+    a: `Yes. Each of the ${inWords(fleet.count)} residences has its own ${fleet.model} and it is not shared with anyone. We drive you in from the airport, then it is yours to use until you leave. It is included in the nightly rate.`,
+  },
   {
     q: "Is there security at night?",
     // Worth adding once known: the exact guarding hours and which company.

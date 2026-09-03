@@ -4,7 +4,7 @@ import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
 import { Reveal } from "@/components/ui/Reveal";
-import { business, neighbourhood, arrival, assurances } from "@/lib/content";
+import { business, neighbourhood, arrival, assurances, fleet, airportMinutes } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Location",
@@ -187,17 +187,13 @@ export default function LocationPage() {
               <SectionHead
                 onNavy
                 eyebrow="Arrival"
-                title="Arriving late is fine"
-                intro={
-                  arrival.selfCheckIn
-                    ? "We send your access details the day before, so the hour you land does not matter."
-                    : "Tell us your flight when you book and someone will be there with the keys, whatever time it lands."
-                }
+                title="You do not have to find us"
+                intro={`Give us your flight when you book. A driver meets it whatever time it lands, brings you in and hands over the ${fleet.model} that stays with you for the rest of the trip. The distances above are for planning, not for your first night.`}
               />
             </div>
 
             <div className="lg:col-span-7">
-              <dl className="grid gap-8 sm:grid-cols-3">
+              <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <dt className="label-caps text-brass-60">Check in</dt>
                   <dd className="mt-2 text-h3 font-light text-white">{arrival.checkIn}</dd>
@@ -207,8 +203,22 @@ export default function LocationPage() {
                   <dd className="mt-2 text-h3 font-light text-white">{arrival.lateCheckOut}</dd>
                 </div>
                 <div>
-                  <dt className="label-caps text-brass-60">Parking</dt>
-                  <dd className="mt-2 text-h3 font-light text-white">Inside the gate</dd>
+                  <dt className="label-caps text-brass-60">From the airport</dt>
+                  <dd className="mt-2 text-h3 font-light text-white">
+                    Driven
+                    <span className="mt-1 block text-caption text-navy-20">
+                      About {airportMinutes()} minutes
+                    </span>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="label-caps text-brass-60">Your car</dt>
+                  <dd className="mt-2 text-h3 font-light text-white">
+                    {fleet.model}
+                    <span className="mt-1 block text-caption text-navy-20">
+                      Parked inside the gate
+                    </span>
+                  </dd>
                 </div>
               </dl>
 

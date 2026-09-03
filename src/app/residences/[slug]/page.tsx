@@ -276,7 +276,12 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
 
           <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
-              <p className="label-caps text-charcoal-60">In the apartment</p>
+              {/*
+                "With this residence", not "In the apartment". The car and the
+                airport runs are part of what a guest gets when they book this
+                unit and neither of them is in the apartment.
+              */}
+              <p className="label-caps text-charcoal-60">With this residence</p>
               <ul className="mt-6 grid gap-px bg-navy/10 sm:grid-cols-2">
                 {amenities.map((a) => (
                   <li key={a} className="bg-stone px-4 py-4 text-body text-charcoal">
@@ -304,8 +309,18 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
             <div className="lg:col-span-6">
               <div className="rounded-md bg-white p-6 ring-1 ring-navy/10 md:p-8">
                 <p className="label-caps text-charcoal">Included in the rate</p>
+                {/*
+                  De-duplicated against the amenity list beside it. The car and
+                  the airport runs belong in both lists conceptually and both
+                  lists are on this one page, so printing them twice a few
+                  centimetres apart would read as a mistake rather than as
+                  emphasis. The amenity column, which is specific to this
+                  residence, wins.
+                */}
                 <ul className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-                  {rates.included.map((inc) => (
+                  {rates.included
+                    .filter((inc) => !amenities.includes(inc))
+                    .map((inc) => (
                     <li key={inc} className="flex items-start gap-3 text-body text-charcoal">
                       <Check
                         size={18}

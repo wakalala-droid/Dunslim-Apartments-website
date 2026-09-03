@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
-import { business, rates, arrival, residences } from "@/lib/content";
-import { money } from "@/lib/format";
+import { business, rates, arrival, residences, fleet } from "@/lib/content";
+import { money, inWords } from "@/lib/format";
 import { publishedNightly, directNightly } from "@/lib/pricing";
 
 /**
@@ -29,6 +29,19 @@ import { publishedNightly, directNightly } from "@/lib/pricing";
  *   - smoking, pets, visitors, quiet hours
  *   - the licence number, so it can be quoted in full
  *   - the registered company name and address behind "Dunslim Group"
+ *
+ * AND THE CAR, which is the most urgent set on this list, because a guest is
+ * being handed the keys to a vehicle and every one of these has a legal answer
+ * whether or not this page states it:
+ *   - what licence is needed and whether an international permit is required
+ *   - insurance: who is covered to drive and the excess on a claim
+ *   - fuel: handed over full and returned full, or metered
+ *   - any mileage limit, or a boundary outside Lusaka
+ *   - a minimum driver age
+ *   - whether a second guest on the booking may drive it
+ * The page below describes only what the owner has confirmed and says openly
+ * that the driving terms are agreed in writing before the keys change hands.
+ * Do not fill these in with a guess.
  */
 export const metadata: Metadata = {
   title: "Booking terms",
@@ -116,6 +129,27 @@ export default function TermsPage() {
             <p className="mt-4 text-body text-charcoal">
               A stay longer than a month is usually priced as a whole engagement rather than run
               through the ladder and we can invoice your employer for it.
+            </p>
+
+            <h2 className="mt-12 text-h3 font-light text-navy">The car</h2>
+            <p className="mt-3 text-body text-charcoal">
+              There are {inWords(fleet.count)} {fleet.model}, one attached to each residence. Book an
+              apartment and that car is yours for the length of your stay. It is not a pool car and
+              it is not shared with the other apartments.
+            </p>
+            <p className="mt-3 text-body text-charcoal">
+              A driver of ours meets your flight and brings you in. We drive you back out to the
+              airport when you leave. In between, you drive it yourself. It parks inside the gate
+              with you.
+            </p>
+            <p className="mt-3 text-body text-charcoal">
+              The car is part of the nightly rate. There is no separate charge for it, no charge for
+              the airport runs and nothing to settle at the end.
+            </p>
+            <p className="mt-3 text-body text-charcoal">
+              The driving terms, which cover the licence we need to see, insurance and fuel, are
+              sent to you in writing when your booking is confirmed and before any keys change
+              hands. We would rather you read them in advance than be handed a form at the gate.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">What is included</h2>

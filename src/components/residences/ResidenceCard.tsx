@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, BedDouble, Users } from "lucide-react";
+import { ArrowRight, BedDouble, Users, Car } from "lucide-react";
 import { Figure } from "@/components/ui/Figure";
 import { money } from "@/lib/format";
+import { fleet } from "@/lib/content";
 import { directNightly } from "@/lib/pricing";
 import type { Residence } from "@/lib/content";
 
@@ -73,6 +74,15 @@ export default function ResidenceCard({
           <li className="flex items-center gap-2">
             <Users size={15} strokeWidth={1.5} className="text-brass" aria-hidden />
             Sleeps {sleeps}
+          </li>
+          {/*
+            The car sits in the spec row rather than in the prose, because this
+            row is what a guest scans when three cards are side by side and all
+            three apartments are otherwise identical on paper.
+          */}
+          <li className="flex items-center gap-2">
+            <Car size={15} strokeWidth={1.5} className="text-brass" aria-hidden />
+            {fleet.model} included
           </li>
         </ul>
 

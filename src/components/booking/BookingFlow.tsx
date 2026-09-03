@@ -18,7 +18,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
 import { Honeypot } from "@/components/ui/Honeypot";
 import Summary from "./Summary";
-import { residences, getResidence, arrival, business, rates, maxGuests } from "@/lib/content";
+import { residences, getResidence, arrival, business, rates, maxGuests, fleet } from "@/lib/content";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
 import { money, isoToday, isoPlusDays, prettyDate, isValidIsoDate } from "@/lib/format";
 import { photo } from "@/lib/photos";
@@ -404,6 +404,11 @@ export default function BookingFlow() {
               <p className="mt-6 max-w-measure text-lead text-charcoal">
                 It has reached our reservations inbox. Someone will confirm your booking and send
                 payment instructions within a few hours, sooner during the day.
+              </p>
+              <p className="mt-4 max-w-measure text-body text-charcoal-80">
+                {arrivalTime
+                  ? `We have your arrival details. A driver will meet you and the ${fleet.model} stays with you for the whole stay.`
+                  : `When you reply, send us your flight number. A driver meets it whatever time it lands. The ${fleet.model} then stays with you for the whole stay.`}
               </p>
             </>
           ) : (
@@ -849,14 +854,14 @@ export default function BookingFlow() {
                   <Field
                     label="Arrival time"
                     htmlFor="arrivalTime"
-                    hint="Flight number is fine too. A late landing is normal here."
+                    hint={`Give us the flight number if you are flying in. A driver meets it, whatever time it lands, then drives you in.`}
                     className="sm:col-span-2"
                   >
                     <Input
                       id="arrivalTime"
                       value={arrivalTime}
                       onChange={(e) => setArrivalTime(e.target.value)}
-                      placeholder="e.g. 23:40, or flight KQ 794"
+                      placeholder="e.g. flight KQ 794, or 23:40 by road"
                     />
                   </Field>
 

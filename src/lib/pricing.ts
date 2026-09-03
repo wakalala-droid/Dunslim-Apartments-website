@@ -116,9 +116,13 @@ export function quote(residence: Residence, from: string, to: string): Quote | n
   };
 }
 
-/** The lowest nightly rate across all residences, for "from K X" copy. */
-export const fromRate = (list: Residence[]) =>
-  list.length ? list.reduce((min, r) => Math.min(min, r.directNightlyZmw), Infinity) : 0;
+/*
+  `fromRate` used to live here: the lowest nightly rate across a list, for
+  "from K X" copy. Nothing called it. The pages that show a "from" price pick the
+  cheapest residence themselves and pass it to `directNightly`, which is the same
+  answer by a shorter route. Removed rather than left as a second way to do one
+  thing, which is how two ways to do one thing start disagreeing.
+*/
 
 /**
  * What a guest actually pays per night, booking direct. This is the number the

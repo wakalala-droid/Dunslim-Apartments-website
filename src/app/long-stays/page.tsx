@@ -4,9 +4,9 @@ import { Figure } from "@/components/ui/Figure";
 import { Reveal } from "@/components/ui/Reveal";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import EnquiryForm from "@/components/booking/EnquiryForm";
-import { rates, audience, residences, arrival } from "@/lib/content";
+import { rates, audience, residences, arrival, fleet } from "@/lib/content";
 import { money } from "@/lib/format";
-import { directNightly } from "@/lib/pricing";
+import { directNightly, longStayBand } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Long stays",
@@ -27,7 +27,9 @@ const WEEKS = 6;
 export default function LongStaysPage() {
   const example = residences[1] ?? residences[0];
   const nights = WEEKS * 7;
-  const band = [...rates.longStay].filter((b) => nights >= b.minNights).pop();
+  // The engine's own band picker. This was a `.pop()`, which takes the last
+  // match rather than the deepest one and only agreed by accident of ordering.
+  const band = longStayBand(nights);
   const nightly =
     directNightly(example) * (band ? 1 - band.discountPct / 100 : 1);
 
@@ -46,7 +48,7 @@ export default function LongStaysPage() {
             as="h1"
             eyebrow="Long stays"
             title="Here for the engagement, not the weekend."
-            intro="Most of our guests are working. A consultant on a six-week posting, an NGO team between houses, a family waiting on a lease. None of that fits a nightly booking form, so this is the way in for stays measured in weeks."
+            intro={`Most of our guests are working. A consultant on a six-week posting, an NGO team between houses, a family waiting on a lease. None of that fits a nightly booking form, so this is the way in for stays measured in weeks. The ${fleet.model} comes with it, for the whole engagement.`}
           />
         </Container>
       </Section>
@@ -90,7 +92,11 @@ export default function LongStaysPage() {
 
               <ul className="mt-8 space-y-3">
                 {[
-                  "Invoiced monthly, in USD or kwacha",
+                  // CONFIRM: do we invoice in USD for corporate clients? This said
+                  // "in USD or kwacha" while every price on the site is kwacha only
+                  // and the dollar switch was removed for quoting a stale rate.
+                  "Invoiced monthly, in kwacha",
+                  `A ${fleet.model} for the whole engagement, included`,
                   "Housekeeping on a schedule that suits you, not us",
                   `Checkout at ${arrival.lateCheckOut} on your last day`,
                   "One point of contact for the whole stay",
