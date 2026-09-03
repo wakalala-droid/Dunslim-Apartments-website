@@ -6,7 +6,7 @@ import { extendTailwindMerge } from "tailwind-merge";
  *
  * The brand type scale uses named sizes (text-body, text-h2, text-label…).
  * Out of the box tailwind-merge cannot tell a custom `text-body` from a text
- * colour, so it treats them as the same group and the later class wins — which
+ * colour, so it treats them as the same group and the later class wins, which
  * silently stripped `text-white` off every button that also set `text-body`.
  * Declaring the font-size names here keeps size and colour in separate groups.
  */

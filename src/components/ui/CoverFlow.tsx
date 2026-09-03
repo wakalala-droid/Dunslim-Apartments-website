@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
  * A COVERFLOW GALLERY
  * ---------------------------------------------------------------------------
  * The centre photograph sits square on, its neighbours turn away into the
- * distance. A serviced apartment is bought with the eyes, and a flat grid of
+ * distance. A serviced apartment is bought with the eyes and a flat grid of
  * four photographs asks the guest to do the work of imagining the room. This
  * puts one room in front of them at a time and makes the rest visibly
  * available.
@@ -74,7 +74,7 @@ export function CoverFlow({
   const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
 
   /*
-    Autoplay stops for a pointer, for keyboard focus, and for anyone who has
+    Autoplay stops for a pointer, for keyboard focus and for anyone who has
     asked for reduced motion, for whom it never starts at all. A gallery that
     keeps moving under a reader is the same discourtesy as one that moves too
     fast to read.

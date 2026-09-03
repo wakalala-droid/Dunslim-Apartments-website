@@ -11,7 +11,7 @@ import { directNightly } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Long stays",
   description:
-    "Serviced apartments in Lusaka for stays of a week, a month or a full engagement. Rates step down with length of stay, and we invoice.",
+    "Serviced apartments in Lusaka for stays of a week, a month or a full engagement. Rates step down with length of stay and we invoice.",
 };
 
 /** A worked example beats a percentage. */
@@ -51,7 +51,7 @@ export default function LongStaysPage() {
             <div className="lg:col-span-6">
               <SectionHead
                 eyebrow="What changes"
-                title="The rate steps down, and so does the admin."
+                title="The rate steps down and so does the admin."
               />
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
@@ -76,7 +76,7 @@ export default function LongStaysPage() {
                 <p className="label-caps text-charcoal-80">For example</p>
                 <p className="mt-3 max-w-measure text-body text-charcoal">
                   {example.name} for {WEEKS} weeks works out at{" "}
-                  <span className="text-navy">{money(nightly)} a night</span>, all in — housekeeping,
+                  <span className="text-navy">{money(nightly)} a night</span>, all in: housekeeping,
                   power, water and Wi-Fi included, invoiced monthly if that suits your finance team.
                 </p>
               </div>
@@ -116,7 +116,7 @@ export default function LongStaysPage() {
               <SectionHead
                 eyebrow="Talk to us"
                 title="Tell us the shape of it."
-                intro="Long stays are priced properly rather than run through a calculator, so this goes to a person. Approximate dates are fine — we would rather hear from you early than exactly."
+                intro="Long stays are priced properly rather than run through a calculator, so this goes to a person. Approximate dates are fine. We would rather hear from you early than exactly."
               />
               <ul className="mt-12 grid gap-px bg-navy/10">
                 {audience.map((who, i) => (

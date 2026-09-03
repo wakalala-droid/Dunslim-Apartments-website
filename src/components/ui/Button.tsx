@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 /**
- * Buttons. Four variants only — component_system.md forbids one-off components.
+ * Buttons. Four variants only. component_system.md forbids one-off components.
  *
  * Touch target is 44px minimum at every breakpoint, not only on mobile
  * (accessibility_system.md, TOUCH TARGET RULE).

@@ -11,7 +11,7 @@ import { directNightly, publishedNightly } from "@/lib/pricing";
 export const metadata: Metadata = {
   title: "Rates",
   description:
-    "Nightly rates for all three Dunslim residences, the long-stay ladder, what is included, and what booking direct saves. No booking fee and nothing added at checkout.",
+    "Nightly rates for all three Dunslim residences, the long-stay ladder, what is included and what booking direct saves. No booking fee and nothing added at checkout.",
 };
 
 /** Worked example, so the ladder is concrete rather than a claim. */

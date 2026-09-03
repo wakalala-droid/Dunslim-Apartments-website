@@ -108,7 +108,7 @@ export default function BookingFlow() {
   const [reference, setReference] = useState("");
   /**
    * Whether a person was actually told. The confirmation screen says one thing
-   * or the other based on this — never "we have your request" when nobody does.
+   * or the other based on this. Never "we have your request" when nobody does.
    */
   const [recorded, setRecorded] = useState(false);
 
@@ -185,7 +185,7 @@ export default function BookingFlow() {
 
   /*
     The funnel. Which step a guest reached is the only way to see WHERE they
-    give up rather than merely that they did — and "everyone leaves at the
+    give up rather than merely that they did, because "everyone leaves at the
     payment step" and "nobody gets past choosing dates" call for completely
     different fixes. Carries the step and the apartment, never a guest's
     details.
@@ -252,7 +252,7 @@ export default function BookingFlow() {
               </h1>
               <p className="mt-6 max-w-measure text-lead text-charcoal">
                 It has reached our reservations inbox. Someone will confirm your booking and send
-                payment instructions within a few hours — sooner during the day.
+                payment instructions within a few hours, sooner during the day.
               </p>
             </>
           ) : (
@@ -260,7 +260,7 @@ export default function BookingFlow() {
               {/*
                 The honest branch. Nothing was delivered, so nothing is claimed.
                 Telling a guest their room is held when no one has been told is
-                the worst outcome this form can produce — worse than an error.
+                the worst outcome this form can produce, worse than an error.
               */}
               <h1 className="mt-8 text-h1 font-extralight text-navy">
                 {firstName}, this did not send.
@@ -280,7 +280,7 @@ export default function BookingFlow() {
               ["Arrive", `${prettyDate(from)}, from ${arrival.checkIn}`],
               ["Depart", `${prettyDate(to)}, by ${arrival.lateCheckOut}`],
               ["Total", money(quote.totalZmw)],
-              ["Paying by", PAYMENT_METHODS.find((m) => m.id === payment)?.label ?? "—"],
+              ["Paying by", PAYMENT_METHODS.find((m) => m.id === payment)?.label ?? "Not chosen"],
               ["Confirmation to", email],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-6 py-4">
@@ -307,8 +307,8 @@ export default function BookingFlow() {
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 /*
-                  When the send failed, the message carries the whole request —
-                  the guest should not have to type their dates out again
+                  When the send failed, the message carries the whole request.
+                  The guest should not have to type their dates out again
                   because our form let them down.
                 */
                 href={`https://wa.me/${business.whatsapp}?text=${encodeURIComponent(
@@ -338,7 +338,7 @@ export default function BookingFlow() {
           <p className="mt-8 text-caption text-charcoal-80">
             {recorded
               ? `Nothing has been charged. You can cancel free of charge up to ${arrival.cancellationHours} hours before arrival.`
-              : "Nothing has been charged, and nothing has been booked. Message us and we will sort it out."}
+              : "Nothing has been charged and nothing has been booked. Message us and we will sort it out."}
           </p>
         </div>
       </Container>
@@ -394,7 +394,7 @@ export default function BookingFlow() {
               </button>
             ) : null}
 
-            {/* ---------------- STEP 0 — DATES ---------------- */}
+            {/* ---------------- STEP 0: DATES ---------------- */}
             {step === 0 ? (
               <section>
                 <h1
@@ -458,7 +458,7 @@ export default function BookingFlow() {
                   <p className="mt-6 text-caption text-charcoal-80">
                     {nights} {nights === 1 ? "night" : "nights"}
                     {nights >= rates.longStay[0].minNights
-                      ? " — the long-stay rate applies."
+                      ? ". The long-stay rate applies."
                       : null}
                   </p>
                 ) : null}
@@ -469,7 +469,7 @@ export default function BookingFlow() {
               </section>
             ) : null}
 
-            {/* ---------------- STEP 1 — RESIDENCE ---------------- */}
+            {/* ---------------- STEP 1: RESIDENCE ---------------- */}
             {step === 1 ? (
               <section>
                 <h1
@@ -539,8 +539,8 @@ export default function BookingFlow() {
 
                 {suitable.length === 0 ? (
                   <p className="mt-6 rounded-md bg-stone p-6 text-body text-charcoal">
-                    Nothing here sleeps {guests}. Go back a step and reduce the party, or message us
-                    — two residences side by side may work.
+                    Nothing here sleeps {guests}. Go back a step and reduce the party, or message us.
+                    Two residences side by side may work.
                   </p>
                 ) : null}
 
@@ -563,7 +563,7 @@ export default function BookingFlow() {
               </section>
             ) : null}
 
-            {/* ---------------- STEP 2 — DETAILS ---------------- */}
+            {/* ---------------- STEP 2: DETAILS ---------------- */}
             {step === 2 ? (
               <section>
                 <h1
@@ -680,7 +680,7 @@ export default function BookingFlow() {
               </section>
             ) : null}
 
-            {/* ---------------- STEP 3 — PAYMENT ---------------- */}
+            {/* ---------------- STEP 3: PAYMENT ---------------- */}
             {step === 3 ? (
               <section>
                 <h1
@@ -763,7 +763,7 @@ export default function BookingFlow() {
             ) : null}
           </div>
 
-          {/* Price panel — visible at every step, on every screen size. */}
+          {/* Price panel, visible at every step, on every screen size. */}
           <div className="lg:col-span-5">
             <Summary
               residence={residence}

@@ -27,9 +27,9 @@
     -webkit-text-size-adjust: 100%;
     /*
       NOT `scroll-behavior: smooth`. Set globally it does not only affect
-      anchor links: every keyboard scroll — space, Page Down, the arrow keys —
+      anchor links: every keyboard scroll (space, Page Down, the arrow keys)
       and every scrollIntoView glides to its destination instead of going
-      there. That is a page which answers slowly, on purpose, on every screen,
+      there. That is a page which answers slowly, on purpose, on every screen
       and a guest reading a rate card with the space bar feels it constantly.
       Apply it per call where a glide is actually wanted.
     */
@@ -42,7 +42,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Brand setting rule, p.13 — ranged left, no hyphenation. */
+  /* Brand setting rule, p.13: ranged left, no hyphenation. */
   p,
   li,
   dd {
@@ -112,7 +112,7 @@
 
   /*
     Letterspaced caps label. Brand hierarchy p.13: Söhne Kräftig, +20 tracking.
-    13px rather than 12 — caps are already harder to scan than lower case, and
+    13px rather than 12. Caps are already harder to scan than lower case and
     wide tracking pulls the letters apart, so this is the smallest size that
     still reads easily at arm's length. Never used for more than a few words.
   */
@@ -125,7 +125,7 @@
   }
 
   /*
-    Skip link — first tab stop on every page.
+    Skip link: first tab stop on every page.
     Hidden by clipping rather than by a negative offset, so it can never widen
     the page or add a scrollbar.
   */
@@ -155,7 +155,7 @@
 }
 
 /*
-  motion_governance.md — every animation has a reduced-motion fallback that
+  motion_governance.md: every animation has a reduced-motion fallback that
   replaces movement with an instant or opacity-only change.
 */
 @media (prefers-reduced-motion: reduce) {
@@ -177,7 +177,7 @@
 }
 
 /*
-  HERO ENTRANCE — CSS, not JavaScript
+  HERO ENTRANCE: CSS, not JavaScript
   ---------------------------------------------------------------------------
   These ran through framer-motion, which meant every element was
   server-rendered at opacity:0 and stayed invisible until React had hydrated
@@ -186,11 +186,11 @@
   nothing visible for most of that.
 
   CSS animations start at first paint. No hydration, no library, no main-thread
-  work, and they keep running if the JavaScript never arrives at all.
+  work and they keep running if the JavaScript never arrives at all.
 
   `both` fill mode holds the start state before the delay elapses and the end
   state afterwards, so nothing flashes. The global prefers-reduced-motion rule
-  collapses the duration, which leaves the end state — visible, unmoved.
+  collapses the duration, which leaves the end state: visible, unmoved.
 */
 @keyframes hero-rise {
   from { opacity: 0; transform: translateY(10px); }
@@ -225,16 +225,16 @@
 
   It is a single composited layer moving 6% over sixteen seconds, running once
   and stopping. It is not tied to scroll, so it cannot stutter with the guest's
-  finger, and prefers-reduced-motion collapses it like everything else.
+  finger and prefers-reduced-motion collapses it like everything else.
 */
 /*
   A DRIFT, NOT A ZOOM.
   This was `scale(1.06)` to `scale(1)`. A scale forces the compositor to
-  re-rasterise the layer at a new resolution on every frame it changes, and the
-  layer here is the full-viewport hero photograph — sixteen seconds of
+  re-rasterise the layer at a new resolution on every frame it changes and the
+  layer here is the full-viewport hero photograph: sixteen seconds of
   continuous re-rastering, landing exactly while the guest is first scrolling.
   That is what the original note in the handover meant by "resample the full
-  viewport every frame", and re-adding the scale re-added the cost.
+  viewport every frame" and re-adding the scale re-added the cost.
 
   A translate is a matrix update on an already-rasterised layer: free. The
   photograph still settles; it now slides a little rather than growing.
@@ -255,7 +255,7 @@
 }
 
 /*
-  SCROLL REVEALS — one-shot, and visible unless something is actively animating
+  SCROLL REVEALS: one-shot, visible unless something is actively animating
   ---------------------------------------------------------------------------
   Third attempt, so it is worth being exact about what was wrong before.
 
@@ -270,16 +270,16 @@
       animation-range: entry 5% entry 55%;
 
   which read as a fix and was not one. `entry` is measured across the whole
-  distance a subject takes to enter the scrollport — its own height PLUS the
-  viewport height — so `entry 55%` on a tall element is a very long way down
+  distance a subject takes to enter the scrollport, its own height PLUS the
+  viewport height, so `entry 55%` on a tall element is a very long way down
   the page. Measured on the live homepage: a 536px card in a 720px viewport
   had to travel roughly 630px before reaching full opacity, which put the card
-  sitting 79px from the top of the screen — the one actually being read — at
+  sitting 79px from the top of the screen (the one actually being read) at
   computed opacity 0.2. Elements that had already scrolled clean past the top
   were still reporting opacity 0.
 
   So the content was never slow to arrive. It was being deliberately held
-  almost invisible for most of the time it was on screen, and a guest scrolling
+  almost invisible for most of the time it was on screen and a guest scrolling
   through that reads it as a site that cannot keep up. That is the lag. No
   amount of shrinking the JavaScript bundle was ever going to touch it.
 
@@ -288,14 +288,14 @@
   1. The resting state is VISIBLE. Nothing in this file hides anything on its
      own. Elements are hidden only inside `.js-motion`, a class the observer
      script adds after it has confirmed it is running. No script, a thrown
-     error, an old browser, reduced motion — every one of those paths ends on a
+     error, an old browser, reduced motion. Every one of those paths ends on a
      static, fully legible page instead of a blank one.
   2. The entrance PLAYS ONCE and finishes. It is a timed animation triggered by
      an IntersectionObserver, not a scrub chained to scroll offset, so how fast
-     the guest scrolls has no bearing on whether they can read the page, and
+     the guest scrolls has no bearing on whether they can read the page and
      stopping mid-scroll can never strand anything half-faded.
   3. One observer per block rather than per word. A heading animates its own
-     words from its single `is-in` class — 59 scroll-linked animations on the
+     words from its single `is-in` class: 59 scroll-linked animations on the
      homepage become 12 observed elements.
 */
 @media (prefers-reduced-motion: no-preference) {
@@ -328,7 +328,7 @@
 
 /*
   A staggered group: one trigger on the container, the sequence carried by each
-  child's own animation-delay. Same contract as the rest of this file — the
+  child's own animation-delay. Same contract as the rest of this file: the
   children are hidden only inside `.js-motion`, so with no script the group is
   simply a static list.
 */
@@ -368,8 +368,8 @@
 
   The card shift is a PERCENTAGE, which resolves against the card's own width,
   so the whole arrangement scales with the card instead of needing a breakpoint
-  for every screen. One custom property sets the card width and everything —
-  stage height, neighbour offsets — follows from it.
+  for every screen. One custom property sets the card width and everything,
+  stage height and neighbour offsets alike, follows from it.
 */
 .cf {
   --cf-w: clamp(220px, 72vw, 330px);
@@ -398,7 +398,7 @@
     opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* The centre photograph: square on, unclouded, and the only one lit. */
+/* The centre photograph: square on, unclouded and the only one lit. */
 .cf-card[data-depth="0"] {
   transform: translateX(0) scale(1) rotateY(0deg);
   opacity: 1;
@@ -434,7 +434,7 @@
 /*
   The caption sits on a scrim rather than on the photograph. Brand Guidelines
   p.12: type does not sit directly on an image. 15px is the floor on this site,
-  and it is not italic — that rule is in the brand book and in the standing
+  and it is not italic. That rule is in the brand book and in the standing
   instruction that an eighty-year-old has to be able to read this.
 */
 .cf-caption {
@@ -557,7 +557,7 @@
   for this one drawer and nothing else.
 
   Both parts stay mounted and are hidden with `visibility`, because an element
-  removed from the DOM cannot animate on its way out — which is the one thing a
+  removed from the DOM cannot animate on its way out, which is the one thing a
   library was genuinely buying here. `visibility: hidden` also takes the links
   out of the tab order and away from screen readers, so a closed menu is closed
   for everybody, not just for people who can see it.

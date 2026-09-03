@@ -42,9 +42,9 @@ export function Figure({
   zoom?: boolean;
   /** A navy wash, for when type has to sit over the image. */
   scrim?: "none" | "soft" | "strong" | "bottom";
-  /** Fill the parent instead of holding an aspect ratio — for full-bleed bands. */
+  /** Fill the parent instead of holding an aspect ratio. For full-bleed bands. */
   cover?: boolean;
-  /** Settle into place on entering view. Never use on a hero — it is already visible. */
+  /** Settle into place on entering view. Never use on a hero, which is already visible. */
   reveal?: boolean;
 }) {
   const p = photo(name);

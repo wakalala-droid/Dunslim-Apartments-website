@@ -3,20 +3,20 @@
  * ---------------------------------------------------------------------------
  * The site had none at all. There was no way to answer how many people visited,
  * how many started a booking, where they gave up, or whether the site had ever
- * produced one — which for a business whose whole pitch is "cheaper booked
+ * produced one, which for a business whose whole pitch is "cheaper booked
  * direct" is the biggest hole in it. You cannot argue that direct works without
  * knowing how often it does.
  *
  * NO DEPENDENCY. Vercel's own script is served from the deployment itself, and
  * the `@vercel/analytics` package is a wrapper around loading it and calling
  * `window.va`. Both are done here directly, which keeps the JavaScript this
- * site ships exactly where it was — worth caring about, having just removed an
+ * site ships exactly where it was, worth caring about, having just removed an
  * animation library for the same reason.
  *
  * PRIVACY. Vercel Web Analytics sets no cookies and records no personal data,
  * which is why there is no consent banner for it. Nothing here ever passes a
  * guest's name, email, phone or message: the events below carry a step name and
- * an apartment slug, and nothing else. Keep it that way — an analytics call is
+ * an apartment slug and nothing else. Keep it that way, because an analytics call is
  * a very easy place to leak a guest into a third party by accident.
  *
  * ONE MANUAL STEP: Web Analytics has to be switched on for the project in the

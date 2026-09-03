@@ -7,9 +7,9 @@ import { rates } from "./content";
  * that is the currency the business prices in and charges in.
  *
  * There used to be a USD/ZMW switch here and in the checkout summary. It quoted
- * in dollars and converted down to Kwacha at a rate stored in content.ts — a
+ * in dollars and converted down to Kwacha at a rate stored in content.ts. A
  * rate recorded in July 2026 and marked as needing confirmation every budgeting
- * cycle. A stored rate goes stale silently, and a stale one shown beside a real
+ * cycle. A stored rate goes stale silently and a stale one shown beside a real
  * price is worse than no second currency at all: at K18 to the dollar the
  * switch would have offered a guest USD 111 for a night that is priced at
  * K2,000. If a dollar figure is wanted again it needs a live rate, not this.
@@ -35,6 +35,6 @@ export const isoPlusDays = (iso: string, days: number) => {
   return d.toISOString().slice(0, 10);
 };
 
-/** "3 nights" / "1 night" — used everywhere a night count is shown. */
+/** "3 nights" / "1 night", used everywhere a night count is shown. */
 export const nightLabel = (n: number) => `${n} ${n === 1 ? "night" : "nights"}`;
 export const guestLabel = (n: number) => `${n} ${n === 1 ? "guest" : "guests"}`;

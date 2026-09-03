@@ -13,7 +13,7 @@ export const site = {
    * Search engines are locked out until this is deliberately switched on.
    *
    * Set NEXT_PUBLIC_ALLOW_INDEXING=true in the Vercel project once the real
-   * photography, rates and contact details are in — not before. Right now the
+   * photography, rates and contact details are in, not before. Right now the
    * site states a phone number that does not work and shows stock interiors
    * that are not these apartments; letting Google index that attaches false
    * details to the business name in a way that is hard to undo.
@@ -23,8 +23,8 @@ export const site = {
   /**
    * Cache-buster for the brand artwork.
    *
-   * The brand files keep stable names on purpose — the guidelines refer to
-   * them by name — so a corrected file arrives at the same URL as the broken
+   * The brand files keep stable names on purpose, because the guidelines refer to
+   * them by name, so a corrected file arrives at the same URL as the broken
    * one it replaces. Anything that already cached the old bytes would keep
    * serving them.
    *

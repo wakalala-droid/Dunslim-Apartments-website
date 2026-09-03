@@ -8,7 +8,7 @@ import { business, neighbourhood, arrival, assurances } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Location",
   description:
-    "Dunslim Apartments on Makeni Road, Lusaka — how to find us, how long it takes from the airport, and what is nearby.",
+    "Dunslim Apartments on Makeni Road, Lusaka: how to find us, how long it takes from the airport and what is nearby.",
 };
 
 export default function LocationPage() {
@@ -65,7 +65,7 @@ export default function LocationPage() {
                   Directions from where you are
                 </ButtonLink>
                 <p className="mt-4 text-caption text-charcoal-80">
-                  Plus Code {business.plusCode} — that works as an address on its own, anywhere
+                  Plus Code {business.plusCode}. That works as an address on its own, anywhere
                   Maps is used.
                 </p>
               </div>
@@ -80,7 +80,7 @@ export default function LocationPage() {
           <SectionHead
             eyebrow="Getting here"
             title="Getting here"
-            intro="Measured by road from our gate, so these are the same numbers on every listing we run. The times assume a clear road — Lusaka at rush hour will add to them."
+            intro="Measured by road from our gate, so these are the same numbers on every listing we run. The times assume a clear road. Lusaka at rush hour will add to them."
           />
 
           <ul className="mt-16 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">

@@ -14,7 +14,7 @@ import { Honeypot } from "@/components/ui/Honeypot";
  * Deliberately shorter than the booking flow. A consultant on a six-week
  * engagement, or the assistant arranging it, is not going to work through a
  * date picker and a payment step for something that will be negotiated and
- * invoiced anyway. Name, dates, and what they need — the rest is a conversation.
+ * invoiced anyway. Name, dates and what they need. The rest is a conversation.
  *
  * Like the booking flow, it never claims to have sent something it did not.
  */
@@ -150,7 +150,7 @@ export default function EnquiryForm() {
         <div role="alert" className="mt-6 flex gap-3 rounded-md bg-stone p-4">
           <AlertTriangle size={20} strokeWidth={1.75} className="mt-px shrink-0 text-warning" aria-hidden />
           <p className="text-caption text-charcoal">
-            This did not send, and nobody has seen it. Nothing is wrong on your end — please message
+            This did not send and nobody has seen it. Nothing is wrong on your end, so please message
             us on{" "}
             <a
               href={`https://wa.me/${business.whatsapp}`}

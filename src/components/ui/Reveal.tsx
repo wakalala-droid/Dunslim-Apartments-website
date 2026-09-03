@@ -9,20 +9,20 @@ import { cn } from "@/lib/cn";
  * run. First it was framer-motion's whileInView, which server-rendered every
  * wrapped element at opacity:0 and held it there until React hydrated. Then it
  * was a scroll-driven CSS timeline, which held a tall card at opacity 0.2 for
- * most of the time it was on screen — measured on the live site — and which
+ * most of the time it was on screen (measured on the live site) and which
  * left blocks that had scrolled clean past the viewport still reporting
  * opacity 0. Both read to a guest as a site that will not keep up.
  *
  * Now: the element is plain, visible markup. A small observer script adds
  * `js-motion` to the document only once it is certain it is running, which is
- * what allows the CSS to hide anything at all, and adds `is-in` when the block
+ * what allows the CSS to hide anything at all and adds `is-in` when the block
  * reaches the viewport, which plays a half-second entrance ONCE. It finishes
  * and stays finished. Scroll speed is not part of the equation.
  *
  * Two shapes:
- *   rise  — text and cards lift a little into place
- *   image — a photograph fades. Never a scale: scaling a photograph makes the
- *           compositor resample it every frame, and it is felt on a mid-range
+ *   rise:  text and cards lift a little into place
+ *   image: a photograph fades. Never a scale: scaling a photograph makes the
+ *           compositor resample it every frame and it is felt on a mid-range
  *           phone with several on a page.
  */
 export function Reveal({
@@ -63,8 +63,8 @@ export function Reveal({
  *
  * `late` holds the trigger until the group is properly on screen rather than
  * firing on its first pixel. Use it where something should be read before the
- * group answers it — a section heading that poses a question, with the answers
- * beside it. The observer script gives these a stricter threshold, and both its
+ * group answers it: a section heading that poses a question, with the answers
+ * beside it. The observer script gives these a stricter threshold and both its
  * sweep and its guard know to leave them alone while they are legitimately
  * waiting, so a deliberate pause is never mistaken for a stuck reveal.
  */

@@ -2,15 +2,15 @@ import { residences } from "./content";
 import { nightsBetween } from "./pricing";
 
 /**
- * AVAILABILITY — THE AI-BOS SEAM
+ * AVAILABILITY: THE AI-BOS SEAM
  * ---------------------------------------------------------------------------
  * This is the only file that needs to change when the site is connected to
  * AI-BOS. Everything else in the app calls `checkAvailability` and
  * `submitBookingRequest` and does not care where the answer comes from.
  *
- * Today both functions run locally: every date is offered, and a booking request
+ * Today both functions run locally: every date is offered and a booking request
  * is held in memory so the whole flow can be walked end to end. Nothing is
- * written anywhere and no guest is told their booking is confirmed — the
+ * written anywhere and no guest is told their booking is confirmed. The
  * confirmation screen says a person will confirm it, which is true.
  *
  * To connect AI-BOS, the hospitality module needs a public, token-scoped surface.
@@ -64,7 +64,7 @@ export async function checkAvailability(
         ? { status: "available", nights }
         : { status: "unavailable", nights, reason: data.reason ?? "Those dates are taken." };
     } catch {
-      // Fall through. A guest should never see a blank page because an API blipped —
+      // Fall through. A guest should never see a blank page because an API blipped.
       // they see the enquiry path instead, which a person answers.
       return { status: "available", nights };
     }
@@ -117,7 +117,7 @@ function makeReference(): string {
  *
  * Two destinations, tried in order:
  *
- *  1. AI-BOS, when it is connected — the request lands as a `pending` booking
+ *  1. AI-BOS, when it is connected. The request lands as a `pending` booking
  *     and holds the dates in the double-booking guard.
  *  2. The site's own /api/booking-request route, which emails the reservations
  *     inbox. This is the floor: it always runs when AI-BOS is not connected.

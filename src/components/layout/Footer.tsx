@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Layout";
 import { business, nav, secondaryNav } from "@/lib/content";
 
 /**
- * The footer is a Deep Navy field — the brand's ground colour (p.11) — carrying
+ * The footer is a Deep Navy field in the brand's ground colour (p.11), carrying
  * the reversed lockup, which is the authorised treatment on a dark ground.
  *
  * The contact block follows the order fixed on p.17: telephone, email, address,
@@ -17,14 +17,14 @@ export default function Footer() {
     /*
       The hairline at the top is doing real work, not decoration.
 
-      The footer is Deep Navy, and so are several of the sections that land
-      directly above it — the arrival band on /location, the closing band on the
+      The footer is Deep Navy and so are several of the sections that land
+      directly above it: the arrival band on /location, the closing band on the
       homepage. Navy meeting navy with nothing between them read as one
-      continuous field, and a guest could not tell where the page ended and the
+      continuous field and a guest could not tell where the page ended and the
       footer began. It looked like the page had simply run on.
 
       A fine rule is the brand's own dividing device (business card, key card,
-      tariff card), and this is the same weight as the rule above the copyright
+      tariff card) and this is the same weight as the rule above the copyright
       line further down, so the footer is bounded top and bottom by the same
       mark. Against a white or stone section the navy already separates itself
       and the rule simply goes unnoticed.
@@ -79,7 +79,7 @@ export default function Footer() {
                 >
                   {/*
                     One span, so the address is a single flex item. Left as bare
-                    text it became three of them — name, "@", domain — and a row
+                    text it became three of them (name, "@", domain) and a row
                     of flex items cannot reflow as a sentence does, so it broke
                     across lines even where there was room for it.
                   */}

@@ -16,7 +16,7 @@ import {
  * six-week engagement is negotiated and usually invoiced, often arranged by
  * someone other than the guest. It goes to a person, not a calendar.
  *
- * Same honesty rule as the booking route — if it cannot send, it says so
+ * Same honesty rule as the booking route: if it cannot send, it says so
  * rather than showing a thank-you that means nothing.
  */
 
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
         from,
         to: [to],
         reply_to: String(b.email),
-        subject: `Long-stay enquiry — ${b.name}${b.organisation ? `, ${b.organisation}` : ""}`,
+        subject: `Long-stay enquiry: ${b.name}${b.organisation ? `, ${b.organisation}` : ""}`,
         html,
       }),
     });

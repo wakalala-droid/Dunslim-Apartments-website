@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
  *
  * All artwork here is the supplied master file (Dunslim Monogram logo.ai),
  * cropped to each authorised lockup and exported as vector. Nothing is redrawn,
- * traced or screen-grabbed — pre-flight check 01, Brand Guidelines p.19.
+ * traced or screen-grabbed. Pre-flight check 01, Brand Guidelines p.19.
  * Proportions are locked by aspect ratio: the horizontal lockup is 4.092:1 and
  * the monogram is 1:1.06, both measured off the master artwork.
  *
@@ -104,7 +104,7 @@ export function LogoLink({
   return (
     <Link
       href="/"
-      aria-label="Dunslim Apartments — home"
+      aria-label="Dunslim Apartments, home"
       className={cn("inline-flex shrink-0 items-center", className)}
       // 2X clear space, scaled from the mark itself.
       style={{ padding: `${Math.round(width * 0.06)}px ${Math.round(width * 0.02)}px` }}

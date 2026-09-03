@@ -2,12 +2,12 @@
  * ONE MOTION LANGUAGE
  * ---------------------------------------------------------------------------
  * Every animation on the site reads from this file. Before it existed the hero
- * ran four separate clocks — a CSS keyframe on the photograph, three Framer
- * transitions on the text, and hardcoded delays that did not relate to when the
+ * ran four separate clocks: a CSS keyframe on the photograph, three Framer
+ * transitions on the text and hardcoded delays that did not relate to when the
  * previous thing actually finished. That is what makes motion feel bolted on
  * rather than choreographed.
  *
- * motion_governance.md: entrances are ease-out, parallax is banned, and every
+ * motion_governance.md: entrances are ease-out, parallax is banned and every
  * animation has a reduced-motion fallback that replaces movement with an
  * opacity change rather than the same movement made faster.
  */
@@ -26,14 +26,14 @@ export const EASE_IN = [0.64, 0, 0.78, 0] as const;
  * Durations, in seconds. Named so a component never invents its own.
  *
  * Deliberately unhurried. This is a brand whose own guidelines say "the
- * identity reads as more valuable the more silence it is given" — motion obeys
+ * identity reads as more valuable the more silence it is given". Motion obeys
  * the same idea, so entrances take their time rather than snapping.
  *
  * `micro` is the exception and stays fast: a hover or a press must answer
  * immediately or the control feels broken. Slow is for arrival, never response.
  */
 export const DUR = {
-  /** Hover, press, toggle — should feel instant. */
+  /** Hover, press, toggle. Should feel instant. */
   micro: 0.16,
   /** Standard entrance for a block of content. */
   entrance: 0.5,
@@ -60,7 +60,7 @@ export const STAGGER = {
  * from the actual word count, so the sequence holds whatever the copy says.
  */
 export function heroTimeline(wordCount: number) {
-  /** The framing rules draw first — the composition builds before the content. */
+  /** The framing rules draw first, so the composition builds before the content. */
   const frame = 0.1;
   const eyebrow = 0.28;
   const words = 0.42;
@@ -68,7 +68,7 @@ export function heroTimeline(wordCount: number) {
   /**
    * Beats overlap rather than queue. Waiting for the headline to finish before
    * starting the paragraph makes a nine-word headline hold the search card back
-   * by well over a second — and that card is the primary action on the page, so
+   * by well over a second and that card is the primary action on the page, so
    * a sequence that looks elegant would be costing bookings.
    *
    * The paragraph therefore begins while the last words are still settling, and
@@ -86,7 +86,7 @@ export function heroTimeline(wordCount: number) {
     eyebrow,
     words,
     intro,
-    /** The search card is the payoff — last, but close behind. */
+    /** The search card is the payoff: last, but close behind. */
     search: Math.min(intro + 0.12, 1),
   };
 }

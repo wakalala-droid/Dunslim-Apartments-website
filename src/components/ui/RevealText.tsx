@@ -10,16 +10,16 @@ import { cn } from "@/lib/cn";
  *
  * Animating a transform inside an `overflow: hidden` box does not merely
  * promote the element to a compositor layer, it forces Chromium to build a
- * render surface for the clip — and it does that at the moment the animation
+ * render surface for the clip and it does that at the moment the animation
  * starts, which is to say mid-scroll. Measured on the homepage: 64 animatable
- * elements, up to 22 of them starting inside a single 900px viewport, and 21 of
+ * elements, up to 22 of them starting inside a single 900px viewport and 21 of
  * those were clipped word spans. The owner's report was scroll judder across
- * the whole site on desktop Chromium, and that churn is on every page.
+ * the whole site on desktop Chromium and that churn is on every page.
  *
- * The heading now rises as one block: one layer instead of eight, and about
+ * The heading now rises as one block: one layer instead of eight and about
  * forty fewer DOM nodes per page. The words-uncovering effect is kept in the
- * homepage hero, where it runs once at load, above the fold, and costs nothing
- * during scrolling — which is where it was always doing the most work anyway.
+ * homepage hero, where it runs once at load, above the fold and costs nothing
+ * during scrolling, which is where it was always doing the most work anyway.
  */
 export function RevealText({
   text,
@@ -32,7 +32,7 @@ export function RevealText({
   as?: "h1" | "h2" | "h3" | "p" | "span";
   /** Seconds to wait before the heading moves. Kept for call-site compatibility. */
   delay?: number;
-  /** Accepted and ignored — the entrance only ever runs on entry. */
+  /** Accepted and ignored. The entrance only ever runs on entry. */
   once?: boolean;
 }) {
   return (

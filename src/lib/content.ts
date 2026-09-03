@@ -1,5 +1,5 @@
 /**
- * DUNSLIM APARTMENTS — SINGLE SOURCE OF CONTENT
+ * DUNSLIM APARTMENTS: SINGLE SOURCE OF CONTENT
  * ---------------------------------------------------------------------------
  * Everything a non-developer needs to change lives in this one file.
  *
@@ -21,7 +21,7 @@ export const business = {
   name: "Dunslim Apartments",
   /** Fixed by the brand guidelines (p.3). Never rewritten. */
   brandLine: "Architectural by nature. Hospitality by choice.",
-  parent: "Dunslim Group — Hospitality Division",
+  parent: "Dunslim Group, Hospitality Division",
 
   street: "Makeni Road",
   city: "Lusaka",
@@ -56,7 +56,7 @@ export const business = {
     Taken from the property's own Google Maps listing, which is where a guest
     following a link will end up, so the pin on this site and the pin they land
     on are the same place. The placeholder these replace sat 9.3km away, across
-    Lusaka — a guest driving to it at night would not have found the gate.
+    Lusaka. A guest driving to it at night would not have found the gate.
   */
   coords: { lat: -15.4640271, lng: 28.2024538 },
   /** The property's listing on Google Maps. */
@@ -66,7 +66,7 @@ export const business = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Who this is for — Growth Proposal §3.1
+// Who this is for: Growth Proposal §3.1
 // ---------------------------------------------------------------------------
 
 export const audience = [
@@ -85,7 +85,7 @@ export const audience = [
  * Kwacha is the base currency of this site. Every amount stored anywhere in the
  * codebase is in Kwacha, because that is what the business sets its prices in.
  * Dollars are derived for display at the rate below and always labelled as
- * approximate — a stored rate is not a live one, and showing a converted figure
+ * approximate. A stored rate is not a live one, so showing a converted figure
  * as though it were exact would be a quiet lie.
  *
  * The nightly rate is confirmed: K2,000 a night, booked direct. It replaces
@@ -114,7 +114,7 @@ export const rates = {
 
   /**
    * Drip pricing is prohibited (Elite Builder System, conversion_psychology.md).
-   * Everything below is included in the displayed nightly rate — there are no
+   * Everything below is included in the displayed nightly rate. There are no
    * fees added at the payment step. If a real fee is ever introduced it must be
    * declared here and shown from the first price the guest ever sees.
    */
@@ -154,8 +154,8 @@ export type Residence = {
   /**
    * The person the apartment is named for. Optional: Mulima has none yet.
    *
-   * Kept short on purpose. This is a serviced apartment, not a museum label —
-   * a guest choosing where to stay will read three sentences about a president
+   * Kept short on purpose. This is a serviced apartment, not a museum label.
+   * A guest choosing where to stay will read three sentences about a president
    * and will not read twelve.
    */
   namedAfter?: { person: string; lived: string; note: string };
@@ -174,7 +174,7 @@ export type Residence = {
  * two bedrooms in every apartment, four guests maximum, K2,000 a night direct.
  *
  * The names are confirmed: Mandela, Mulima and Kaunda. They replace the
- * placeholder Residence One / Two / Three, and the slugs follow them, so the
+ * placeholder Residence One / Two / Three and the slugs follow them, so the
  * addresses read /residences/mandela rather than /residences/residence-one.
  * Changing them costs nothing today because the site is still behind noindex
  * and has never been linked publicly; it would be expensive after launch.
@@ -191,10 +191,10 @@ export const residences: Residence[] = [
     namedAfter: {
       person: "Nelson Mandela",
       lived: "1918 to 2013",
-      note: "South Africa's first democratically elected president, and twenty-seven years a prisoner before that. Lusaka gave the African National Congress a home through its long years in exile, and Mandela came here within weeks of walking free in 1990.",
+      note: "South Africa's first democratically elected president. Before that, twenty-seven years a prisoner. Lusaka gave the African National Congress a home through its long years in exile. Mandela came here within weeks of walking free in 1990.",
     },
     description: [
-      "Set up for someone here to work. There is a proper desk, the bedrooms get properly dark at night, and the kitchen can handle more than coffee.",
+      "Set up for someone here to work. There is a proper desk, the bedrooms get properly dark at night and the kitchen can handle more than coffee.",
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
     ],
     amenities: [
@@ -281,7 +281,7 @@ export const getResidence = (slug: string) => residences.find((r) => r.slug === 
  * Derived from the apartments rather than written down beside them, so it can
  * never disagree with them. Every guest selector on the site counts up to this,
  * which is what stops a guest choosing six, walking through the dates step, and
- * being told at the end that nothing here sleeps six — a dead end the form used
+ * being told at the end that nothing here sleeps six, a dead end the form used
  * to allow because its options were hardcoded 1 to 6 in two separate files.
  */
 export const maxGuests = Math.max(...residences.map((r) => r.sleeps));
@@ -303,13 +303,13 @@ export const maxGuests = Math.max(...residences.map((r) => r.sleeps));
  * `detail` is an internal note, never rendered. What it asks for is no longer
  * whether the claim holds but the specifics behind it, which are worth having
  * because a number always outsells an adjective: "eight hours of backup" beats
- * "we have backup power", and a measured speed beats "fast enough".
+ * "we have backup power" and a measured speed beats "fast enough".
  */
 export const assurances = [
   {
     title: "The power stays on",
     body: "We have backup power. When the grid goes down, the lights, the fridge and the Wi-Fi keep running.",
-    detail: "Confirmed. Still worth having: what the backup is, and how many hours it holds.",
+    detail: "Confirmed. Still worth having: what the backup is and how many hours it holds.",
   },
   {
     title: "We store our own water",
@@ -319,7 +319,7 @@ export const assurances = [
   {
     title: "Gated, with a guard at night",
     body: "The gate is manned overnight and you park inside it, not out on the road.",
-    detail: "Confirmed. Still worth having: guarding hours, and which company.",
+    detail: "Confirmed. Still worth having: guarding hours and which company.",
   },
   {
     title: "Wi-Fi that handles video calls",
@@ -347,23 +347,23 @@ export const arrival = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// The neighbourhood — Growth Proposal §2.1 records that distances currently
+// The neighbourhood. Growth Proposal §2.1 records that distances currently
 // disagree across listings. One confirmed set of numbers replaces them.
 // ---------------------------------------------------------------------------
 
 export type Place = {
   name: string;
   kind: string;
-  /** Road distance from the gate, in kilometres. A fact, and it does not change. */
+  /** Road distance from the gate, in kilometres. A fact that does not change. */
   km: number;
-  /** Typical driving time. An estimate, and it does change — see the note below. */
+  /** Typical driving time. An estimate that does change. See the note below. */
   minutes: number;
   mode: "drive" | "walk";
 };
 
 /*
  * Measured by road from the property's own map pin, not guessed and not copied
- * from the old listings — which is what the Growth Proposal found disagreeing
+ * from the old listings, which is what the Growth Proposal found disagreeing
  * with each other in the first place.
  *
  * Both numbers are shown deliberately. The kilometres are a fact and stay put;
@@ -386,7 +386,7 @@ export const neighbourhood: Place[] = [
 // Reviews
 //
 // The Growth Proposal (§2.2) records that no listing currently carries a
-// calculated review score — not because reviews are bad, but because there are
+// calculated review score. Not because reviews are bad, but because there are
 // not yet enough verified bookings to produce one. Nothing is invented here.
 // Add entries only when they are real and the guest has given permission.
 // ---------------------------------------------------------------------------
@@ -414,7 +414,7 @@ export const reviews: Review[] = [];
 export const faqs = [
   {
     q: "What happens if the power goes out?",
-    // Worth adding once known: what the backup is, and how many hours it holds.
+    // Worth adding once known: what the backup is and how many hours it holds.
     a: "We have backup power, so the lights, sockets and Wi-Fi stay on.",
   },
   {
@@ -429,16 +429,16 @@ export const faqs = [
     a: "Visa, Mastercard, MTN Mobile Money, Airtel Money or bank transfer. You see the full total before you pay anything.",
   },
   /*
-   * CONFIRM: do we offer an airport pick-up, and what does it cost?
+   * CONFIRM: do we offer an airport pick-up and what does it cost?
    *
    * The question is removed rather than answered, because the answer was not
    * known. A guest reading a question with no answer under it trusts the rest
-   * of the page less, and guessing at one would be worse still. Put it back the
+   * of the page less, while guessing at one would be worse still. Put it back the
    * moment there is something true to say.
    */
   {
     q: "Is there security at night?",
-    // Worth adding once known: the exact guarding hours, and which company.
+    // Worth adding once known: the exact guarding hours and which company.
     a: "Yes. The gate is manned overnight and you park inside it.",
   },
   {
@@ -447,12 +447,12 @@ export const faqs = [
   },
   {
     q: "Is it cheaper to book here than on Booking.com?",
-    a: `Yes. Booking here is ${rates.directDiscountPct}% cheaper than the platforms, every time, and there is no booking fee.`,
+    a: `Yes. Booking here is ${rates.directDiscountPct}% cheaper than the platforms, every time. There is no booking fee.`,
   },
 ] as const;
 
 // ---------------------------------------------------------------------------
-// Navigation — fixed by the brand guidelines, p.16 (website header).
+// Navigation: fixed by the brand guidelines, p.16 (website header).
 // ---------------------------------------------------------------------------
 
 export const nav = [

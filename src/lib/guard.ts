@@ -2,13 +2,13 @@
  * PROTECTION FOR THE TWO PUBLIC ENDPOINTS
  * ---------------------------------------------------------------------------
  * /api/booking-request and /api/enquiry both send an email when they are
- * posted to. They are public, they are linked from every page, and until now
+ * posted to. They are public, they are linked from every page and until now
  * nothing at all stood in front of them: no rate limit, no size limit, no spam
- * trap, and no check that the address a guest typed could even receive a reply.
+ * trap and no check that the address a guest typed could even receive a reply.
  *
  * That is a bill waiting to happen. A bot that finds the endpoint can send as
  * fast as it likes, filling the reservations inbox with rubbish and spending
- * the Resend quota — and a real booking arriving in the middle of that flood is
+ * the Resend quota and a real booking arriving in the middle of that flood is
  * the one that gets missed.
  *
  * None of this is a substitute for a proper WAF. It is the cheap 90% that costs
@@ -20,10 +20,10 @@
  *
  * HONEST LIMITATION: on serverless this is per-instance and disappears when the
  * instance is recycled, so a determined attacker spread across enough cold
- * starts gets through. It is still worth having — the floods that actually
+ * starts gets through. It is still worth having, because the floods that actually
  * arrive come from one place as fast as they can, which is exactly what this
- * stops — but if abuse ever becomes real, this is the piece to replace with a
- * shared store such as Vercel KV, and the only piece that needs replacing.
+ * stops. If abuse ever becomes real, this is the piece to replace with a
+ * shared store such as Vercel KV and the only piece that needs replacing.
  */
 const hits = new Map<string, number[]>();
 
@@ -55,7 +55,7 @@ export function rateLimit(
  * Behind Vercel the client address is in x-forwarded-for, first entry. Falls
  * back to a single shared bucket rather than to a per-request unique value:
  * if the header is ever missing, everyone sharing one limit is the safe
- * failure, and giving each request its own key would silently disable the
+ * failure and giving each request its own key would silently disable the
  * limiter altogether.
  */
 export function clientKey(request: Request): string {
@@ -96,8 +96,8 @@ export const FIELD_LIMITS = {
  * Does this address stand a chance of receiving a reply?
  *
  * Deliberately permissive. The job is to catch a typo and an obviously fake
- * entry, not to adjudicate the grammar of email addresses — real addresses are
- * stranger than most regular expressions allow, and rejecting a guest's real
+ * entry, not to adjudicate the grammar of email addresses. Real addresses are
+ * stranger than most regular expressions allow and rejecting a guest's real
  * address is a worse failure than accepting a bad one.
  */
 export const looksLikeEmail = (value: string): boolean =>
@@ -108,7 +108,7 @@ export const looksLikeEmail = (value: string): boolean =>
  *
  * The form renders a field no human can see. A person leaves it empty; the
  * scripts that fill in every input on a page do not. When it comes back filled
- * the request is dropped — and the caller is told it succeeded, because telling
+ * the request is dropped and the caller is told it succeeded, because telling
  * a bot precisely which move failed is how it learns to stop making it.
  */
 export const HONEYPOT_FIELD = "company_website";

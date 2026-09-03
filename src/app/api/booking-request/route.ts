@@ -16,11 +16,11 @@ import {
  * WHERE A BOOKING REQUEST ACTUALLY GOES
  * ---------------------------------------------------------------------------
  * Before this existed, a guest completed the whole flow, was told their dates
- * were held, and the request was discarded. This route is what makes that
+ * were held and the request was discarded. This route is what makes that
  * message true.
  *
  * It emails the reservations inbox. It does not pretend to succeed: if the mail
- * cannot be sent, it says so, and the confirmation screen changes to match.
+ * cannot be sent, it says so and the confirmation screen changes to match.
  * A booking that silently vanishes is worse than a form that admits it failed,
  * because the guest walks away believing they have a room.
  *
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   }
 
   /*
-    Six requests a minute from one address. A guest sends one, and might send a
+    Six requests a minute from one address. A guest sends one and might send a
     second if they change their mind about the dates. Anything past six in a
     minute is not a person booking an apartment.
   */
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
   }
 
   /*
-    The address is the only way back to this guest — it is the reply-to on the
+    The address is the only way back to this guest: it is the reply-to on the
     email. A typo here means the request arrives and cannot be answered.
   */
   if (!looksLikeEmail(body.email!)) {
@@ -136,7 +136,7 @@ export async function POST(request: Request) {
   if (!key || !to || !from) {
     // Loud, not silent. The guest is told a person has not been notified.
     console.error(
-      "[booking-request] Mail is not configured — RESEND_API_KEY, BOOKING_NOTIFY_EMAIL " +
+      "[booking-request] Mail is not configured: RESEND_API_KEY, BOOKING_NOTIFY_EMAIL " +
         "and BOOKING_FROM_EMAIL must all be set. Request NOT delivered:",
       body.reference,
     );
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
   </table>
   <p style="margin:24px 0 0;padding-top:16px;border-top:1px solid #D9D3C8;color:#6B7076;font-size:13px">
     The guest has been told someone will confirm within a few hours. Their dates are not
-    held anywhere yet — confirm or decline so they are not left waiting.
+    held anywhere yet. Confirm or decline so they are not left waiting.
   </p>
 </div>`.trim();
 
@@ -181,7 +181,7 @@ export async function POST(request: Request) {
         from,
         to: [to],
         reply_to: String(body.email),
-        subject: `Booking request — ${guest}, ${residence?.name ?? body.slug} — ${body.reference}`,
+        subject: `Booking request: ${guest}, ${residence?.name ?? body.slug}, ref ${body.reference}`,
         html,
       }),
     });

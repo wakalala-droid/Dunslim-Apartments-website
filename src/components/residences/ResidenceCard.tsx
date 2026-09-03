@@ -6,16 +6,16 @@ import { directNightly } from "@/lib/pricing";
 import type { Residence } from "@/lib/content";
 
 /**
- * One residence, as a card. Used on the homepage and on /residences — the same
+ * One residence, as a card. Used on the homepage and on /residences, the same
  * component in both places, per component_system.md rule 1.
  *
  * The photograph carries the card. A serviced apartment is bought with the eyes
- * first, and every operator worth studying leads with the room, not the copy.
+ * first and every operator worth studying leads with the room, not the copy.
  *
  * The title carries a stretched link so the whole card is one large tap target.
  * "Check dates" sits above it on its own layer as a second destination.
  *
- * The price shown is the direct rate — what the guest is actually charged.
+ * The price shown is the direct rate, what the guest is actually charged.
  */
 export default function ResidenceCard({
   residence,
@@ -25,7 +25,7 @@ export default function ResidenceCard({
   residence: Residence;
   priority?: boolean;
   /**
-   * Headings must descend without skipping a level, and the right level depends
+   * Headings must descend without skipping a level and the right level depends
    * on what precedes the card. On /residences the cards follow the page h1, so
    * they are h2; on the homepage they sit under a section h2, so they are h3.
    */
@@ -39,7 +39,7 @@ export default function ResidenceCard({
     <article className="group relative flex flex-col">
       <Figure
         name={cover?.id ?? ""}
-        alt={`${name} — ${cover?.caption ?? "interior"}`}
+        alt={`${name}, ${cover?.caption ?? "interior"}`}
         ratio="4 / 3"
         priority={priority}
         zoom

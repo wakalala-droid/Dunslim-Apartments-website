@@ -10,8 +10,8 @@ import { maxGuests } from "@/lib/content";
 /**
  * The date search.
  *
- * Every apartment brand worth studying — Limehome, Numa, Locke, Blueground,
- * Sonder — puts this above the fold and makes it the first thing a visitor can
+ * Every apartment brand worth studying (Limehome, Numa, Locke, Blueground,
+ * Sonder) puts this above the fold and makes it the first thing a visitor can
  * do. There is no "where" field: three residences, one address.
  *
  * It is a real <form>, so Enter submits and the whole thing works by keyboard.
@@ -24,7 +24,7 @@ export default function SearchBar({
   tone?: "light" | "onNavy";
   /**
    * `stacked` fits a narrow column (the hero rail). `inline` spreads onto one
-   * row and is only safe in a container at least ~700px wide — otherwise the
+   * row and is only safe in a container at least ~700px wide, otherwise the
    * row overflows the page, which responsive_design_system.md forbids outright.
    */
   layout?: "stacked" | "inline";

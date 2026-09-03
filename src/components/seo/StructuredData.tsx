@@ -7,7 +7,7 @@ import { directNightly } from "@/lib/pricing";
  * Schema.org structured data.
  *
  * Accommodation is one of the few categories where search engines will surface
- * price, location and availability directly in results — but only from a
+ * price, location and availability directly in results, but only from a
  * machine-readable description of the offer. Without it the site competes as
  * plain prose against platform listings that publish theirs.
  *
@@ -59,7 +59,7 @@ export function LodgingSchema() {
     /*
       Kwacha, with the symbol that matches. This read "$2000+" for a while after
       the site moved to pricing in Kwacha: the number changed underneath a
-      hardcoded dollar sign, and Google was being told a night here costs two
+      hardcoded dollar sign and Google was being told a night here costs two
       thousand US dollars.
     */
     priceRange: `${money(directNightly(cheapest))}+`,

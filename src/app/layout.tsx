@@ -24,7 +24,7 @@ const inter = Inter({
 /**
  * The title tag is a commercial decision, not a formality. When someone searches
  * "Dunslim Apartments", the booking platforms bid on that name and sit above the
- * real site. "Official Site" plus a rate promise is the counter — the pattern
+ * real site. "Official Site" plus a rate promise is the counter, the pattern
  * Numa and every serious operator uses.
  */
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   */
   metadataBase: new URL(site.url),
   title: {
-    default: "Dunslim Apartments — Official Site | Best Rates, Booked Direct",
+    default: "Dunslim Apartments: Official Site | Best Rates, Booked Direct",
     template: "%s | Dunslim Apartments",
   },
   description:
@@ -49,16 +49,16 @@ export const metadata: Metadata = {
     "Dunslim Apartments",
   ],
   /*
-    The share card. Without an image, a link pasted into WhatsApp — which is how
-    this will actually spread in Lusaka — renders as a bare grey rectangle.
+    The share card. Without an image, a link pasted into WhatsApp (which is how
+    this will actually spread in Lusaka) renders as a bare grey rectangle.
     The card is the hero photograph with the lockup on a solid Deep Navy panel
     across the foot, because the brand book (p.12) does not allow the mark to
     sit directly on a photograph.
   */
   openGraph: {
-    title: "Dunslim Apartments — Official Site",
+    title: "Dunslim Apartments: Official Site",
     description:
-      "Three serviced apartments on Makeni Road, Lusaka. Backup power, secure parking, and a rate that is always lower booked direct.",
+      "Three serviced apartments on Makeni Road, Lusaka. Backup power, secure parking and a rate that is always lower booked direct.",
     type: "website",
     locale: "en_ZM",
     siteName: business.name,
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dunslim Apartments — Official Site",
+    title: "Dunslim Apartments: Official Site",
     description: "Serviced apartments on Makeni Road, Lusaka. Best rate, booked direct.",
     images: ["/og-default.jpg"],
   },
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     The reason is not caution for its own sake. Right now the site states a
     phone number that does not work and shows stock interiors that are not
     these apartments. Letting Google index that attaches false details to the
-    business name permanently — which is the exact trust problem the Growth
+    business name permanently, which is the exact trust problem the Growth
     Proposal set out to fix, made worse and harder to undo.
   */
   robots: site.allowIndexing
@@ -123,15 +123,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           is a plain static document rather than a blank one.
 
           This replaces a <noscript> block that undid inline `opacity:0` styles.
-          Those styles no longer exist — nothing is hidden in the markup any
-          more — so the override had stopped protecting anything.
+          Those styles no longer exist, nothing is hidden in the markup any
+          more, so the override had stopped protecting anything.
         */}
         <RevealScript />
 
         {/*
           Web Analytics. Vercel serves this script from the deployment itself,
-          so there is no package and no bundle cost — `@vercel/analytics` is a
-          wrapper around exactly this plus a call to `window.va`, and both are
+          so there is no package and no bundle cost. `@vercel/analytics` is a
+          wrapper around exactly this plus a call to `window.va` and both are
           done directly. It sets no cookies and records nothing personal, which
           is why there is no consent banner for it.
 

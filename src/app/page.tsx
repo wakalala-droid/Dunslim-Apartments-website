@@ -38,7 +38,7 @@ export default function HomePage() {
           HERO
           A full-bleed photograph with a navy gradient rising from the foot,
           so the display line has a ground to sit on rather than fighting the
-          image. The identity itself never touches the photograph — it stays on
+          image. The identity itself never touches the photograph. It stays on
           the solid header bar above, per Brand Guidelines p.12.
       ---------------------------------------------------------------- */}
       {/* The search card is passed in as the hero's own last beat, so its
@@ -47,7 +47,7 @@ export default function HomePage() {
       <Hero
         eyebrow="Serviced residences"
         headline="A room that works as well as it looks."
-        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate, and it is always cheaper to book with us than through a platform."
+        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate and a rate that is always lower than the platforms."
         metaLeft={`${business.city} · ${business.country}`}
         metaRight={`${business.street}`}
         /* The fixed brand line, exactly as the cover carries it. The parent
@@ -76,7 +76,7 @@ export default function HomePage() {
               {
                 icon: BadgeCheck,
                 title: "Always cheaper here",
-                body: `Book with us and you pay ${rates.directDiscountPct}% less than on Booking.com or Airbnb. No booking fee, and the price you see first is the price you pay.`,
+                body: `Book with us and you pay ${rates.directDiscountPct}% less than on Booking.com or Airbnb. No booking fee. The price you see first is the price you pay.`,
                 note: "",
               },
               {
@@ -148,8 +148,8 @@ export default function HomePage() {
           {/*
             The heading sits above the row rather than inside the left column.
             Stacked, the heading plus a 4/5 portrait made that column roughly
-            twice the height of the list beside it, and the list — being
-            `self-start` — left about 550px of empty navy underneath. Moving the
+            twice the height of the list beside it and the list, being
+            `self-start`, left about 550px of empty navy underneath. Moving the
             heading out leaves the row carrying only the photograph and the
             list, so the two are free to match: the list sets the height and the
             photograph, holding no ratio of its own, stretches to meet it.
@@ -210,7 +210,7 @@ export default function HomePage() {
               <SectionHead
                 eyebrow="Long stays"
                 title="Staying a few weeks?"
-                intro="Most people who stay with us are here for work, not a holiday. The longer you stay the less you pay per night, and it comes off automatically."
+                intro="Most people who stay with us are here for work, not a holiday. The longer you stay the less you pay per night. It comes off automatically."
               />
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
@@ -244,7 +244,7 @@ export default function HomePage() {
       {/* ---------------------------------------------------------------
           WHO STAYS HERE
           The Growth Proposal records that no listing yet carries a calculated
-          review score — there are not enough verified bookings. Rather than
+          review score. There are not enough verified bookings. Rather than
           invent testimonials, this section says who the place is built for.
           Real, permissioned reviews replace it the moment they exist.
       ---------------------------------------------------------------- */}
@@ -276,7 +276,7 @@ export default function HomePage() {
                     "bg-stone p-6",
                     /*
                       An odd number of names left the last cell of the grid
-                      empty, and since the hairlines are made by a background
+                      empty and since the hairlines are made by a background
                       showing through a 1px gap, that empty cell rendered as a
                       grey block. The last name spans the row instead.
                     */

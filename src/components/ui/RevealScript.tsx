@@ -2,7 +2,7 @@
  * The entrance observer.
  *
  * Inlined in the document rather than shipped as a component, for one reason:
- * it adds the `js-motion` class that permits the CSS to hide anything, and it
+ * it adds the `js-motion` class that permits the CSS to hide anything and it
  * has to do that before the first paint or blocks would flash in and then
  * disappear. It is deliberately plain, dependency-free and defensive, because
  * every previous version of this feature failed by leaving a guest looking at
@@ -26,17 +26,17 @@
  *      which would have hidden a group taller than the viewport for good.
  *   3. A MutationObserver picks up blocks that arrive with a client-side
  *      navigation. Without it, every page reached by clicking a link inside
- *      the site would render its content hidden and never reveal it — which is
+ *      the site would render its content hidden and never reveal it, which is
  *      the same blank-page failure in a new costume.
  *   4. A sweep shows anything still hidden but on screen, after every DOM
  *      change and again on load, pageshow and becoming visible.
  *   5. The guard. Four seconds after the last DOM change, if any block is
- *      STILL hidden while on screen — or the viewport measures zero, which
- *      means the observer can never fire — the whole hiding system is switched
- *      off by dropping `js-motion`, and every block becomes visible at once.
+ *      STILL hidden while on screen, or the viewport measures zero, which
+ *      means the observer can never fire, the whole hiding system is switched
+ *      off by dropping `js-motion` and every block becomes visible at once.
  *      Unlike the sweep, this does not depend on the mechanism it is checking.
  *      A guest who loses the animation has lost nothing; a guest who loses the
- *      content has lost the site, and this project has spent three attempts
+ *      content has lost the site and this project has spent three attempts
  *      proving which of those actually happens.
  *
  *      The guard also re-arms on scroll, because otherwise it only ever ran
@@ -47,9 +47,9 @@
  *
  * Everything here is debounced with setTimeout and never requestAnimationFrame.
  * That is not a style preference: rAF is PAUSED outright whenever the surface
- * is not rendering — a background tab, a hidden pane — whereas setTimeout is
+ * is not rendering (a background tab, a hidden pane) whereas setTimeout is
  * only throttled and still fires. The first cut of this script debounced the
- * rescan with rAF, and a client-side navigation into a non-rendering tab left
+ * rescan with rAF and a client-side navigation into a non-rendering tab left
  * all eighteen blocks on the rates page without `is-in` and two of them
  * invisible on screen. Caught in testing, but it is exactly the failure this
  * component exists to prevent.
@@ -128,16 +128,16 @@ try{
     }
   };
   /*
-    The scroll listener re-arms the guard, and it must cost NOTHING per event.
+    The scroll listener re-arms the guard and it must cost NOTHING per event.
     The first version of this ran a document-wide querySelector for unrevealed
     blocks on every scroll event: 33 microseconds a call once everything had been
     revealed, because the query then has to walk the whole document to return
-    null — so it got MORE expensive the further down the page you were. It was
+    null, so it got MORE expensive the further down the page you were. It was
     measured at 0.15 to 0.48ms per event on a desktop, several times that on a
-    mid-range phone, and it never stopped, on every page of the site.
+    mid-range phone and it never stopped, on every page of the site.
 
     Now the count of unrevealed blocks is kept as a number, the handler is an
-    integer comparison, and the listener takes itself off entirely once there
+    integer comparison and the listener takes itself off entirely once there
     is nothing left to reveal.
   */
   var scrollBound=false;

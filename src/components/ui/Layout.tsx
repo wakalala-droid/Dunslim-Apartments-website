@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
  * Layout primitives. component_system.md: all UI derives from system primitives,
  * and no screen invents its own container or section rhythm.
  *
- * The brand grid (p.15) is twelve columns with a 24px gutter on web, and a 40px
+ * The brand grid (p.15) is twelve columns with a 24px gutter on web and a 40px
  * page padding at 1440px. Section rhythm uses the Elite Builder spacing scale.
  */
 
@@ -111,7 +111,7 @@ export function Eyebrow({
 
 /**
  * Section heading. Pairs the caps label with a display line and holds the
- * measure rule (56–72 characters) on any supporting paragraph.
+ * measure rule (56 to 72 characters) on any supporting paragraph.
  */
 export function SectionHead({
   eyebrow,

@@ -10,9 +10,9 @@ import { cn } from "@/lib/cn";
  * The price panel.
  *
  * This is the honesty surface of the whole site. It is visible from the first
- * step, it itemises every discount, and the figure at the bottom is the figure
- * charged. Nothing is added later — drip pricing is explicitly banned by the
- * Elite Builder System, and it is the fastest way to lose a business traveller.
+ * step, it itemises every discount and the figure at the bottom is the figure
+ * charged. Nothing is added later. Drip pricing is explicitly banned by the
+ * Elite Builder System and it is the fastest way to lose a business traveller.
  */
 export default function Summary({
   residence,
@@ -38,7 +38,7 @@ export default function Summary({
 
       {!residence || !quote ? (
         <p className="mt-6 text-body text-charcoal">
-          Choose a residence and your dates and the full price appears here — everything included,
+          Choose a residence and your dates and the full price appears here, everything included,
           nothing added later.
         </p>
       ) : (

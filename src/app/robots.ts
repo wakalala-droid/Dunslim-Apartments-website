@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
  *
  * Mirrors the same switch the page metadata uses. While the site is still
  * carrying placeholder photography and contact details, crawlers are turned
- * away at the door as well as in the page head — two independent signals, so
+ * away at the door as well as in the page head: two independent signals, so
  * a mistake in one does not quietly let the other through.
  */
 export default function robots(): MetadataRoute.Robots {

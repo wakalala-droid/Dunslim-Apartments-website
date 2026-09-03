@@ -9,7 +9,7 @@ import { residences, rates } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Residences",
   description:
-    "Three serviced apartments on Makeni Road, Lusaka — two bedrooms each. Furnished, serviced, and lower booked direct.",
+    "Three serviced apartments on Makeni Road, Lusaka, two bedrooms each. Furnished, serviced and lower booked direct.",
 };
 
 export default function ResidencesPage() {
@@ -49,7 +49,7 @@ export default function ResidencesPage() {
           </div>
 
           <p className="mt-16 max-w-measure text-caption text-charcoal-80">
-            Every rate shown is the direct rate — {rates.directDiscountPct} per cent below the
+            Every rate shown is the direct rate, {rates.directDiscountPct} per cent below the
             platform price, with no booking fee and nothing added at checkout. Rates step down
             further at seven nights and again at twenty-eight.
           </p>

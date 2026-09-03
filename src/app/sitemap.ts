@@ -7,9 +7,9 @@ import { site } from "@/lib/site";
  *
  * Generated from the residence list, so a fourth unit appears here the moment
  * it is added to content.ts. A hand-maintained sitemap goes stale the first
- * time someone forgets, and a stale sitemap is worse than none.
+ * time someone forgets and a stale sitemap is worse than none.
  *
- * /book is deliberately absent — it is a form, not a destination, and there is
+ * /book is deliberately absent. It is a form, not a destination and there is
  * nothing there for a search result to land on.
  */
 export default function sitemap(): MetadataRoute.Sitemap {

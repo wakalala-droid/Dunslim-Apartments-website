@@ -18,10 +18,10 @@ import { cn } from "@/lib/cn";
  * it resolves into a white bar with the primary lockup.
  *
  * The band is solid rather than transparent on purpose. Brand Guidelines p.12
- * is explicit that the mark never sits directly on a photograph — if photography
+ * is explicit that the mark never sits directly on a photograph. If photography
  * is unavoidable, the mark goes on a solid Deep Navy or Warm Stone panel laid
  * over the image. A translucent bar would break that; a solid one is the
- * treatment the brand book actually prescribes, and it reads as a sign plate.
+ * treatment the brand book actually prescribes and it reads as a sign plate.
  *
  * Navigation is the four items the guidelines specify for the website (p.16):
  * Residences, Rates, Location, Book.
@@ -40,10 +40,10 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close on route change — a drawer that survives navigation traps the guest.
+  // Close on route change. A drawer that survives navigation traps the guest.
   useEffect(() => setOpen(false), [pathname]);
 
-  // Escape closes, and focus returns to the trigger (accessibility_system.md).
+  // Escape closes and focus returns to the trigger (accessibility_system.md).
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -80,7 +80,7 @@ export default function Header() {
         >
           <Link
             href="/"
-            aria-label="Dunslim Apartments — home"
+            aria-label="Dunslim Apartments, home"
             className="inline-flex shrink-0 items-center py-2"
           >
             {/*
@@ -199,15 +199,15 @@ export default function Header() {
 
       {/*
         The menu is a floating card, not a full-bleed panel. A sheet that covers
-        the whole screen to carry four links is mostly empty navy — it reads as
+        the whole screen to carry four links is mostly empty navy. It reads as
         an interruption rather than a menu. This is anchored under its own
-        trigger, sized to its content, and scales out of the top-right corner so
+        trigger, sized to its content and scales out of the top-right corner so
         the movement points back at the button that opened it.
       */}
       {/*
         The menu, in CSS.
 
-        This was the last thing on the site using framer-motion, and the library
+        This was the last thing on the site using framer-motion and the library
         was being downloaded on every page for this one drawer. It is animated
         here with two classes instead.
 
@@ -254,7 +254,7 @@ export default function Header() {
                       )}
                     >
                       {/*
-                        The index is the architectural tell — a numbered set,
+                        The index is the architectural tell: a numbered set,
                         not a pile of links.
 
                         Charcoal, not brass. Brass on white measures 3.17:1 and

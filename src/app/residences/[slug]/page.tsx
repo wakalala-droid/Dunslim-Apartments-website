@@ -21,8 +21,8 @@ export function generateStaticParams() {
  * Each apartment gets its own share card and its own canonical address.
  *
  * It used to return a title and a description and nothing else, which meant
- * every apartment link pasted into WhatsApp — the way this spreads in Lusaka,
- * and the reason the site exists in the form it does — rendered the same
+ * every apartment link pasted into WhatsApp (the way this spreads in Lusaka,
+ * which is the reason the site exists in the form it does) rendered the same
  * generic photograph of a different room. Somebody sending a friend "look at
  * this one" was sending a picture of something else.
  *
@@ -43,7 +43,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     description: r.summary,
     alternates: { canonical: path },
     openGraph: {
-      title: `${r.name} — ${business.name}`,
+      title: `${r.name} | ${business.name}`,
       description: r.summary,
       url: path,
       type: "website",
@@ -52,13 +52,13 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
           url: image,
           width: 1400,
           height: 1050,
-          alt: `${r.name} — ${cover?.caption ?? "interior"}`,
+          alt: `${r.name}, ${cover?.caption ?? "interior"}`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${r.name} — ${business.name}`,
+      title: `${r.name} | ${business.name}`,
       description: r.summary,
       images: [image],
     },
@@ -87,7 +87,7 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
       <section className="on-navy under-header relative isolate flex min-h-[420px] items-end bg-navy md:min-h-[68vh]">
         <Figure
           name={photos[0]?.id ?? ""}
-          alt={`${name} — ${photos[0]?.caption ?? "interior"}`}
+          alt={`${name}, ${photos[0]?.caption ?? "interior"}`}
           cover
           priority
           scrim="bottom"
@@ -115,11 +115,11 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                 wrapping row, at the same weight as everything around them, on
                 an unbroken field of stone. Nothing told the eye where the prose
                 stopped and the specification started, so the whole column read
-                flat — a page of one texture.
+                flat, a page of one texture.
 
                 A fine rule is what the brand divides things with (business
                 card, key card, tariff card), so the band is bounded top and
-                bottom and split between the figures, and the numbers step up to
+                bottom and split between the figures and the numbers step up to
                 34px against a 13px letterspaced label. The contrast is what
                 does the work: a big number under a small label reads as data at
                 a glance, where two similar sizes read as more sentences.
@@ -151,9 +151,9 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                 second two-column section further down the page, which left
                 BOTH rows lopsided: here the summary and three figures ran out
                 after about 180px against a 420px booking card, leaving a
-                quarter of a screen of bare stone, and down there the column
+                quarter of a screen of bare stone and down there the column
                 had text with nothing beside it. Moving the article up gives
-                this row something to be as tall as, and leaves the section
+                this row something to be as tall as and leaves the section
                 below carrying only the two specification blocks, which are a
                 fair match for each other.
               */}
@@ -168,11 +168,11 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
               {/*
                 Who the apartment is named for. A brass rule rather than a
                 boxed-out panel: the brand uses a fine rule as its dividing
-                device, and this is an aside, not a second article.
+                device and this is an aside, not a second article.
 
-                `mt-16`, and it has to be a value that exists. This was `mt-10`,
+                `mt-16` and it has to be a value that exists. This was `mt-10`,
                 which is NOT on the Elite Builder spacing scale in
-                tailwind.config.ts — that scale runs 0, 1, 2, 3, 4, 6, 8, 12,
+                tailwind.config.ts, where that scale runs 0, 1, 2, 3, 4, 6, 8, 12,
                 16, 24, 32, 40 and nothing else. An off-scale utility does not
                 fall back to something close; it compiles to nothing at all, so
                 the block had no top margin whatsoever and sat flush against the
@@ -251,7 +251,7 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
             label={`${name}, photographs`}
             slides={photos.slice(1).map((p) => ({
               name: p.id,
-              alt: `${name} — ${p.caption}`,
+              alt: `${name}, ${p.caption}`,
               caption: p.caption,
             }))}
           />
@@ -260,7 +260,7 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
 
       {/*
         The specification. This section used to carry the article as well, in a
-        left column beside these lists, and the article has moved up to sit
+        left column beside these lists and the article has moved up to sit
         against the booking card where it gives that row something to be as tall
         as. What is left is two blocks of a similar size, which is what a
         two-column row wants.
@@ -284,8 +284,8 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
             {/*
               What the rate includes.
 
-              This was the smallest, faintest thing on the page: 15px — the
-              site's absolute floor — greyed to charcoal-60, and packed into a
+              This was the smallest, faintest thing on the page: 15px, the
+              site's absolute floor, greyed to charcoal-60 and packed into a
               wrapping row where the items ran together. That is backwards. It
               is the list of everything a guest gets without paying extra, which
               makes it the strongest argument on the page for booking direct,
@@ -327,10 +327,10 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         apartment in full is exactly the person most likely to look at another,
         and this was the weakest invitation on the page.
 
-        They now use ResidenceCard — the same component the homepage and
+        They now use ResidenceCard, the same component the homepage and
         /residences use, per the rule that a screen does not invent its own
         version of something the system already has. It leads with the
-        photograph, which is the real click target, and carries its own
+        photograph, which is the real click target and carries its own
         "Check dates" action.
       */}
       <Section>

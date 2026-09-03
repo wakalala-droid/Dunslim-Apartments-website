@@ -24,7 +24,7 @@ PHOTOS = os.path.join(ROOT, "public", "photos")
 TARGET = os.path.join(ROOT, "src", "lib", "photos.ts")
 
 HEADER = '''/**
- * Photo manifest — generated from the files in /public/photos.
+ * Photo manifest, generated from the files in /public/photos.
  *
  * Do not edit by hand. Run:  python scripts/build-photo-manifest.py
  *

@@ -4,7 +4,7 @@ import { rates, type Residence } from "./content";
  * Pricing engine.
  *
  * One rule governs this file: the number a guest sees first is the number they pay.
- * Drip pricing — fees that appear only at checkout — is prohibited by the Elite
+ * Drip pricing (fees that appear only at checkout) is prohibited by the Elite
  * Builder System (conversion_psychology.md, "EXPLICITLY BANNED"). Every component
  * of the total is computed here and rendered in full at every step of the flow.
  */
@@ -36,7 +36,7 @@ export const nightsBetween = (from: string, to: string): number => {
 
 /**
  * Long-stay discount. The ladder is defined in content.ts; the deepest band the
- * stay qualifies for wins. They do not stack — stacking would make the displayed
+ * stay qualifies for wins. They do not stack. Stacking would make the displayed
  * headline discount a lie.
  */
 const longStayBand = (nights: number) =>
@@ -66,7 +66,7 @@ export function quote(residence: Residence, from: string, to: string): Quote | n
   if (band) {
     const base = subtotalZmw - direct;
     discounts.push({
-      label: `${band.label} — ${band.discountPct}% off`,
+      label: `${band.label}, ${band.discountPct}% off`,
       pct: band.discountPct,
       amountZmw: (base * band.discountPct) / 100,
     });
@@ -102,9 +102,9 @@ export const fromRate = (list: Residence[]) =>
 export const directNightly = (r: Residence) => r.directNightlyZmw;
 
 /**
- * The published rate — the headline the book-direct discount comes off.
+ * The published rate: the headline the book-direct discount comes off.
  *
- * Derived from the direct price rather than stored beside it, and deliberately
+ * Derived from the direct price rather than stored beside it and deliberately
  * left unrounded. Rounding here is what put a three-night stay at K5,999.40
  * against a nightly rate advertised as K2,000: the discount was being taken off
  * a rounded headline. Working back from the direct price makes every multiple

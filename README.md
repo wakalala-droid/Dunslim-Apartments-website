@@ -1,4 +1,4 @@
-# Dunslim Apartments — website
+# Dunslim Apartments website
 
 Landing page through to checkout, built on the Dunslim brand guidelines
 (Volume One, 2026) and the Elite Builder System design OS.
@@ -42,7 +42,7 @@ The important ones:
    One confirmed rate per unit replaces them.
 3. **The residences.** Names, bedroom counts, sleeps, areas and amenities.
    They are called Residence One/Two/Three so they are safe to rename.
-4. **The assurances** — backup power, water, security, Wi-Fi speed. These are
+4. **The assurances.** Backup power, water, security, Wi-Fi speed. These are
    the four things that actually decide a booking in Lusaka. Every claim must be
    true of all three units before launch. State the real numbers: hours of
    backup, tank capacity, guarding hours, measured Mbps.
@@ -50,19 +50,19 @@ The important ones:
    Growth Proposal records that current listings disagree with each other, so
    these need measuring once and using everywhere.
 6. **Self check-in.** `arrival.selfCheckIn` is `false`. The FAQ and the location
-   page both change wording when it flips to `true` — do not flip it until it is
+   page both change wording when it flips to `true`. Do not flip it until it is
    genuinely in place.
 7. **Photography.** Not shot yet (Phase 2 of the Growth Proposal). See below.
 
 ### Reviews
 
 `reviews` in `content.ts` is deliberately an empty array. The Growth Proposal
-(§2.2) records that no listing carries a calculated review score yet — not
+(§2.2) records that no listing carries a calculated review score yet. Not
 because reviews are bad, but because there are not enough verified bookings to
 produce one. Nothing has been invented. Add entries only when they are real and
 the guest has given permission.
 
-### Photography — READ THIS BEFORE LAUNCH
+### Photography: READ THIS BEFORE LAUNCH
 
 **The photographs currently on the site are placeholders. They are stock
 interiors, not Dunslim.** They are there so the design can be judged properly
@@ -79,12 +79,12 @@ after the slot it fills:
 ```
 hero.jpg           the homepage hero
 exterior.jpg       the approach from the road
-r1-living.jpg      Residence One — living room     (also its card + page hero)
-r1-bedroom.jpg     Residence One — bedroom
-r1-kitchen.jpg     Residence One — kitchen
-r1-desk.jpg        Residence One — work desk
-r2-*.jpg           Residence Two  — same four slots
-r3-*.jpg           Residence Three — same four slots
+r1-living.jpg      Residence One, living room     (also its card + page hero)
+r1-bedroom.jpg     Residence One, bedroom
+r1-kitchen.jpg     Residence One, kitchen
+r1-desk.jpg        Residence One, work desk
+r2-*.jpg           Residence Two,  same four slots
+r3-*.jpg           Residence Three, same four slots
 detail-living.jpg  used on /residences and the long-stay section
 detail-bath.jpg    used in the assurances section
 ```
@@ -122,7 +122,7 @@ as the approved screen substitute (p.13). Weights map to the brand's:
 and labels), 600 Halbfett.
 
 **The type scale is sized for an eighty-year-old reader**, which is the actual
-guest — diplomats, returning families, corporate visitors. The old 16px web
+guest: diplomats, returning families, corporate visitors. The old 16px web
 default and WCAG's 4.5:1 are floors, not targets.
 
 | Role | Size | Weight |
@@ -132,27 +132,27 @@ default and WCAG's 4.5:1 are floors, not targets.
 | Body | 18px / 1.65 | 400 |
 | Lead | 21px | 400 |
 | h3 | 25px | 300 |
-| h2 | 34px | 200–300 |
-| h1 | 36–46px (fluid) | 200 |
-| Display | 44–84px (fluid) | 200 |
+| h2 | 34px | 200 to 300 |
+| h1 | 36 to 46px (fluid) | 200 |
+| Display | 44 to 84px (fluid) | 200 |
 
-Two rules go with it, and both matter more than the numbers:
+Two rules go with it and both matter more than the numbers:
 
 1. **Nothing below 15px anywhere**, fine print included.
 2. **Body copy is never set in a light weight.** Thin type defeats an older eye
    even when it passes contrast, so 200 and 300 are reserved for large display
-   sizes. This is also what the brand book says — it specifies Buch (400) for
-   body — so the earlier 300 was both hard to read and off-brand.
+   sizes. This is also what the brand book says: it specifies Buch (400) for
+   body, so the earlier 300 was both hard to read and off-brand.
 
 Body copy runs at 13.6:1 contrast and muted text at 6.9:1, both well past AA.
 18px inputs also stop iOS zooming the page when a field is focused.
 
-If you change the scale, re-run the responsive and contrast checks — larger text
+If you change the scale, re-run the responsive and contrast checks. Larger text
 reflows layouts and pushes things off-screen (it broke the footer at 768px).
 
 **Logo.** `public/brand/` holds each authorised lockup as vector, cropped from
 the supplied master file (`Dunslim Monogram logo.ai`). Nothing was redrawn or
-traced — pre-flight check 01. Proportions are locked in `Logo.tsx` by aspect
+traced. Pre-flight check 01. Proportions are locked in `Logo.tsx` by aspect
 ratio, measured off the master: horizontal 4.092:1, vertical 1:0.92, monogram
 1:1.06. All three match the ratios printed in the brand book.
 
@@ -165,7 +165,7 @@ ratio, measured off the master: horizontal 4.092:1, vertical 1:0.92, monogram
    white measures 3.17:1 and on Warm Stone 2.45:1, against the 4.5:1 that 12px
    text requires. This agrees with the brand's own rule that brass is never a
    body text colour. So section labels are set in Charcoal and the brass appears
-   as the hairline rule beside them — the identity colour doing the job the
+   as the hairline rule beside them, the identity colour doing the job the
    brand book actually assigns it.
 
 ---
@@ -195,15 +195,15 @@ A booking request lands as `pending`, which is already a blocking status in the
 double-booking guard, so the request holds the dates by itself. The owner
 confirms in the dashboard and the existing spine bridge posts the Sale.
 
-Until then the flow runs end to end locally: every date is offered, and the
-confirmation screen says a person will confirm — which is true, and never claims
+Until then the flow runs end to end locally: every date is offered and the
+confirmation screen says a person will confirm, which is true and never claims
 a booking is secured.
 
 ---
 
 ## Rules this site is built to
 
-From the Elite Builder System, and enforced rather than aspired to:
+From the Elite Builder System and enforced rather than aspired to:
 
 - **No drip pricing.** The total is visible from step one of checkout and does
   not change at the end. No booking fee, no cleaning fee, no service charge.

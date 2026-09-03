@@ -10,7 +10,7 @@ import { business } from "@/lib/content";
  * is the primary channel, so it sits on every screen rather than being buried.
  *
  * Hidden on the booking flow: a guest mid-checkout should be finishing the
- * booking, and a floating action there competes with the primary one.
+ * booking and a floating action there competes with the primary one.
  */
 export default function WhatsAppButton() {
   const pathname = usePathname();
@@ -23,8 +23,8 @@ export default function WhatsAppButton() {
       rel="noopener noreferrer"
       /*
         Arrives last, once the page has settled, so it reads as offered rather
-        than as part of the furniture. It is a control and not content, and the
-        animation is plain CSS with no script behind it, so it always appears —
+        than as part of the furniture. It is a control and not content, so the
+        animation is plain CSS with no script behind it, so it always appears:
         instantly under prefers-reduced-motion, which collapses the duration.
       */
       style={{ animationDelay: "900ms" }}

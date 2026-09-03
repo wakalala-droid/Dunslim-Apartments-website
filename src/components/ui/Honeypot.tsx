@@ -5,7 +5,7 @@ import { HONEYPOT_FIELD } from "@/lib/guard";
  *
  * A field no person ever sees, fills, or tabs into. The scripts that harvest
  * public forms fill in every input they find, so an arriving request with this
- * field populated was not typed by a human, and the server drops it — while
+ * field populated was not typed by a human and the server drops it, while
  * answering as though it worked, because telling a bot exactly which move
  * failed is how it learns to stop making it.
  *

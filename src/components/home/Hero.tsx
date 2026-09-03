@@ -9,17 +9,17 @@ import { brandAsset } from "@/lib/site";
  * ---------------------------------------------------------------------------
  * Built to the composition of the brand guidelines cover (Volume One, p.1):
  * a Deep Navy ground, the brand grid faintly visible, the mark offset left and
- * vertically centred, the type block ranged right against it, and hairline
+ * vertically centred, the type block ranged right against it and hairline
  * rules top and bottom carrying letterspaced caps meta.
  *
  * NO JAVASCRIPT. This was a client component driving framer-motion, which meant
  * every element was server-rendered at opacity:0 and stayed invisible until
  * React had hydrated and the animation library had booted. Measured on the live
- * site, that put first paint eight seconds after a 304ms server response — the
+ * site, that put first paint eight seconds after a 304ms server response. The
  * page sat blank for almost all of it.
  *
  * It is now a server component with CSS animations. The markup paints as soon
- * as it arrives, the entrance runs on the compositor, and none of it depends on
+ * as it arrives, the entrance runs on the compositor and none of it depends on
  * JavaScript loading, or loading successfully.
  */
 
@@ -78,7 +78,7 @@ export default function Hero({
         </div>
 
         {/*
-          A soft Deep Navy vignette behind the mark. Not a panel — an ellipse
+          A soft Deep Navy vignette behind the mark. Not a panel but an ellipse
           centred on the monogram, so there is no seam and the room is
           otherwise untouched. It is also what lets a 40 per cent white mark
           read at all against a sunlit wall.
@@ -95,8 +95,8 @@ export default function Hero({
         />
 
         {/*
-          The monogram. Monogram only — the full lockup already sits on the
-          header bar directly above, and naming the brand twice in one view
+          The monogram. Monogram only, because the full lockup already sits on the
+          header bar directly above and naming the brand twice in one view
           reads as a template rather than art direction.
 
           White at 40 per cent is the frosted-etch density the guidelines set
@@ -182,7 +182,7 @@ export default function Hero({
                       </span>
                       {/*
                         The space lives BETWEEN the clipping boxes, never inside
-                        one — trailing whitespace in an inline-block is trimmed,
+                        one, because trailing whitespace in an inline-block is trimmed,
                         which ran every word together.
                       */}
                       {i < words.length - 1 ? " " : null}
