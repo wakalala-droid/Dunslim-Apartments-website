@@ -35,12 +35,6 @@ export function Reveal({
   className?: string;
   as?: "div" | "li" | "section" | "figure";
   variant?: "rise" | "image";
-  /**
-   * Accepted and ignored. Stagger used to be a hand-set index; each block now
-   * animates when it personally reaches the viewport, which staggers a row
-   * naturally and stays right at any width.
-   */
-  delay?: number;
 }) {
   const Tag = as;
   return (

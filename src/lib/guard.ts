@@ -27,6 +27,25 @@
  */
 const hits = new Map<string, number[]>();
 
+/**
+ * Drop everyone whose window has already elapsed.
+ *
+ * This used to be `hits.clear()` once the map passed five thousand entries,
+ * which handed an attacker a reset button: five thousand invented callers and
+ * everybody's count went to zero, including theirs. Expiring by age instead
+ * bounds the map just as well and cannot be used to wipe a live window.
+ */
+function prune(cutoff: number) {
+  // `Array.from` rather than iterating the Map directly: the project's
+  // TypeScript target predates for..of over a Map and this also snapshots the
+  // keys so deleting while walking them is safe.
+  for (const key of Array.from(hits.keys())) {
+    const live = (hits.get(key) ?? []).filter((t: number) => t > cutoff);
+    if (live.length) hits.set(key, live);
+    else hits.delete(key);
+  }
+}
+
 export function rateLimit(
   key: string,
   { limit, windowMs }: { limit: number; windowMs: number },
@@ -36,8 +55,7 @@ export function rateLimit(
 
   const recent = (hits.get(key) ?? []).filter((t) => t > cutoff);
 
-  // Keep the map from growing without bound on a long-lived instance.
-  if (hits.size > 5000) hits.clear();
+  if (hits.size > 2000) prune(cutoff);
 
   if (recent.length >= limit) {
     const oldest = recent[0];
@@ -52,16 +70,29 @@ export function rateLimit(
 /**
  * Who is asking.
  *
- * Behind Vercel the client address is in x-forwarded-for, first entry. Falls
- * back to a single shared bucket rather than to a per-request unique value:
- * if the header is ever missing, everyone sharing one limit is the safe
- * failure and giving each request its own key would silently disable the
- * limiter altogether.
+ * ORDER MATTERS, AND IT USED TO BE WRONG. The first thing this read was
+ * `x-forwarded-for`, first entry. A caller can send that header themselves, and
+ * a proxy appends rather than replaces, so the first entry is whatever the
+ * caller put there: a different value on each request bought a fresh allowance
+ * every time and the limit counted for nothing.
+ *
+ * `x-vercel-forwarded-for` is set by the platform on the way in and cannot be
+ * spoofed by the caller, so it is asked first. The general header stays as a
+ * fallback for running anywhere else and last of all everyone shares one
+ * bucket, which is the safe failure: giving each request its own key would
+ * silently switch the limiter off.
  */
 export function clientKey(request: Request): string {
+  const platform = request.headers.get("x-vercel-forwarded-for")?.trim();
+  if (platform) return platform;
+
+  const real = request.headers.get("x-real-ip")?.trim();
+  if (real) return real;
+
   const fwd = request.headers.get("x-forwarded-for");
   if (fwd) return fwd.split(",")[0]!.trim();
-  return request.headers.get("x-real-ip")?.trim() || "unknown";
+
+  return "unknown";
 }
 
 /** Longest body worth reading. A booking request is under 2KB of JSON. */
@@ -110,6 +141,13 @@ export const looksLikeEmail = (value: string): boolean =>
  * scripts that fill in every input on a page do not. When it comes back filled
  * the request is dropped and the caller is told it succeeded, because telling
  * a bot precisely which move failed is how it learns to stop making it.
+ *
+ * THE ONE RISK, AND WHY BOTH ROUTES NOW LOG A CATCH. "Told it succeeded" is the
+ * same signal the confirmation screen reads to choose between "We have your
+ * request" and "This did not send". So if the trap ever fires on a real guest,
+ * that guest is shown the one screen this codebase works hardest to avoid. The
+ * opaque answer stays, because it is right for the bots, but a catch is now
+ * written to the log. If a real name ever appears on that line, loosen this.
  */
 export const HONEYPOT_FIELD = "company_website";
 

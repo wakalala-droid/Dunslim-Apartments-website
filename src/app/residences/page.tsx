@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   title: "Residences",
   description:
     "Three serviced apartments on Makeni Road, Lusaka, two bedrooms each. Furnished, serviced and lower booked direct.",
+  alternates: { canonical: "/residences" },
+  openGraph: {
+    title: "The residences | Dunslim Apartments",
+    description:
+      "Mandela, Mulima and Kaunda. Three serviced apartments on Makeni Road, Lusaka, two bedrooms each.",
+    url: "/residences",
+  },
 };
 
 export default function ResidencesPage() {
@@ -42,7 +49,7 @@ export default function ResidencesPage() {
         <Container wide>
           <div className="grid gap-16 md:grid-cols-2 lg:grid-cols-3">
             {residences.map((r, i) => (
-              <Reveal key={r.slug} delay={i}>
+              <Reveal key={r.slug}>
                 <ResidenceCard residence={r} priority={i === 0} headingLevel="h2" />
               </Reveal>
             ))}

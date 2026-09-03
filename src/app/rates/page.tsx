@@ -6,12 +6,35 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Figure } from "@/components/ui/Figure";
 import { residences, rates, arrival, faqs, business } from "@/lib/content";
 import { money } from "@/lib/format";
-import { directNightly, publishedNightly } from "@/lib/pricing";
+import { directNightly, publishedNightly, longStayBand } from "@/lib/pricing";
 
+/*
+  ITS OWN CANONICAL AND ITS OWN SHARE CARD.
+
+  The root layout sets `alternates.canonical: "/"` and `openGraph.url` to the
+  homepage and App Router metadata is inherited, so every page that did not
+  override them told search engines it was a duplicate of the homepage. Verified
+  on the live site: /rates, /residences, /location and /long-stays all declared
+  the homepage as their canonical. That is an instruction to drop them from the
+  index and this is the page that answers the question the site is built to win.
+
+  The same inheritance handed every page the homepage's share card, so a link to
+  the rates page pasted into WhatsApp previewed as the homepage, with the
+  homepage's title and the homepage's address on it.
+
+  The residence pages already did this properly. Every page now does.
+*/
 export const metadata: Metadata = {
   title: "Rates",
   description:
     "Nightly rates for all three Dunslim residences, the long-stay ladder, what is included and what booking direct saves. No booking fee and nothing added at checkout.",
+  alternates: { canonical: "/rates" },
+  openGraph: {
+    title: "Rates | Dunslim Apartments",
+    description:
+      "What a night costs in each residence, how the long-stay rates step down and what booking direct saves. No booking fee.",
+    url: "/rates",
+  },
 };
 
 /** Worked example, so the ladder is concrete rather than a claim. */
@@ -19,7 +42,14 @@ const EXAMPLE_NIGHTS = 14;
 
 export default function RatesPage() {
   const example = residences[1] ?? residences[0];
-  const band = [...rates.longStay].filter((b) => EXAMPLE_NIGHTS >= b.minNights).pop();
+  /*
+    The same band picker the pricing engine uses. This line chose the band with
+    `.pop()`, which takes the LAST match rather than the deepest one and agreed
+    with the engine only because the ladder happens to be written in ascending
+    order. Reordering the ladder would have made the worked example disagree with
+    the price a guest is actually charged, silently.
+  */
+  const band = longStayBand(EXAMPLE_NIGHTS);
 
   return (
     <>
@@ -53,7 +83,7 @@ export default function RatesPage() {
                   <div>
                     <dt className="label-caps text-charcoal-60">On platforms</dt>
                     <dd className="mt-1 text-body text-charcoal-60 line-through">
-                      {money(publishedNightly(r) * (1 + rates.platformUpliftPct / 100))}
+                      {money(publishedNightly(r))}
                     </dd>
                   </div>
                   <div className="text-right">
@@ -97,7 +127,7 @@ export default function RatesPage() {
                     </th>
                     <td className="py-6 pr-6 text-body text-charcoal">{r.sleeps}</td>
                     <td className="py-6 pr-6 text-body text-charcoal-60 line-through">
-                      {money(publishedNightly(r) * (1 + rates.platformUpliftPct / 100))}
+                      {money(publishedNightly(r))}
                     </td>
                     <td className="py-6 text-h3 font-light text-navy">
                       {money(directNightly(r))}
@@ -108,10 +138,17 @@ export default function RatesPage() {
             </table>
           </div>
 
+          {/*
+            The second half of this used to explain that dollar figures elsewhere
+            on the site were converted at K18 to the dollar. There are no dollar
+            figures anywhere on the site and K18 is a long way from the real
+            rate, so it sent a guest looking for a price that does not exist and
+            quoted them a stale one on the way.
+          */}
           <p className="mt-6 max-w-measure text-caption text-charcoal-80">
-            Rates are per night in Kwacha and include everything listed below. Dollar figures
-            shown elsewhere on the site are approximate, converted at K{rates.zmwPerUsd} to the
-            dollar; you are charged in Kwacha.
+            Rates are per night in Kwacha and include everything listed below. The struck-through
+            figure is what the same night costs on a booking platform. Booking here is always{" "}
+            {rates.directDiscountPct} per cent below it.
           </p>
         </Container>
       </Section>
@@ -156,6 +193,11 @@ export default function RatesPage() {
                   </div>
                 ))}
               </dl>
+
+              <p className="mt-6 max-w-measure text-caption text-navy-20">
+                Each rate comes off the direct price rather than off the one above it, so they do
+                not add up to 25 per cent. The worked example below is the real figure.
+              </p>
 
               {band ? (
                 <div className="mt-8 rounded-md bg-white/5 p-6 ring-1 ring-white/10">
@@ -245,7 +287,7 @@ export default function RatesPage() {
           <SectionHead eyebrow="Before you book" title="Questions we get asked" />
           <dl className="mt-12 max-w-[860px] divide-y divide-navy/10 border-y border-navy/10">
             {faqs.map((f, i) => (
-              <Reveal key={f.q} delay={i} className="py-8">
+              <Reveal key={f.q} className="py-8">
                 <dt className="text-h3 font-light text-navy">{f.q}</dt>
                 <dd className="mt-3 max-w-measure text-body text-charcoal">{f.a}</dd>
               </Reveal>

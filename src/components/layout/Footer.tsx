@@ -155,7 +155,13 @@ export default function Footer() {
           <p>
             © {year} {business.parent}
           </p>
-          <p>Rates shown in Kwacha. Dollar figures are approximate.</p>
+          {/*
+            "Dollar figures are approximate" used to follow this, on every page,
+            long after the last dollar figure was removed from the site. It sent
+            a guest looking for a price that does not exist, quoting an exchange
+            rate years out of date.
+          */}
+          <p>Rates shown in Kwacha.</p>
         </div>
       </Container>
     </footer>

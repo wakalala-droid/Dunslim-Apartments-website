@@ -1,3 +1,4 @@
+import { Children, cloneElement, isValidElement } from "react";
 import { cn } from "@/lib/cn";
 
 /**
@@ -7,14 +8,22 @@ import { cn } from "@/lib/cn";
  *  - every input carries a visible, persistent label; placeholder is never the label
  *  - required fields are marked in text, not by asterisk alone
  *  - errors appear inline next to the field, in words, never colour alone
+ *
+ * THE HINT AND THE ERROR ARE NOW ACTUALLY CONNECTED TO THE INPUT.
+ *
+ * They were not. This component worked out an id for its hint and another for
+ * its error, put them on the two paragraphs and then never referred to either
+ * again: no `aria-describedby`, no `aria-invalid`. Both variables sat unused,
+ * which is the tell that this was meant to be wired and was missed. Someone
+ * using a screen reader heard the label and the word "required" and never heard
+ * "Include the country code", or "That email does not look right" when it
+ * appeared under the field they were sitting in.
+ *
+ * The child input is cloned rather than asking every call site to thread the
+ * ids through by hand, because a rule that depends on forty call sites
+ * remembering it is a rule that will be broken again. Any `aria-describedby`
+ * the caller sets is kept and ours is appended to it.
  */
-
-const controlBase =
-  "w-full min-h-[44px] rounded-sm border bg-white px-4 text-body text-charcoal " +
-  "transition-colors duration-micro ease-entrance " +
-  "placeholder:text-charcoal-60 " +
-  "border-navy/20 hover:border-navy/40 focus:border-navy";
-
 export function Field({
   label,
   htmlFor,
@@ -35,6 +44,21 @@ export function Field({
   const hintId = hint ? `${htmlFor}-hint` : undefined;
   const errId = error ? `${htmlFor}-error` : undefined;
 
+  const describedBy = [hintId, errId].filter(Boolean).join(" ") || undefined;
+
+  const control = Children.map(children, (child) => {
+    if (!isValidElement<Record<string, unknown>>(child)) return child;
+
+    const own = child.props["aria-describedby"];
+    const merged = [own, describedBy].filter(Boolean).join(" ") || undefined;
+
+    return cloneElement(child, {
+      "aria-describedby": merged,
+      "aria-invalid": error ? true : child.props["aria-invalid"],
+      required: required ?? child.props.required,
+    });
+  });
+
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <label htmlFor={htmlFor} className="label-caps text-charcoal-80">
@@ -51,7 +75,7 @@ export function Field({
           {hint}
         </p>
       ) : null}
-      {children}
+      {control}
       {error ? (
         <p id={errId} role="alert" className="text-caption font-medium text-danger">
           {error}
@@ -60,6 +84,19 @@ export function Field({
     </div>
   );
 }
+
+/*
+  A visible focus ring on every control. The base styles moved the border colour
+  on focus and nothing else, which is a 1px change in hue and easy to miss on a
+  form with eight fields in it.
+*/
+const controlBase =
+  "w-full min-h-[44px] rounded-sm border bg-white px-4 text-body text-charcoal " +
+  "transition-colors duration-micro ease-entrance " +
+  "placeholder:text-charcoal-60 " +
+  "border-navy/20 hover:border-navy/40 focus:border-navy " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-navy/40 focus-visible:ring-offset-1 " +
+  "aria-[invalid=true]:border-danger";
 
 export const Input = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
   <input className={cn(controlBase, className)} {...props} />

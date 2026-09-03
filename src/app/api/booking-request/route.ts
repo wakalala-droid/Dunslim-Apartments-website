@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { business, getResidence, arrival } from "@/lib/content";
-import { money, prettyDate, nightLabel } from "@/lib/format";
+import { money, prettyDate, nightLabel, isValidIsoDate, isoToday } from "@/lib/format";
 import { quote as buildQuote } from "@/lib/pricing";
 import {
   rateLimit,
@@ -90,8 +90,16 @@ export async function POST(request: Request) {
   /*
     The trap came back filled, so this was not typed by a person. Answer as
     though it worked: an error tells the sender which move to change.
+
+    Logged, though. This branch shows the guest "We have your request" when
+    nobody was told, so if it ever catches a real person it has to be findable.
   */
   if (looksAutomated(raw)) {
+    console.warn(
+      "[booking-request] Honeypot filled, request dropped. If this line ever " +
+        "appears beside a real guest, loosen the trap. Email given:",
+      clamp(raw.email, FIELD_LIMITS.email),
+    );
     return NextResponse.json({ recorded: true });
   }
 
@@ -129,6 +137,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ recorded: false, reason: "bad-email" }, { status: 400 });
   }
 
+  /*
+    THE DATES, AND THE APARTMENT THEY ARE FOR.
+
+    None of this was checked. Six deliberately wrong requests were sent at this
+    route and all six passed: a stay in January 2020, `from: "banana"`, a
+    departure before the arrival, a residence slug that does not exist and 999
+    guests in a flat that sleeps four. Every one of them would have landed in the
+    reservations inbox the moment the mail keys were set and the malformed date
+    would have thrown inside the template below, where nothing catches it, so the
+    guest would have been told the send failed for no discoverable reason.
+
+    The client checks all of this too. That is not a reason to trust it: the
+    client is a form anyone can skip by posting here directly.
+  */
+  const residence = getResidence(String(body.slug));
+  if (!residence) {
+    return NextResponse.json({ recorded: false, reason: "unknown-residence" }, { status: 400 });
+  }
+
+  if (!isValidIsoDate(body.from) || !isValidIsoDate(body.to)) {
+    return NextResponse.json({ recorded: false, reason: "bad-dates" }, { status: 400 });
+  }
+
+  if (String(body.to) <= String(body.from)) {
+    return NextResponse.json({ recorded: false, reason: "departure-before-arrival" }, { status: 400 });
+  }
+
+  if (String(body.from) < isoToday()) {
+    return NextResponse.json({ recorded: false, reason: "arrival-in-the-past" }, { status: 400 });
+  }
+
+  const guests = Number(body.guests ?? 0);
+  if (!Number.isInteger(guests) || guests < 1 || guests > residence.sleeps) {
+    return NextResponse.json({ recorded: false, reason: "party-too-large" }, { status: 400 });
+  }
+
   const key = process.env.RESEND_API_KEY;
   const to = process.env.BOOKING_NOTIFY_EMAIL;
   const from = process.env.BOOKING_FROM_EMAIL;
@@ -143,9 +187,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ recorded: false, reason: "not-configured" }, { status: 503 });
   }
 
-  const residence = getResidence(String(body.slug));
-  const q = residence ? buildQuote(residence, String(body.from), String(body.to)) : null;
+  const q = buildQuote(residence, String(body.from), String(body.to));
   const guest = `${body.firstName} ${body.lastName}`.trim();
+
+  /*
+    The total in the email is recomputed here, from the dates and the apartment,
+    and never taken from the request. A page left open while a rate changes would
+    otherwise quote the old price straight into the inbox as though it were
+    current. If the two disagree the email says so, in the email, rather than
+    leaving it to be discovered on arrival.
+  */
+  const clientTotal = Number(raw.totalZmw);
+  const totalsDisagree =
+    q != null && Number.isFinite(clientTotal) && Math.round(clientTotal) !== Math.round(q.totalZmw);
 
   const html = `
 <div style="font:15px system-ui;color:#1B2530;max-width:560px">
@@ -156,12 +210,17 @@ export async function POST(request: Request) {
     ${row("Email", String(body.email))}
     ${row("Phone", String(body.phone))}
     ${row("Organisation", String(body.organisation ?? ""))}
-    ${row("Residence", residence?.name ?? String(body.slug))}
+    ${row("Residence", residence.name)}
     ${row("Arrive", `${prettyDate(String(body.from))} from ${arrival.checkIn}`)}
     ${row("Depart", `${prettyDate(String(body.to))} by ${arrival.lateCheckOut}`)}
     ${row("Nights", q ? nightLabel(q.nights) : "")}
     ${row("Guests", String(body.guests ?? ""))}
-    ${row("Total quoted", q ? money(q.totalZmw) : "")}
+    ${row("Total", q ? money(q.totalZmw) : "")}
+    ${
+      totalsDisagree
+        ? row("CHECK THIS", `The guest's page showed ${money(clientTotal)}. Current rates give ${money(q!.totalZmw)}.`)
+        : ""
+    }
     ${row("Paying by", String(body.payment ?? ""))}
     ${row("Reason for stay", String(body.purpose ?? ""))}
     ${row("Arrival time", String(body.arrivalTime ?? ""))}
@@ -181,7 +240,7 @@ export async function POST(request: Request) {
         from,
         to: [to],
         reply_to: String(body.email),
-        subject: `Booking request: ${guest}, ${residence?.name ?? body.slug}, ref ${body.reference}`,
+        subject: `Booking request: ${guest}, ${residence.name}, ref ${body.reference}`,
         html,
       }),
     });

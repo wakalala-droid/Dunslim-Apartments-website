@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { business } from "@/lib/content";
-import { isoToday } from "@/lib/format";
+import { isoToday, isoPlusDays } from "@/lib/format";
 import { Honeypot } from "@/components/ui/Honeypot";
 
 /**
@@ -21,6 +21,14 @@ import { Honeypot } from "@/components/ui/Honeypot";
 export default function EnquiryForm() {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  /*
+    Today, after mount rather than during render. A `min` computed while
+    rendering is baked into prerendered HTML and freezes at the last deploy, so
+    it drifts further into the past with every day that passes without one.
+  */
+  const [today, setToday] = useState("");
+  useEffect(() => setToday(isoToday()), []);
   const [f, setF] = useState({
     name: "",
     organisation: "",
@@ -44,13 +52,34 @@ export default function EnquiryForm() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (state === "sending") return;
+
     const err: Record<string, string> = {};
     if (!f.name.trim()) err.name = "Tell us who you are.";
     if (!f.email.trim()) err.email = "We need an email to reply to.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) err.email = "That email does not look right.";
     if (!f.message.trim()) err.message = "Tell us roughly what you need.";
+    if (f.from && f.to && f.to <= f.from) err.to = "Leaving should be after arriving.";
     setErrors(err);
-    if (Object.keys(err).length) return;
+
+    if (Object.keys(err).length) {
+      /*
+        Put the cursor in the first field that needs attention. The message used
+        to appear beside its field with focus left wherever it was, which on a
+        form this tall can be off screen and a screen reader announced nothing
+        at all. The field's error is wired to it by aria-describedby now, so
+        moving focus reads the message out.
+      */
+      const order: [string, string][] = [
+        ["name", "eq-name"],
+        ["email", "eq-email"],
+        ["to", "eq-to"],
+        ["message", "eq-message"],
+      ];
+      const first = order.find(([field]) => err[field]);
+      if (first) document.getElementById(first[1])?.focus();
+      return;
+    }
 
     setState("sending");
     try {
@@ -107,11 +136,17 @@ export default function EnquiryForm() {
         </Field>
 
         <Field label="Arriving" htmlFor="eq-from" hint="Approximate is fine.">
-          <Input id="eq-from" type="date" min={isoToday()} value={f.from} onChange={set("from")} />
+          <Input id="eq-from" type="date" min={today || undefined} value={f.from} onChange={set("from")} />
         </Field>
 
-        <Field label="Leaving" htmlFor="eq-to" hint="Or how many weeks.">
-          <Input id="eq-to" type="date" min={f.from || isoToday()} value={f.to} onChange={set("to")} />
+        <Field label="Leaving" htmlFor="eq-to" hint="Or how many weeks." error={errors.to}>
+          <Input
+            id="eq-to"
+            type="date"
+            min={(f.from ? isoPlusDays(f.from, 1) : isoPlusDays(today, 1)) || undefined}
+            value={f.to}
+            onChange={set("to")}
+          />
         </Field>
 
         <Field label="How many people" htmlFor="eq-people">

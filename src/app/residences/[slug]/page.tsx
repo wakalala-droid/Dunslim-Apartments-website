@@ -32,7 +32,12 @@ export function generateStaticParams() {
  */
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const r = getResidence(params.slug);
-  if (!r) return { title: "Residence" };
+  /*
+    An address that names no residence renders the 404. Titling it "Residence"
+    put a page that says "That page is not here" behind a title that says the
+    opposite and left it indexable.
+  */
+  if (!r) return { title: "Page not found", robots: { index: false, follow: false } };
 
   const path = `/residences/${r.slug}`;
   const cover = r.photos[0];

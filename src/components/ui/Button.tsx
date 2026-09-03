@@ -31,9 +31,19 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  // Letterspaced caps, so a button reads as part of the same typographic system
-  // as the navigation rather than as a stray web control.
-  nav: "min-h-[44px] px-6 text-[11px] uppercase tracking-[0.18em]",
+  /*
+    Letterspaced caps, so a button reads as part of the same typographic system
+    as the navigation rather than as a stray web control.
+
+    13px, taken from the `label` token, NOT the 11px that used to be written
+    straight into this line. That made the header's Book button the smallest
+    text on the entire site: below the project's own 15px floor, below its
+    smallest label and below anything the standing instruction about an
+    eighty-year-old reader would allow. It is also the most important button on
+    the page. Off-scale values are how that happens, so this one now matches the
+    navigation links beside it.
+  */
+  nav: "min-h-[44px] px-6 text-label uppercase",
   md: "min-h-[44px] px-6 text-[15px]",
   lg: "min-h-[52px] px-8 text-body",
 };

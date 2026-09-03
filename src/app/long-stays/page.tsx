@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   title: "Long stays",
   description:
     "Serviced apartments in Lusaka for stays of a week, a month or a full engagement. Rates step down with length of stay and we invoice.",
+  alternates: { canonical: "/long-stays" },
+  openGraph: {
+    title: "Long stays | Dunslim Apartments",
+    description:
+      "A week, a month or a full engagement in Lusaka. The rate steps down with the length of the stay and we invoice your employer.",
+    url: "/long-stays",
+  },
 };
 
 /** A worked example beats a percentage. */
@@ -120,7 +127,7 @@ export default function LongStaysPage() {
               />
               <ul className="mt-12 grid gap-px bg-navy/10">
                 {audience.map((who, i) => (
-                  <Reveal as="li" key={who} delay={i} className="bg-stone py-4">
+                  <Reveal as="li" key={who} className="bg-stone py-4">
                     <span className="text-body text-charcoal">{who}</span>
                   </Reveal>
                 ))}

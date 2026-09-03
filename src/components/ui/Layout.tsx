@@ -153,7 +153,7 @@ export function SectionHead({
       />
 
       {intro ? (
-        <Reveal delay={2}>
+        <Reveal>
           <p
             className={cn("mt-6 text-lead", onNavy ? "text-navy-20" : "text-charcoal-80")}
           >

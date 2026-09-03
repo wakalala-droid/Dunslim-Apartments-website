@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { isoToday, isoPlusDays } from "@/lib/format";
@@ -31,7 +31,20 @@ export default function SearchBar({
   className?: string;
 }) {
   const router = useRouter();
-  const today = isoToday();
+
+  /*
+    Today, worked out after mount.
+
+    This was `const today = isoToday()` in the render body. The homepage is
+    prerendered, so the value went straight into the served HTML and stayed
+    there: the live page carried min="2026-09-03" because that is when it was
+    last built and every day after that the earliest selectable date sat a day
+    further in the past. Together with a validator that only checked departure
+    against arrival, a guest could pick and submit a stay that had already
+    happened and walk it all the way to the confirmation screen.
+  */
+  const [today, setToday] = useState("");
+  useEffect(() => setToday(isoToday()), []);
 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -46,6 +59,11 @@ export default function SearchBar({
     }
     if (to <= from) {
       setError("Departure must be after arrival.");
+      return;
+    }
+    // The `min` attribute is a hint a browser draws, not a rule it enforces.
+    if (today && from < today) {
+      setError("That arrival date has already passed.");
       return;
     }
     setError("");
@@ -84,7 +102,7 @@ export default function SearchBar({
           <input
             id="search-from"
             type="date"
-            min={today}
+            min={today || undefined}
             value={from}
             onChange={(e) => {
               setFrom(e.target.value);
@@ -101,7 +119,7 @@ export default function SearchBar({
           <input
             id="search-to"
             type="date"
-            min={from ? isoPlusDays(from, 1) : isoPlusDays(today, 1)}
+            min={(from ? isoPlusDays(from, 1) : isoPlusDays(today, 1)) || undefined}
             value={to}
             onChange={(e) => setTo(e.target.value)}
             className={controlCls}

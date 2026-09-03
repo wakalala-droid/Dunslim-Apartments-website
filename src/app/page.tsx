@@ -20,12 +20,21 @@ import {
 } from "@/lib/content";
 import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
-import { directNightly } from "@/lib/pricing";
+import { directNightly, publishedNightly, quote as buildQuote } from "@/lib/pricing";
+import { isoPlusDays, isoToday } from "@/lib/format";
 
 export default function HomePage() {
   const cheapest = residences.reduce((a, b) =>
     a.directNightlyZmw <= b.directNightlyZmw ? a : b,
   );
+
+  /*
+    A real seven-night total, taken from the pricing engine rather than written
+    out, so the figure under the ladder cannot drift from the figure at checkout.
+    The dates are arbitrary; only the length of the stay changes the answer.
+  */
+  const ladderFrom = isoToday();
+  const weekQuote = buildQuote(cheapest, ladderFrom, isoPlusDays(ladderFrom, 7));
 
   return (
     <>
@@ -92,7 +101,7 @@ export default function HomePage() {
                 note: "T&Cs apply",
               },
             ].map((item, i) => (
-              <Reveal as="li" key={item.title} delay={i} className="flex flex-col">
+              <Reveal as="li" key={item.title} className="flex flex-col">
                 <item.icon size={22} strokeWidth={1.25} className="text-brass" aria-hidden />
                 <h2 className="mt-4 text-h3 font-light text-navy">{item.title}</h2>
                 <p className="mt-3 max-w-measure text-body text-charcoal">
@@ -102,9 +111,18 @@ export default function HomePage() {
                   The qualifier sits under the promise it qualifies, quietly.
                   Two of these three are conditional offers; the direct-rate
                   promise is not, so it carries nothing.
+
+                  AND IT NOW POINTS SOMEWHERE. "T&Cs apply" appeared under two of
+                  the four claims a cautious corporate booker checks first, as
+                  plain text with no terms page in existence to link to. A
+                  disclaimer with nothing behind it is worse than no disclaimer.
                 */}
                 {item.note ? (
-                  <p className="mt-3 text-caption text-charcoal-60">{item.note}</p>
+                  <p className="mt-3 text-caption text-charcoal-60">
+                    <Link href="/terms" className="underline underline-offset-4 hover:text-navy">
+                      {item.note}
+                    </Link>
+                  </p>
                 ) : null}
               </Reveal>
             ))}
@@ -130,7 +148,7 @@ export default function HomePage() {
 
           <div className="mt-16 grid gap-12 md:grid-cols-2 lg:grid-cols-3">
             {residences.map((r, i) => (
-              <Reveal key={r.slug} delay={i}>
+              <Reveal key={r.slug}>
                 <ResidenceCard residence={r} priority={i === 0} />
               </Reveal>
             ))}
@@ -177,7 +195,7 @@ export default function HomePage() {
 
             <ul className="grid content-between gap-x-12 gap-y-12 sm:grid-cols-2 lg:col-span-7">
               {assurances.map((a, i) => (
-                <Reveal as="li" key={a.title} delay={i}>
+                <Reveal as="li" key={a.title}>
                   <RevealRule />
                   <h3 className="mt-6 text-h3 font-light text-white">{a.title}</h3>
                   <p className="mt-3 max-w-measure text-body text-navy-20">{a.body}</p>
@@ -232,6 +250,24 @@ export default function HomePage() {
                   </Reveal>
                 ))}
               </dl>
+
+              {/*
+                The ladder reads as though the percentages add up and they do
+                not: each one comes off the direct rate rather than off the one
+                above it. A guest doing the arithmetic in their head gets 25 per
+                cent and pays 23.5, which is the sort of small surprise this site
+                is built to avoid. A real total settles it without asking anyone
+                to do the sum.
+              */}
+              {weekQuote ? (
+                <Reveal>
+                  <p className="mt-6 max-w-measure text-caption text-charcoal-80">
+                    Each rate comes off the direct price rather than off the one above it. Seven
+                    nights in {cheapest.name} is {money(weekQuote.totalZmw)}, against{" "}
+                    {money(publishedNightly(cheapest) * 7)} on a platform.
+                  </p>
+                </Reveal>
+              ) : null}
 
               <ButtonLink href="/rates" variant="secondary" className="mt-8">
                 See the full rate card
@@ -315,7 +351,7 @@ export default function HomePage() {
 
           <ul className="mt-12 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
             {neighbourhood.slice(0, 6).map((p, i) => (
-              <Reveal as="li" key={p.name} delay={i} className="bg-white p-6">
+              <Reveal as="li" key={p.name} className="bg-white p-6">
                 <p className="label-caps text-charcoal-60">{p.kind}</p>
                 <p className="mt-3 text-body text-navy">{p.name}</p>
                 <p className="mt-1 text-caption text-charcoal-80">

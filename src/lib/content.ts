@@ -82,11 +82,13 @@ export const audience = [
 // ---------------------------------------------------------------------------
 
 /**
- * Kwacha is the base currency of this site. Every amount stored anywhere in the
- * codebase is in Kwacha, because that is what the business sets its prices in.
- * Dollars are derived for display at the rate below and always labelled as
- * approximate. A stored rate is not a live one, so showing a converted figure
- * as though it were exact would be a quiet lie.
+ * Kwacha is the base currency of this site and the only one. Every amount
+ * stored anywhere in the codebase is in Kwacha, because that is what the
+ * business sets its prices in and what a guest is charged.
+ *
+ * There is no stored dollar rate any more. One lived here, was marked as
+ * needing confirmation every budgeting cycle and went stale exactly as that
+ * note predicted. See the header of lib/format.ts.
  *
  * The nightly rate is confirmed: K2,000 a night, booked direct. It replaces
  * three placeholders (USD 57, 72 and 87) taken from the very platform
@@ -94,16 +96,16 @@ export const audience = [
  */
 export const rates = {
   currencyBase: "ZMW" as const,
+
   /**
-   * Only used to show an approximate dollar figure beside the Kwacha price,
-   * never to set one. CONFIRM before each budgeting cycle.
+   * The book-direct promise and the ONLY discount setting on the site.
+   *
+   * It does three jobs and they cannot disagree: it derives the published rate
+   * from the direct one, it is the figure every line of copy quotes and it is
+   * the saving shown at checkout. A second setting used to add a further twelve
+   * per cent on top of this to invent a platform price, which made the site
+   * display a nineteen per cent saving beside a ten per cent promise. Removed.
    */
-  zmwPerUsd: 18,
-
-  /** What a guest pays on Booking.com / Airbnb, used to show the direct saving. */
-  platformUpliftPct: 12,
-
-  /** The book-direct promise. Shown on the homepage, honoured at checkout. */
   directDiscountPct: 10,
 
   /** Long-stay ladder. Applied automatically, shown before payment. */
@@ -159,6 +161,15 @@ export type Residence = {
    * and will not read twelve.
    */
   namedAfter?: { person: string; lived: string; note: string };
+  /**
+   * The one thing this apartment has that the other two do not.
+   *
+   * All three are two bedrooms, sleep four and cost K2,000, so on the residence
+   * step of checkout they rendered as three identical cards and the guest was
+   * asked to choose with nothing to choose on. This is the line that answers it,
+   * and it is deliberately one concrete object rather than an adjective.
+   */
+  standout: string;
   /** Longest-form description. Two or three sentences, plainly written. */
   description: string[];
   amenities: string[];
@@ -184,6 +195,7 @@ export const residences: Residence[] = [
     slug: "mandela",
     name: "Mandela",
     summary: "Two bedrooms. Set up for someone here to work.",
+    standout: "A proper desk and a bedroom that goes properly dark",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -216,6 +228,7 @@ export const residences: Residence[] = [
     slug: "mulima",
     name: "Mulima",
     summary: "Two bedrooms. Works for two colleagues, or a family.",
+    standout: "A cot fits in the second bedroom and the living room holds a meeting",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -243,6 +256,7 @@ export const residences: Residence[] = [
     slug: "kaunda",
     name: "Kaunda",
     summary: "Two bedrooms. Room for a team, or family visiting.",
+    standout: "A dining table for six and parking for two vehicles",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -458,13 +472,24 @@ export const faqs = [
 export const nav = [
   { href: "/residences", label: "Residences" },
   { href: "/rates", label: "Rates" },
+  /*
+    FOR THE BRAND CUSTODIAN TO CONFIRM.
+
+    The guidelines fix the header at four items and this makes it five with the
+    Book button. It was added because the homepage tells guests that most people
+    who stay here are in Lusaka for work and the page written for exactly those
+    guests was reachable only from the footer. If the four-item rule is to hold,
+    the right move is to take this back out and give long stays a prominent link
+    inside /rates instead, rather than leaving it where it was.
+  */
+  { href: "/long-stays", label: "Long stays" },
   { href: "/location", label: "Location" },
 ] as const;
 
 /**
- * Secondary destinations. Kept out of the header, which the brand guidelines
- * fix at four items, but reachable from the footer and linked in context.
+ * Secondary destinations. Not in the header, listed in the footer, linked in
+ * context from wherever they are relevant.
  */
 export const secondaryNav = [
-  { href: "/long-stays", label: "Long stays" },
+  { href: "/terms", label: "Booking terms" },
 ] as const;

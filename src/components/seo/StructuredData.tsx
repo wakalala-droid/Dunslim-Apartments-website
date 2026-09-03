@@ -69,7 +69,14 @@ export function LodgingSchema() {
       longitude: business.coords.lng,
     },
     hasMap: business.mapsUrl,
-    currenciesAccepted: "ZMW, USD",
+    /*
+      One of the few fields that decides whether a listing gets a picture beside
+      it in a result. Absolute, because a crawler has no page to resolve a
+      relative path against.
+    */
+    image: [`${site.url}/og-default.jpg`, `${site.url}/photos/exterior.jpg`],
+    // Kwacha only. This said "ZMW, USD" long after the dollar switch was removed.
+    currenciesAccepted: "ZMW",
     paymentAccepted: "Visa, Mastercard, MTN Mobile Money, Airtel Money, Bank transfer",
     checkinTime: arrival.checkIn,
     checkoutTime: arrival.lateCheckOut,
@@ -111,7 +118,18 @@ export function ResidenceSchema({ residence }: { residence: Residence }) {
       price: directNightly(residence).toFixed(2),
       priceCurrency: "ZMW",
       url: `${site.url}/book?residence=${residence.slug}`,
-      availability: "https://schema.org/InStock",
+      /*
+        NO `availability` FIELD, DELIBERATELY.
+
+        This declared every residence InStock for every date, which the site
+        cannot possibly know: availability is not connected yet and every date is
+        currently offered. Publishing a machine-readable claim that a room is
+        free is exactly the sort of disagreement between markup and reality that
+        the note at the top of this file warns is treated as deceptive.
+
+        Put it back, set from the real answer, once lib/availability.ts is
+        talking to AI-BOS.
+      */
       priceSpecification: {
         "@type": "UnitPriceSpecification",
         price: directNightly(residence).toFixed(2),

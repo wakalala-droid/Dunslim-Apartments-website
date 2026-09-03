@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prettyDate } from "@/lib/format";
 import {
   rateLimit,
   clientKey,
@@ -55,8 +56,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ sent: false, reason: "bad-request" }, { status: 400 });
   }
 
-  // Filled trap: not a person. Answer as though it worked.
+  // Filled trap: not a person. Answer as though it worked, but leave a trace.
   if (looksAutomated(raw)) {
+    console.warn(
+      "[enquiry] Honeypot filled, enquiry dropped. Email given:",
+      clamp(raw.email, FIELD_LIMITS.email),
+    );
     return NextResponse.json({ sent: true });
   }
 
@@ -70,6 +75,19 @@ export async function POST(request: Request) {
     to: clamp(raw.to, 10),
     message: clamp(raw.message, FIELD_LIMITS.notes),
   };
+
+  /*
+    THE INVOICE TICK BOX, WHICH USED TO BE THROWN AWAY.
+
+    The form has always sent `invoice: true` when a guest ticks "I will need an
+    invoice". This object was built without it, so the email read `b.invoice`,
+    got `undefined` and printed "No" every single time. For a corporate booker
+    whose employer is paying, that tick is the most important thing they told us,
+    and it was the one field that could not survive the trip.
+
+    Kept out of `b` above because that map is all strings and this is a boolean.
+  */
+  const needsInvoice = raw.invoice === true || raw.invoice === "true" || raw.invoice === "on";
 
   const missing = (["name", "email", "message"] as const).filter((k) => !b[k]);
   if (missing.length) {
@@ -97,10 +115,10 @@ export async function POST(request: Request) {
     ${row("Organisation", String(b.organisation ?? ""))}
     ${row("Email", String(b.email))}
     ${row("Phone", String(b.phone ?? ""))}
-    ${row("Arriving", String(b.from ?? ""))}
-    ${row("Leaving", String(b.to ?? ""))}
+    ${row("Arriving", prettyDate(b.from) || b.from)}
+    ${row("Leaving", prettyDate(b.to) || b.to)}
     ${row("People", String(b.people ?? ""))}
-    ${row("Invoice needed", b.invoice ? "Yes" : "No")}
+    ${row("Invoice needed", needsInvoice ? "YES" : "No")}
   </table>
   <p style="margin:20px 0 0;padding-top:14px;border-top:1px solid #D9D3C8;white-space:pre-wrap">${esc(b.message)}</p>
 </div>`.trim();

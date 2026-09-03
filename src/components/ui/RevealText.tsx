@@ -30,10 +30,8 @@ export function RevealText({
   text: string;
   className?: string;
   as?: "h1" | "h2" | "h3" | "p" | "span";
-  /** Seconds to wait before the heading moves. Kept for call-site compatibility. */
+  /** Seconds to wait before the heading moves. */
   delay?: number;
-  /** Accepted and ignored. The entrance only ever runs on entry. */
-  once?: boolean;
 }) {
   return (
     <Tag

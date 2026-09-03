@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeft,
   Check,
@@ -19,7 +20,8 @@ import { Honeypot } from "@/components/ui/Honeypot";
 import Summary from "./Summary";
 import { residences, getResidence, arrival, business, rates, maxGuests } from "@/lib/content";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
-import { money, isoToday, isoPlusDays, prettyDate } from "@/lib/format";
+import { money, isoToday, isoPlusDays, prettyDate, isValidIsoDate } from "@/lib/format";
+import { photo } from "@/lib/photos";
 import {
   checkAvailability,
   submitBookingRequest,
@@ -48,6 +50,73 @@ import { track, BOOKING_STEP } from "@/lib/analytics";
 const STEPS = ["Dates", "Residence", "Details", "Payment"] as const;
 type StepIndex = 0 | 1 | 2 | 3;
 
+/**
+ * WHAT ARRIVES IN THE ADDRESS BAR, AND WHY NONE OF IT IS TRUSTED.
+ *
+ * This page reads the dates, the party size and the apartment out of the URL,
+ * because the homepage search sends a guest here with them attached. It used to
+ * take all four values as given and every one of them could break the page:
+ *
+ *   ?from=banana   the departure field works out its earliest allowed date by
+ *                  adding a day to the arrival date. Adding a day to a word
+ *                  raises a RangeError during render, which nothing catches, so
+ *                  React unmounted the entire page. In production a guest saw
+ *                  one grey line: "Application error: a client-side exception
+ *                  has occurred". On the page that takes the money.
+ *   ?guests=abc    rendered "Showing what fits NaN guests" over an empty list,
+ *                  then "Nothing here sleeps NaN", with no way forward.
+ *   ?from=2020-01-01  priced a four-night stay in January 2020, all the way to
+ *                  the confirmation screen.
+ *   ?residence=x   left the flow on step two with nothing selectable.
+ *
+ * A malformed value is now simply dropped and the guest starts a step earlier,
+ * which is the worst thing that should ever happen to a mistyped link. The date
+ * helpers in lib/format.ts were made throw-proof at the same time, so this is a
+ * belt as well as braces.
+ */
+function readSearch(params: ReadonlyURLSearchParams) {
+  const today = isoToday();
+
+  const rawFrom = params.get("from") ?? "";
+  const rawTo = params.get("to") ?? "";
+
+  // A real calendar day and not one that has already gone.
+  const from = isValidIsoDate(rawFrom) && rawFrom >= today ? rawFrom : "";
+  // A real calendar day and after the arrival if there is one.
+  const to = isValidIsoDate(rawTo) && (!from || rawTo > from) ? rawTo : "";
+
+  const n = Number(params.get("guests"));
+  const guests = Number.isInteger(n) && n >= 1 && n <= maxGuests ? n : 1;
+
+  const rawSlug = params.get("residence") ?? "";
+  const candidate = getResidence(rawSlug);
+  // An apartment that exists and one that can actually hold this party.
+  const slug = candidate && candidate.sleeps >= guests ? rawSlug : "";
+
+  return { from, to, guests, slug };
+}
+
+/** The order errors are reported in, which is the order the fields are in. */
+const ERROR_ORDER = ["from", "to", "residence", "firstName", "lastName", "email", "phone", "payment"];
+
+/**
+ * How a guest would like to pay.
+ *
+ * THE DESCRIPTIONS NOW SAY WHAT ACTUALLY HAPPENS.
+ *
+ * They did not. Card promised that the guest would be taken to a payment
+ * provider's secure page. Bank transfer promised that we hold their dates for
+ * twenty-four hours. Pay on arrival promised a WhatsApp confirmation first.
+ * Mobile money promised a prompt on their phone. None of it is built: every one
+ * of the four ends in the same email to the reservations inbox and nothing
+ * anywhere holds a date.
+ *
+ * The confirmation screen after this step is scrupulously honest about that. The
+ * step itself was not and it is the last thing a guest reads before pressing
+ * the button. So each description now says the true thing, which is that we
+ * confirm first and then send instructions for whichever method they picked.
+ * Put the promises back one at a time, as each becomes real.
+ */
 const PAYMENT_METHODS: {
   id: PaymentMethod;
   label: string;
@@ -57,25 +126,25 @@ const PAYMENT_METHODS: {
   {
     id: "card",
     label: "Card",
-    detail: "Visa or Mastercard. You are taken to our payment provider's secure page to pay.",
+    detail: "Visa or Mastercard. We send you a secure payment link once your dates are confirmed. Card details are never entered on this site.",
     icon: CreditCard,
   },
   {
     id: "mobile-money",
     label: "Mobile money",
-    detail: "MTN Mobile Money or Airtel Money. You approve the payment on your phone.",
+    detail: "MTN Mobile Money or Airtel Money. We send the number to pay to once your dates are confirmed.",
     icon: Smartphone,
   },
   {
     id: "bank-transfer",
     label: "Bank transfer",
-    detail: "We send account details and hold your dates for 24 hours.",
+    detail: "We send our account details once your dates are confirmed, with the reference to quote.",
     icon: Landmark,
   },
   {
     id: "on-arrival",
     label: "Pay on arrival",
-    detail: "Settle when you check in. We confirm your booking by WhatsApp first.",
+    detail: "Settle when you check in. We will confirm your dates before you travel either way.",
     icon: Banknote,
   },
 ];
@@ -86,10 +155,23 @@ export default function BookingFlow() {
   // ---- state -------------------------------------------------------------
   const [step, setStep] = useState<StepIndex>(0);
 
-  const [from, setFrom] = useState(params.get("from") ?? "");
-  const [to, setTo] = useState(params.get("to") ?? "");
-  const [guests, setGuests] = useState(Number(params.get("guests") ?? 1));
-  const [slug, setSlug] = useState(params.get("residence") ?? "");
+  const initial = useMemo(() => readSearch(params), [params]);
+
+  const [from, setFrom] = useState(initial.from);
+  const [to, setTo] = useState(initial.to);
+  const [guests, setGuests] = useState(initial.guests);
+  const [slug, setSlug] = useState(initial.slug);
+
+  /*
+    Today, worked out once after mount rather than during render.
+
+    The `min` attribute on a date input is written into the HTML and these pages
+    are prerendered, so a value computed at render time is frozen at the moment
+    of the last deploy and drifts further out of date with every day that passes
+    without one. Setting it in an effect means it is always actually today.
+  */
+  const [today, setToday] = useState("");
+  useEffect(() => setToday(isoToday()), []);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -103,6 +185,9 @@ export default function BookingFlow() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [availability, setAvailability] = useState<string>("");
+  /** The dates could not be checked. Said plainly rather than assumed away. */
+  const [datesUnchecked, setDatesUnchecked] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [trap, setTrap] = useState("");
   const [reference, setReference] = useState("");
@@ -114,7 +199,11 @@ export default function BookingFlow() {
 
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  // If a residence arrived in the URL but dates did not, start on step 1.
+  /*
+    Skip ahead only over the steps the URL genuinely answered. Everything read
+    from it has already been through readSearch, so a value that survives here
+    is a value the guest would have been allowed to enter by hand.
+  */
   useEffect(() => {
     if (slug && from && to) setStep(2);
     else if (from && to) setStep(1);
@@ -137,6 +226,30 @@ export default function BookingFlow() {
   const suitable = useMemo(() => residences.filter((r) => r.sleeps >= guests), [guests]);
 
   // ---- validation --------------------------------------------------------
+
+  /**
+   * Put the cursor in the first field that needs attention.
+   *
+   * The messages appeared beside their fields and focus stayed wherever it was,
+   * which on the details step, with eight fields, can be off screen entirely.
+   * Nothing was announced either: a screen-reader user pressed Continue and
+   * heard silence. Moving focus fixes both, because the field's own error is
+   * wired to it by `aria-describedby` now (see components/ui/Field).
+   */
+  const focusFirstError = (e: Record<string, string>) => {
+    const key = ERROR_ORDER.find((k) => e[k]);
+    if (!key) return;
+
+    const byId = document.getElementById(key);
+    if (byId) {
+      byId.focus();
+      return;
+    }
+
+    // The residence and payment steps are radio groups, named but not id'd.
+    document.querySelector<HTMLElement>(`input[name="${key}"]`)?.focus();
+  };
+
   const validate = (s: StepIndex): boolean => {
     const e: Record<string, string> = {};
 
@@ -144,6 +257,8 @@ export default function BookingFlow() {
       if (!from) e.from = "Choose your arrival date.";
       if (!to) e.to = "Choose your departure date.";
       if (from && to && to <= from) e.to = "Departure must be after arrival.";
+      // The `min` attribute is a hint the browser draws, not a rule it enforces.
+      if (from && today && from < today) e.from = "That date has already passed.";
     }
 
     if (s === 1 && !slug) e.residence = "Choose a residence to continue.";
@@ -159,23 +274,58 @@ export default function BookingFlow() {
     if (s === 3 && !payment) e.payment = "Choose how you would like to pay.";
 
     setErrors(e);
-    return Object.keys(e).length === 0;
+    if (Object.keys(e).length) {
+      focusFirstError(e);
+      return false;
+    }
+    return true;
   };
 
   const next = async () => {
+    /*
+      One press at a time. Checking availability is a waiting operation and the
+      button used to stay live with no change of label while it ran, so two
+      impatient taps both passed validation and both advanced the step: the
+      guest landed on Payment having never entered their name. It resolves
+      instantly today because it runs locally, which is exactly what hid it.
+      The moment it becomes a real request to AI-BOS the gap opens.
+    */
+    if (checking || submitting) return;
     if (!validate(step)) return;
 
     // Confirm the dates are actually free before asking for personal details.
     if (step === 1 && slug) {
+      setChecking(true);
       const res = await checkAvailability(slug, from, to);
-      if (res.status === "unavailable") {
+      setChecking(false);
+
+      if (res.status === "unavailable" || res.status === "invalid") {
         setAvailability(res.reason);
         return;
       }
+
       setAvailability("");
+      // Told, not assumed. See the `unknown` case in lib/availability.ts.
+      setDatesUnchecked(res.status === "unknown");
     }
 
     setStep((s) => Math.min(s + 1, 3) as StepIndex);
+  };
+
+  /*
+    Enter submits, on every step.
+
+    All four steps were laid out without a form around them, so pressing Enter
+    in any field did nothing at all and the "Go" key on a phone keyboard was
+    dead. Anyone who fills forms by keyboard, which is most business travellers,
+    had to reach for the mouse at the end of every step. The enquiry form and
+    the homepage search were both real forms; checkout was the one place it was
+    skipped and the one place it matters.
+  */
+  const onSubmitStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (step === 3) void submit();
+    else void next();
   };
 
   const back = () => {
@@ -196,6 +346,7 @@ export default function BookingFlow() {
   }, [step, slug]);
 
   const submit = async () => {
+    if (submitting) return;
     if (!validate(3) || !residence || !quote) return;
     setSubmitting(true);
     const outcome = await submitBookingRequest({
@@ -358,7 +509,8 @@ export default function BookingFlow() {
                 <span
                   aria-hidden
                   className={cn(
-                    "flex h-6 w-6 items-center justify-center rounded-full text-[11px]",
+                    // 13px on the label scale, in a 28px circle. It was 11px.
+                    "flex h-7 w-7 items-center justify-center rounded-full text-[13px] tabular-nums",
                     // Navy on brass measures 5.1:1; white on brass only 3.3:1.
                     i < step && "bg-brass text-navy",
                     i === step && "bg-navy text-white",
@@ -396,7 +548,7 @@ export default function BookingFlow() {
 
             {/* ---------------- STEP 0: DATES ---------------- */}
             {step === 0 ? (
-              <section>
+              <form onSubmit={onSubmitStep} noValidate>
                 <h1
                   ref={headingRef}
                   tabIndex={-1}
@@ -414,7 +566,7 @@ export default function BookingFlow() {
                     <Input
                       id="from"
                       type="date"
-                      min={isoToday()}
+                      min={today}
                       value={from}
                       onChange={(e) => {
                         setFrom(e.target.value);
@@ -427,7 +579,7 @@ export default function BookingFlow() {
                     <Input
                       id="to"
                       type="date"
-                      min={from ? isoPlusDays(from, 1) : isoPlusDays(isoToday(), 1)}
+                      min={from ? isoPlusDays(from, 1) : isoPlusDays(today, 1)}
                       value={to}
                       onChange={(e) => setTo(e.target.value)}
                     />
@@ -463,15 +615,15 @@ export default function BookingFlow() {
                   </p>
                 ) : null}
 
-                <Button onClick={next} size="lg" className="mt-12 w-full sm:w-auto">
+                <Button type="submit" size="lg" className="mt-12 w-full sm:w-auto">
                   Choose a residence
                 </Button>
-              </section>
+              </form>
             ) : null}
 
             {/* ---------------- STEP 1: RESIDENCE ---------------- */}
             {step === 1 ? (
-              <section>
+              <form onSubmit={onSubmitStep} noValidate>
                 <h1
                   ref={headingRef}
                   tabIndex={-1}
@@ -484,22 +636,65 @@ export default function BookingFlow() {
                   {nights} {nights === 1 ? "night" : "nights"}.
                 </p>
 
+                {/*
+                  A PHOTOGRAPH AND ONE DISTINGUISHING LINE PER OPTION.
+
+                  All three apartments are two bedrooms, sleep four and cost the
+                  same, so this step rendered three options that were word for
+                  word identical on every visible attribute: K8,000, two
+                  bedrooms, sleeps four. There was no photograph anywhere on the
+                  step either. The guest was being asked to choose with nothing
+                  to choose on, on a site whose own CoverFlow notes argue that a
+                  serviced apartment is bought with the eyes.
+
+                  The `standout` line comes from content.ts, one per apartment,
+                  and is deliberately a concrete object rather than an adjective.
+                  The photograph carries an empty alt because the name sits
+                  immediately beside it: announcing both would read the option
+                  twice.
+                */}
                 <fieldset className="mt-12">
                   <legend className="sr-only">Choose a residence</legend>
                   <div className="space-y-4">
                     {suitable.map((r) => {
                       const q = buildQuote(r, from, to);
                       const selected = slug === r.slug;
+                      const cover = photo(r.photos[0]?.id ?? "");
                       return (
                         <label
                           key={r.slug}
                           className={cn(
-                            "flex cursor-pointer items-start gap-4 rounded-md border p-6 transition-colors duration-micro",
+                            "flex cursor-pointer flex-col gap-4 rounded-md border p-4 transition-colors duration-micro sm:flex-row sm:items-start sm:p-6",
                             selected
                               ? "border-navy bg-stone-40"
                               : "border-navy/20 bg-white hover:border-navy/50",
                           )}
                         >
+                          {/*
+                            ONE image element that changes shape, not two.
+
+                            The first pass at this made the photograph `hidden
+                            sm:block`, to keep a 375px row from crowding, which
+                            meant it did not appear on a phone at all: no picture
+                            on the device where the choice between three
+                            identical-looking options is hardest. It is now a
+                            full-width band above the text on a phone and a thumb
+                            beside it from `sm` up, so it is always there and
+                            still only one file to fetch.
+                          */}
+                          {cover ? (
+                            <Image
+                              src={cover.src}
+                              alt=""
+                              width={cover.w}
+                              height={cover.h}
+                              placeholder="blur"
+                              blurDataURL={cover.blur}
+                              sizes="(max-width: 640px) 100vw, 128px"
+                              className="h-40 w-full rounded-sm object-cover sm:h-24 sm:w-32 sm:shrink-0"
+                            />
+                          ) : null}
+                          <span className="flex flex-1 items-start gap-4">
                           <input
                             type="radio"
                             name="residence"
@@ -528,8 +723,9 @@ export default function BookingFlow() {
                               </span>
                             </span>
                             <span className="mt-3 block max-w-measure text-body text-charcoal">
-                              {r.summary}
+                              {r.standout}
                             </span>
+                          </span>
                           </span>
                         </label>
                       );
@@ -557,15 +753,15 @@ export default function BookingFlow() {
                   </p>
                 ) : null}
 
-                <Button onClick={next} size="lg" className="mt-12 w-full sm:w-auto">
-                  Continue
+                <Button type="submit" size="lg" disabled={checking} className="mt-12 w-full sm:w-auto">
+                  {checking ? "Checking those dates…" : "Continue"}
                 </Button>
-              </section>
+              </form>
             ) : null}
 
             {/* ---------------- STEP 2: DETAILS ---------------- */}
             {step === 2 ? (
-              <section>
+              <form onSubmit={onSubmitStep} noValidate>
                 <h1
                   ref={headingRef}
                   tabIndex={-1}
@@ -674,15 +870,15 @@ export default function BookingFlow() {
                   </Field>
                 </div>
 
-                <Button onClick={next} size="lg" className="mt-12 w-full sm:w-auto">
+                <Button type="submit" size="lg" className="mt-12 w-full sm:w-auto">
                   Continue to payment
                 </Button>
-              </section>
+              </form>
             ) : null}
 
             {/* ---------------- STEP 3: PAYMENT ---------------- */}
             {step === 3 ? (
-              <section>
+              <form onSubmit={onSubmitStep} noValidate>
                 <h1
                   ref={headingRef}
                   tabIndex={-1}
@@ -747,8 +943,15 @@ export default function BookingFlow() {
                   the provider&rsquo;s own secure page.
                 </p>
 
+                {datesUnchecked ? (
+                  <p className="mt-6 rounded-md bg-stone p-6 text-body text-charcoal">
+                    We could not check those dates automatically just now, so someone will confirm
+                    them by hand when they answer. Nothing is held until they do.
+                  </p>
+                ) : null}
+
                 <Button
-                  onClick={submit}
+                  type="submit"
                   size="lg"
                   disabled={submitting}
                   className="mt-12 w-full sm:w-auto"
@@ -757,9 +960,13 @@ export default function BookingFlow() {
                 </Button>
 
                 <p className="mt-4 text-caption text-charcoal-80">
-                  Free cancellation up to {arrival.cancellationHours} hours before arrival.
+                  Free cancellation up to {arrival.cancellationHours} hours before arrival.{" "}
+                  <Link href="/terms" className="underline underline-offset-4 hover:text-navy">
+                    Booking terms
+                  </Link>
+                  .
                 </p>
-              </section>
+              </form>
             ) : null}
           </div>
 

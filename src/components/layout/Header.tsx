@@ -31,6 +31,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // The white state begins once the header has cleared its own height.
   useEffect(() => {
@@ -43,15 +44,59 @@ export default function Header() {
   // Close on route change. A drawer that survives navigation traps the guest.
   useEffect(() => setOpen(false), [pathname]);
 
-  // Escape closes and focus returns to the trigger (accessibility_system.md).
+  /*
+    Escape closes and focus returns to the trigger (accessibility_system.md).
+
+    AND TAB STAYS INSIDE THE PANEL. It did not. Escape and the closed state were
+    both handled properly, but while the menu was open, tabbing past the last
+    item carried straight on into the page behind the dimmed scrim: a keyboard
+    user moving through content they cannot see, in a menu they have no way of
+    knowing is still open. The panel holds four links, a button and two contact
+    actions, so the cycle is short and obvious once it is closed.
+  */
   useEffect(() => {
     if (!open) return;
+
+    const focusable = () => {
+      const panel = panelRef.current;
+      if (!panel) return [] as HTMLElement[];
+      return Array.from(
+        panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+      ).filter((el) => el.offsetParent !== null);
+    };
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
         triggerRef.current?.focus();
+        return;
+      }
+
+      if (e.key !== "Tab") return;
+
+      const items = focusable();
+      if (!items.length) return;
+
+      const first = items[0]!;
+      const last = items[items.length - 1]!;
+      const active = document.activeElement;
+
+      // The trigger sits outside the panel, so Tab from it enters the panel.
+      if (active === triggerRef.current && !e.shiftKey) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
+
+      if (e.shiftKey && (active === first || active === triggerRef.current)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
+
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
@@ -233,6 +278,7 @@ export default function Header() {
 
         <div
           id="mobile-nav"
+          ref={panelRef}
           className={cn(
             "menu-panel absolute right-4 top-[calc(var(--header-h)-8px)] w-[min(19rem,calc(100vw-2rem))]",
             "overflow-hidden rounded-lg bg-white p-2 shadow-3 ring-1 ring-navy/10",

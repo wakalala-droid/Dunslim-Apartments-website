@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Book",
   description:
     "Check availability and book a Dunslim residence direct: the lowest rate, no booking fee and free cancellation up to 48 hours before arrival.",
+  alternates: { canonical: "/book" },
   robots: { index: false, follow: true },
 };
 

@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.url}/rates`, changeFrequency: "monthly", priority: 0.8, lastModified: now },
     { url: `${site.url}/location`, changeFrequency: "monthly", priority: 0.7, lastModified: now },
     { url: `${site.url}/long-stays`, changeFrequency: "monthly", priority: 0.8, lastModified: now },
+    { url: `${site.url}/terms`, changeFrequency: "yearly", priority: 0.3, lastModified: now },
   ];
 
   const units: MetadataRoute.Sitemap = residences.map((r) => ({
