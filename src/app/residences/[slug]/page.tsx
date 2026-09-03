@@ -108,18 +108,37 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
             <div className="lg:col-span-7">
               <p className="max-w-measure text-lead text-charcoal">{summary}</p>
 
-              <dl className="mt-8 flex flex-wrap gap-x-12 gap-y-4">
-                <div>
+              {/*
+                The three figures, as a band rather than as loose text.
+
+                They used to be three label-and-number pairs floating in a
+                wrapping row, at the same weight as everything around them, on
+                an unbroken field of stone. Nothing told the eye where the prose
+                stopped and the specification started, so the whole column read
+                flat — a page of one texture.
+
+                A fine rule is what the brand divides things with (business
+                card, key card, tariff card), so the band is bounded top and
+                bottom and split between the figures, and the numbers step up to
+                34px against a 13px letterspaced label. The contrast is what
+                does the work: a big number under a small label reads as data at
+                a glance, where two similar sizes read as more sentences.
+
+                The number drops to 25px below `sm`, because "K2,000" at 34px
+                does not fit a third of a phone screen.
+              */}
+              <dl className="mt-12 grid grid-cols-3 border-y border-navy/10">
+                <div className="border-r border-navy/10 py-6 pr-4 sm:pr-6">
                   <dt className="label-caps text-charcoal-60">Bedrooms</dt>
-                  <dd className="mt-2 text-h3 font-light text-navy">{bedrooms}</dd>
+                  <dd className="mt-3 text-h3 font-extralight text-navy sm:text-h2">{bedrooms}</dd>
                 </div>
-                <div>
+                <div className="border-r border-navy/10 px-4 py-6 sm:px-6">
                   <dt className="label-caps text-charcoal-60">Sleeps</dt>
-                  <dd className="mt-2 text-h3 font-light text-navy">{sleeps}</dd>
+                  <dd className="mt-3 text-h3 font-extralight text-navy sm:text-h2">{sleeps}</dd>
                 </div>
-                <div>
+                <div className="py-6 pl-4 sm:pl-6">
                   <dt className="label-caps text-charcoal-60">Per night</dt>
-                  <dd className="mt-2 text-h3 font-light text-navy">
+                  <dd className="mt-3 text-h3 font-extralight text-navy sm:text-h2">
                     {money(directNightly(residence))}
                   </dd>
                 </div>

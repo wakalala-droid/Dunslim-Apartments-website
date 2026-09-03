@@ -120,7 +120,14 @@ export default function RatesPage() {
       <Section ground="navy">
         <Container wide>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-6">
+            {/*
+              The heading travels with the block beside it. Left as a normal
+              grid item it stretched to a row set by much taller content and
+              stranded a few hundred pixels of bare ground beneath itself.
+              `self-start` stops the stretch and sticky turns what was a void
+              into a heading that stays with what it names.
+            */}
+            <div className="self-start lg:sticky lg:top-24 lg:col-span-6">
               <SectionHead
                 onNavy
                 eyebrow="Long stays"
