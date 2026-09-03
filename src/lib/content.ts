@@ -549,7 +549,7 @@ export const faqs = [
   */
   {
     q: "Can you pick me up from the airport?",
-    a: `Yes and it costs nothing extra. A driver meets your flight at Kenneth Kaunda International and brings you in, about ${airportMinutes()} minutes by road. The ${fleet.model} then stays with you for the rest of your stay and we drive you back out for your flight home.`,
+    a: `Yes, at no extra charge. A driver meets your flight at Kenneth Kaunda International and brings you in, about ${airportMinutes()} minutes by road. The ${fleet.model} then stays with you for the rest of your stay and we drive you back out for your flight home.`,
   },
   {
     q: "Do I really get a car?",

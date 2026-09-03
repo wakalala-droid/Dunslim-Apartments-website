@@ -96,8 +96,9 @@ export default function TermsPage() {
               That later checkout is part of the direct rate and you do not need to ask for it.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              Arriving late is normal here and it is not a problem. Tell us your flight or your
-              arrival time when you book and someone will be at the apartment with the keys.
+              Arriving late is normal here and it is not a problem. Give us your flight when you
+              book. A driver meets it whatever time it lands and brings you in, to someone waiting
+              at the apartment with the keys.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">What you pay</h2>
