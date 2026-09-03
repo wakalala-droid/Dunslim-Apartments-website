@@ -229,15 +229,37 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                 ))}
               </ul>
 
-              <p className="label-caps mt-12 text-charcoal-60">Included in the rate</p>
-              <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                {rates.included.map((inc) => (
-                  <li key={inc} className="flex items-center gap-2 text-caption text-charcoal-80">
-                    <Check size={14} strokeWidth={2} className="text-brass" aria-hidden />
-                    {inc}
-                  </li>
-                ))}
-              </ul>
+              {/*
+                What the rate includes.
+
+                This was the smallest, faintest thing in the column: 15px — the
+                site's absolute floor — greyed to charcoal-60, and packed into a
+                wrapping row where the items ran together. That is backwards.
+                It is the list of everything a guest gets without paying extra,
+                which makes it the strongest argument on the page for booking
+                direct, and it was being set like a footnote.
+
+                Now 18px, the site's standard body size, at full contrast, one
+                item per line in two columns so each reads as its own promise
+                rather than as a run-on. The white panel lifts it off the stone
+                ground, which is what makes it findable at a glance.
+              */}
+              <div className="mt-16 rounded-md bg-white p-6 ring-1 ring-navy/10 md:p-8">
+                <p className="label-caps text-charcoal">Included in the rate</p>
+                <ul className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                  {rates.included.map((inc) => (
+                    <li key={inc} className="flex items-start gap-3 text-body text-charcoal">
+                      <Check
+                        size={18}
+                        strokeWidth={2}
+                        aria-hidden
+                        className="mt-[6px] shrink-0 text-brass"
+                      />
+                      {inc}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </Container>
