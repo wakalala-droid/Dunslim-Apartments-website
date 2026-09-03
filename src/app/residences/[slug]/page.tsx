@@ -69,7 +69,8 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
   const residence = getResidence(params.slug);
   if (!residence) notFound();
 
-  const { name, summary, description, amenities, photos, bedrooms, sleeps, slug } = residence;
+  const { name, summary, description, amenities, photos, bedrooms, sleeps, slug, namedAfter } =
+    residence;
 
   return (
     <>
@@ -200,6 +201,22 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                   </p>
                 ))}
               </div>
+
+              {/*
+                Who the apartment is named for. A brass rule rather than a
+                boxed-out panel: the brand uses a fine rule as its dividing
+                device, and this is an aside, not a second article.
+              */}
+              {namedAfter ? (
+                <div className="mt-10 border-l-2 border-brass pl-6">
+                  <p className="label-caps text-charcoal-60">Named after</p>
+                  <p className="mt-3 text-h3 font-light text-navy">
+                    {namedAfter.person}{" "}
+                    <span className="text-body text-charcoal-60">{namedAfter.lived}</span>
+                  </p>
+                  <p className="mt-3 max-w-measure text-body text-charcoal">{namedAfter.note}</p>
+                </div>
+              ) : null}
             </div>
 
             <div className="lg:col-span-6">

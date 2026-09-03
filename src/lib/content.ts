@@ -151,6 +151,14 @@ export type Residence = {
    * K2,000.
    */
   directNightlyZmw: number;
+  /**
+   * The person the apartment is named for. Optional: Mulima has none yet.
+   *
+   * Kept short on purpose. This is a serviced apartment, not a museum label —
+   * a guest choosing where to stay will read three sentences about a president
+   * and will not read twelve.
+   */
+  namedAfter?: { person: string; lived: string; note: string };
   /** Longest-form description. Two or three sentences, plainly written. */
   description: string[];
   amenities: string[];
@@ -180,6 +188,11 @@ export const residences: Residence[] = [
     sleeps: 4,
     area: 0,
     directNightlyZmw: 2000,
+    namedAfter: {
+      person: "Nelson Mandela",
+      lived: "1918 to 2013",
+      note: "South Africa's first democratically elected president, and twenty-seven years a prisoner before that. Lusaka gave the African National Congress a home through its long years in exile, and Mandela came here within weeks of walking free in 1990.",
+    },
     description: [
       "Set up for someone here to work. There is a proper desk, the bedrooms get properly dark at night, and the kitchen can handle more than coffee.",
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
@@ -234,6 +247,11 @@ export const residences: Residence[] = [
     sleeps: 4,
     area: 0,
     directNightlyZmw: 2000,
+    namedAfter: {
+      person: "Kenneth Kaunda",
+      lived: "1924 to 2021",
+      note: "Zambia's first president, who led the country to independence in 1964 and then governed it for twenty-seven years. A schoolteacher before he was a politician, he opened Lusaka to the liberation movements of southern Africa at a time when few other capitals would.",
+    },
     description: [
       "Two bedrooms and a living room that seats everyone, whether that is a work team or family.",
       "Best value on a longer stay, where the weekly and monthly rates really start to count.",
@@ -333,16 +351,35 @@ export const arrival = {
 // disagree across listings. One confirmed set of numbers replaces them.
 // ---------------------------------------------------------------------------
 
-export type Place = { name: string; kind: string; minutes: number; mode: "drive" | "walk" };
+export type Place = {
+  name: string;
+  kind: string;
+  /** Road distance from the gate, in kilometres. A fact, and it does not change. */
+  km: number;
+  /** Typical driving time. An estimate, and it does change — see the note below. */
+  minutes: number;
+  mode: "drive" | "walk";
+};
 
-/** CONFIRM: every distance. Leave `minutes: 0` and it renders as "distance to confirm". */
+/*
+ * Measured by road from the property's own map pin, not guessed and not copied
+ * from the old listings — which is what the Growth Proposal found disagreeing
+ * with each other in the first place.
+ *
+ * Both numbers are shown deliberately. The kilometres are a fact and stay put;
+ * the minutes are free-flowing driving time and Lusaka traffic does what it
+ * likes with them, so they are rounded to five minutes rather than presented
+ * as though anyone could hold them to the minute.
+ *
+ * Leave `km: 0` and the place renders as "distance to confirm".
+ */
 export const neighbourhood: Place[] = [
-  { name: "Kenneth Kaunda International Airport", kind: "Airport", minutes: 0, mode: "drive" },
-  { name: "Lusaka city centre", kind: "Business district", minutes: 0, mode: "drive" },
-  { name: "Makeni Mall", kind: "Shops and pharmacy", minutes: 0, mode: "drive" },
-  { name: "Lusaka Golf Club", kind: "Club", minutes: 0, mode: "drive" },
-  { name: "Lusaka National Museum", kind: "Museum", minutes: 0, mode: "drive" },
-  { name: "Levy Junction", kind: "Shopping and dining", minutes: 0, mode: "drive" },
+  { name: "Kenneth Kaunda International Airport", kind: "Airport", km: 37.6, minutes: 55, mode: "drive" },
+  { name: "Lusaka city centre", kind: "Business district", km: 12.4, minutes: 25, mode: "drive" },
+  { name: "Makeni Mall", kind: "Shops and pharmacy", km: 8.7, minutes: 20, mode: "drive" },
+  { name: "Lusaka Golf Club", kind: "Club", km: 17.1, minutes: 30, mode: "drive" },
+  { name: "Lusaka National Museum", kind: "Museum", km: 13.9, minutes: 25, mode: "drive" },
+  { name: "Levy Junction", kind: "Shopping and dining", km: 13.4, minutes: 25, mode: "drive" },
 ];
 
 // ---------------------------------------------------------------------------

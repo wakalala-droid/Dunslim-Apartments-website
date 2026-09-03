@@ -319,7 +319,11 @@ export default function HomePage() {
                 <p className="label-caps text-charcoal-60">{p.kind}</p>
                 <p className="mt-3 text-body text-navy">{p.name}</p>
                 <p className="mt-1 text-caption text-charcoal-80">
-                  {p.minutes > 0 ? `${p.minutes} minutes by ${p.mode}` : "Distance to confirm"}
+                  {p.km > 0
+                    ? `${p.km} km · about ${p.minutes} minutes ${
+                        p.mode === "drive" ? "by car" : "on foot"
+                      }`
+                    : "Distance to confirm"}
                 </p>
               </Reveal>
             ))}

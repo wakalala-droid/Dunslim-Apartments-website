@@ -80,7 +80,7 @@ export default function LocationPage() {
           <SectionHead
             eyebrow="Getting here"
             title="Getting here"
-            intro="Our old listings gave different distances. We are re-measuring these so the numbers are the same everywhere."
+            intro="Measured by road from our gate, so these are the same numbers on every listing we run. The times assume a clear road — Lusaka at rush hour will add to them."
           />
 
           <ul className="mt-16 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,7 +89,11 @@ export default function LocationPage() {
                 <p className="label-caps text-charcoal-60">{p.kind}</p>
                 <p className="mt-3 text-body text-navy">{p.name}</p>
                 <p className="mt-1 text-caption text-charcoal-80">
-                  {p.minutes > 0 ? `${p.minutes} minutes by ${p.mode}` : "Distance to confirm"}
+                  {p.km > 0
+                    ? `${p.km} km · about ${p.minutes} minutes ${
+                        p.mode === "drive" ? "by car" : "on foot"
+                      }`
+                    : "Distance to confirm"}
                 </p>
               </Reveal>
             ))}
