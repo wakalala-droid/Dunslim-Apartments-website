@@ -23,6 +23,34 @@
 }
 
 @layer base {
+  html,
+  body {
+    /*
+      NOTHING MAY MAKE THE PAGE SCROLL SIDEWAYS.
+
+      A residence page did. The gallery parks its neighbouring cards at 86%,
+      152% and 190% of a card's own width to either side, which is what gives it
+      its depth. Nothing clipped them. On a 375px phone that put the
+      right-hand card's edge at 541px and the left-hand one at -165px, so the
+      document measured 539px wide against a 375px viewport and the whole page
+      could be dragged sideways. Every full-width band then stretched to 539px
+      while the viewport showed 375 of it, which is why the navy sections looked
+      like they ended in the middle of the screen and the edges moved as you
+      scrolled.
+
+      The gallery is fixed at its own source below, in `.cf-stage`. This is the
+      net underneath it, so the next component to reach past the edge is simply
+      clipped rather than turning the whole document into a horizontal scroller.
+
+      `clip`, NOT `hidden`. `overflow-x: hidden` makes the element a scroll
+      container, which would break every `position: sticky` heading on the site
+      and change how the fixed header measures itself. `clip` clips and does
+      nothing else: no scroll container, no scrollbar, sticky untouched. It also
+      pairs legally with `overflow-y: visible`, which `hidden` does not.
+    */
+    overflow-x: clip;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     /*
@@ -382,6 +410,27 @@
   justify-content: center;
   height: calc(var(--cf-w) * 4 / 3);
   perspective: 1400px;
+
+  /*
+    THE STAGE IS THE EDGE OF THE GALLERY.
+
+    Cards sit outside it on purpose: that is the whole effect. What was missing
+    is that the stage never said where the effect stops, so on a narrow screen
+    the parked cards ran off the side of the document and took the page's width
+    with them. Measured at 375px: cards at -165px and 541px, a 539px document
+    and 164px of sideways drag on every residence page.
+
+    Clipping here rather than only in the net above means the cards are cut at
+    the gallery's own edge, which is what a cover flow is meant to look like:
+    the neighbours lean in from the sides rather than trailing off the screen.
+
+    `clip` on the horizontal axis only, so the centre card's drop shadow still
+    falls below it. `overflow-clip-margin` lets that shadow, plus the very edge
+    of each neighbour, breathe by the width of the page gutter; browsers that do
+    not know the property simply clip at the box, which is also correct.
+  */
+  overflow-x: clip;
+  overflow-clip-margin: 24px;
 }
 
 .cf-card {
