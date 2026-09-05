@@ -64,7 +64,24 @@ export function CoverFlow({
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchX = useRef(0);
+  const touchY = useRef(0);
   const liveId = useId();
+
+  /*
+    THE LIVE REGION ONLY SPEAKS WHEN THE GUEST ASKED IT TO.
+
+    It used to render straight from `current`, so autoplay changed it every six
+    seconds and a screen reader announced "Photograph 2 of 3. Kitchen" over and
+    over for as long as the page was open. Measured: the text changed twice in
+    fourteen seconds with nobody touching anything. An announcement nobody asked
+    for, on a loop, is worse than no announcement at all.
+
+    Autoplay now moves the photographs silently, which is right: it is
+    decoration. A press of an arrow, a dot, or an arrow key sets the flag below
+    and that change is spoken.
+  */
+  const askedForIt = useRef(false);
+  const [spoken, setSpoken] = useState("");
 
   const go = useCallback(
     (i: number) => setCurrent(((i % total) + total) % total),
@@ -72,6 +89,12 @@ export function CoverFlow({
   );
   const next = useCallback(() => setCurrent((i) => (i + 1) % total), [total]);
   const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
+
+  /** Wraps a move the guest made, so it is the only kind that gets announced. */
+  const byHand = useCallback((move: () => void) => {
+    askedForIt.current = true;
+    move();
+  }, []);
 
   /*
     Autoplay stops for a pointer, for keyboard focus and for anyone who has
@@ -89,17 +112,23 @@ export function CoverFlow({
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft") {
       e.preventDefault();
-      prev();
+      byHand(prev);
     }
     if (e.key === "ArrowRight") {
       e.preventDefault();
-      next();
+      byHand(next);
     }
   };
 
-  if (total === 0) return null;
-
   const activeCaption = slides[current]?.caption ?? slides[current]?.alt ?? "";
+
+  useEffect(() => {
+    if (!askedForIt.current) return;
+    askedForIt.current = false;
+    setSpoken(`Photograph ${current + 1} of ${total}. ${activeCaption}`);
+  }, [current, total, activeCaption]);
+
+  if (total === 0) return null;
 
   return (
     <div
@@ -114,10 +143,21 @@ export function CoverFlow({
       onBlurCapture={() => setPaused(false)}
       onTouchStart={(e) => {
         touchX.current = e.touches[0].clientX;
+        touchY.current = e.touches[0].clientY;
       }}
       onTouchEnd={(e) => {
-        const d = e.changedTouches[0].clientX - touchX.current;
-        if (Math.abs(d) > 45) (d < 0 ? next : prev)();
+        /*
+          A swipe has to be sideways to count. This measured the horizontal
+          distance only, so a guest scrolling the page down past the gallery
+          with any sideways drift in their thumb changed the photograph under
+          their finger. Requiring the horizontal movement to beat the vertical
+          leaves a plain scroll alone.
+        */
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        const dy = e.changedTouches[0].clientY - touchY.current;
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+          byHand(dx < 0 ? next : prev);
+        }
       }}
     >
       <div className="cf-stage">
@@ -155,14 +195,14 @@ export function CoverFlow({
 
       {/* What changed, for anyone not looking at the screen. */}
       <p id={liveId} className="sr-only" aria-live="polite">
-        {`Photograph ${current + 1} of ${total}. ${activeCaption}`}
+        {spoken}
       </p>
 
       {total > 1 ? (
         <div className="cf-controls">
           <button
             type="button"
-            onClick={prev}
+            onClick={() => byHand(prev)}
             className="cf-arrow"
             aria-controls={liveId}
             aria-label="Previous photograph"
@@ -175,7 +215,7 @@ export function CoverFlow({
               <button
                 key={s.name}
                 type="button"
-                onClick={() => go(i)}
+                onClick={() => byHand(() => go(i))}
                 aria-label={`Show photograph ${i + 1} of ${total}`}
                 aria-current={i === current ? "true" : undefined}
                 className={cn("cf-dot", i === current && "cf-dot-on")}
@@ -185,7 +225,7 @@ export function CoverFlow({
 
           <button
             type="button"
-            onClick={next}
+            onClick={() => byHand(next)}
             className="cf-arrow"
             aria-controls={liveId}
             aria-label="Next photograph"

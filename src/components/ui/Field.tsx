@@ -86,16 +86,23 @@ export function Field({
 }
 
 /*
-  A visible focus ring on every control. The base styles moved the border colour
-  on focus and nothing else, which is a 1px change in hue and easy to miss on a
-  form with eight fields in it.
+  Focus is the site's own brass outline, not a ring of this component's own.
+
+  globals.css already draws `:focus-visible { outline: 2px solid brass }` on
+  everything, with a white variant on navy. An earlier pass added a navy ring
+  here alongside `focus:outline-none` and because a class-plus-pseudo selector
+  outranks the bare `:focus-visible` one, that quietly switched these inputs to
+  a different focus treatment from every other control on the site. The keyboard
+  ring was still visible, so nothing looked broken; it was just inconsistent.
+
+  What stays is the border darkening on focus and reddening when the field is
+  invalid, which is a second channel rather than a replacement for the outline.
 */
 const controlBase =
   "w-full min-h-[44px] rounded-sm border bg-white px-4 text-body text-charcoal " +
   "transition-colors duration-micro ease-entrance " +
   "placeholder:text-charcoal-60 " +
   "border-navy/20 hover:border-navy/40 focus:border-navy " +
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-navy/40 focus-visible:ring-offset-1 " +
   "aria-[invalid=true]:border-danger";
 
 export const Input = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (

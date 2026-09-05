@@ -1,6 +1,74 @@
+/**
+ * Headers the site sends with every response and why each one is here.
+ *
+ * There were none. Not one of X-Frame-Options, X-Content-Type-Options,
+ * Referrer-Policy, Permissions-Policy or a Content-Security-Policy, on a site
+ * that collects a guest's name, email and phone number and will shortly carry
+ * payment instructions. Every response also announced `X-Powered-By: Next.js`,
+ * which tells an attacker which framework's known issues to try first.
+ *
+ * The Content-Security-Policy below is deliberately not a strict one. A strict
+ * script policy needs per-request nonces and this site is almost entirely
+ * static pages served from the edge, where a nonce cannot be generated without
+ * giving up that caching. What it does instead is take the four directives that
+ * cost nothing and are worth the most:
+ *
+ *   frame-ancestors  nobody can put this site in an iframe, which is what makes
+ *                    a clickjacked booking form possible in the first place
+ *   base-uri         no injected <base> tag can re-point every relative URL on
+ *                    the page at somebody else's server
+ *   form-action      a form on this site can only ever post back to this site
+ *   object-src       no plugins, ever
+ *
+ * `frame-ancestors` in the CSP and `X-Frame-Options` say the same thing twice,
+ * on purpose: the header is what older browsers understand.
+ */
+const SECURITY_HEADERS = [
+  {
+    key: "Content-Security-Policy",
+    value: [
+      "default-src 'self'",
+      // Next's own bootstrap and the JSON-LD blocks are inline scripts.
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob:",
+      "font-src 'self'",
+      "connect-src 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "upgrade-insecure-requests",
+    ].join("; "),
+  },
+  { key: "X-Frame-Options", value: "DENY" },
+  // Stops a browser second-guessing a Content-Type and running a file as script.
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  /*
+    The address of the page a guest came from is sent to Google Maps, to
+    OpenStreetMap and to wa.me. `strict-origin-when-cross-origin` sends the full
+    address within the site and only the bare origin to anyone else, so a
+    /book address carrying a guest's dates never leaves the site.
+  */
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  /*
+    Nothing on this site uses a camera, a microphone or a location, so nothing
+    embedded in it should be able to ask for one.
+  */
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+  },
+  // Two years, subdomains included. Vercel serves HTTPS only in any case.
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // Stop telling every visitor which framework this is.
+  poweredByHeader: false,
 
   images: {
     /*
@@ -52,8 +120,11 @@ const nextConfig = {
       { key: "Cache-Control", value: "public, max-age=0, s-maxage=86400, must-revalidate" },
     ];
     return [
+      // Everything, including the API routes and the images.
+      { source: "/:path*", headers: SECURITY_HEADERS },
       { source: "/brand/:file*", headers: revalidate },
       { source: "/photos/:file*", headers: revalidate },
+      { source: "/map/:file*", headers: revalidate },
     ];
   },
 };

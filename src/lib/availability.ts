@@ -141,7 +141,7 @@ export type BookingOutcome = {
  * central register: two guests who collide are two requests that look like one
  * in the inbox. Six takes it to 2.1 billion and costs nothing.
  */
-function makeReference(): string {
+export function makeReference(prefix = "DA"): string {
   const d = new Date();
   const stamp = `${d.getFullYear()}`.slice(2) + String(d.getMonth() + 1).padStart(2, "0");
 
@@ -157,7 +157,7 @@ function makeReference(): string {
     rand += ALPHABET[b % ALPHABET.length];
   });
 
-  return `DA-${stamp}-${rand}`;
+  return `${prefix}-${stamp}-${rand}`;
 }
 
 /**

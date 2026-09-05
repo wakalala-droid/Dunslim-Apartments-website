@@ -185,6 +185,18 @@
 /*
   motion_governance.md: every animation has a reduced-motion fallback that
   replaces movement with an instant or opacity-only change.
+
+  WHERE MOTION IS DEFINED, so nobody builds a fourth home for it. Durations and
+  easings for hover and press are tokens in tailwind.config.ts. Everything that
+  moves on arrival is a keyframe in this file. The hero's own sequence is the
+  BEAT object at the top of components/home/Hero.tsx, computed from the word
+  count so the timing holds whatever the headline says.
+
+  There used to be a lib/motion.ts as well, exporting durations, staggers and
+  framer-motion variants. framer-motion was removed from the site and the file
+  outlived it: ninety-eight lines imported by nothing, holding a third set of
+  numbers for the same movements. A developer editing it would have seen no
+  effect anywhere. Deleted rather than left as a trap.
 */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -497,10 +509,32 @@
   font-size: 15px;
   line-height: 22px;
   text-align: left;
-  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Appearing: opacity animates and it is readable from the first frame. */
+  transition:
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s;
 }
+
+/*
+  THE CAPTIONS OF THE CARDS EITHER SIDE ARE HIDDEN FROM SCREEN READERS TOO.
+
+  This was `opacity: 0` on its own. Opacity hides a thing from the eye and from
+  nobody else, so both neighbouring captions stayed in the accessibility tree:
+  on a residence page, a screen reader read out "Bedroom" and "Work desk"
+  alongside the caption of the photograph actually on show. Measured: two
+  invisible captions announced per page.
+
+  The card at depth 3 already had this right and says why in its own rule. This
+  brings the neighbours into line, with the visibility flip DELAYED by the
+  length of the fade so the caption is still painted while it fades out. Going
+  the other way there is no delay, so it is announced as soon as it appears.
+*/
 .cf-card:not(.cf-card-centre) .cf-caption {
   opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 400ms;
 }
 
 .cf-controls {

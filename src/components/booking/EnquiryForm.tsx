@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Textarea } from "@/components/ui/Field";
-import { business } from "@/lib/content";
-import { isoToday, isoPlusDays } from "@/lib/format";
+import { business, fleet } from "@/lib/content";
+import { makeReference } from "@/lib/availability";
+import { isoToday, isoPlusDays, prettyDate } from "@/lib/format";
 import { Honeypot } from "@/components/ui/Honeypot";
 
 /**
@@ -21,6 +22,18 @@ import { Honeypot } from "@/components/ui/Honeypot";
 export default function EnquiryForm() {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  /*
+    A reference, the same as a booking gets.
+
+    An enquiry used to vanish into a thank-you with nothing to quote. A guest
+    chasing it a week later could only say "I sent something through your
+    website", which is not enough to find it in an inbox and the reservations
+    side had no handle either. `LS` rather than `DA` so the two are
+    distinguishable at a glance: a long-stay enquiry is answered by a person
+    writing a quote, a booking request by someone checking a calendar.
+  */
+  const [reference, setReference] = useState("");
 
   /*
     Today, after mount rather than during render. A `min` computed while
@@ -82,11 +95,13 @@ export default function EnquiryForm() {
     }
 
     setState("sending");
+    const ref = makeReference("LS");
+    setReference(ref);
     try {
       const res = await fetch("/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(f),
+        body: JSON.stringify({ ...f, reference: ref }),
       });
       const data = (await res.json().catch(() => ({}))) as { sent?: boolean };
       setState(res.ok && data.sent ? "sent" : "failed");
@@ -96,6 +111,26 @@ export default function EnquiryForm() {
   };
 
   if (state === "sent") {
+    /*
+      What was actually sent, echoed back.
+
+      This was a thank-you and nothing else. A guest who had just typed out six
+      weeks of dates, a headcount and a paragraph about what they needed had no
+      record of any of it and nothing to quote if they chased it. The booking
+      flow has always shown this; the enquiry, which is the higher-value of the
+      two, showed none of it.
+    */
+    const sent: [string, string][] = [
+      ["Reference", reference],
+      ["Name", f.name],
+      ...(f.organisation ? ([["Organisation", f.organisation]] as [string, string][]) : []),
+      ...(f.from ? ([["Arriving", prettyDate(f.from) || f.from]] as [string, string][]) : []),
+      ...(f.to ? ([["Leaving", prettyDate(f.to) || f.to]] as [string, string][]) : []),
+      ...(f.people ? ([["People", f.people]] as [string, string][]) : []),
+      ["Invoice needed", f.invoice ? "Yes" : "No"],
+      ["Reply to", f.email],
+    ];
+
     return (
       <div className="rounded-md bg-stone p-8">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-navy">
@@ -104,7 +139,22 @@ export default function EnquiryForm() {
         <h2 className="mt-6 text-h3 font-light text-navy">Thank you, {f.name.split(" ")[0]}.</h2>
         <p className="mt-3 max-w-measure text-body text-charcoal">
           Your enquiry has reached us. Someone will come back to you with availability and a price
-          for the whole stay, usually the same day.
+          for the whole stay, usually the same day. Quote{" "}
+          <span className="text-navy">{reference}</span> if you need to chase it.
+        </p>
+
+        <dl className="mt-8 divide-y divide-navy/10 border-y border-navy/10">
+          {sent.map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-6 py-3">
+              <dt className="text-caption text-charcoal-60">{k}</dt>
+              <dd className="text-right text-caption text-charcoal">{v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <p className="mt-6 max-w-measure text-caption text-charcoal-80">
+          A {fleet.model} comes with the apartment for the whole engagement and we meet your
+          flight. Nothing is booked or charged until we have agreed the price with you.
         </p>
       </div>
     );

@@ -66,6 +66,7 @@ export async function POST(request: Request) {
   }
 
   const b: Record<string, string> = {
+    reference: clamp(raw.reference, FIELD_LIMITS.short),
     name: clamp(raw.name, FIELD_LIMITS.name),
     email: clamp(raw.email, FIELD_LIMITS.email),
     phone: clamp(raw.phone, FIELD_LIMITS.phone),
@@ -111,6 +112,7 @@ export async function POST(request: Request) {
 <div style="font:15px system-ui;color:#1B2530;max-width:560px">
   <p style="font:600 20px system-ui;margin:0 0 20px">Long-stay enquiry</p>
   <table style="border-collapse:collapse;width:100%">
+    ${row("Reference", String(b.reference))}
     ${row("Name", String(b.name))}
     ${row("Organisation", String(b.organisation ?? ""))}
     ${row("Email", String(b.email))}
@@ -131,7 +133,7 @@ export async function POST(request: Request) {
         from,
         to: [to],
         reply_to: String(b.email),
-        subject: `Long-stay enquiry: ${b.name}${b.organisation ? `, ${b.organisation}` : ""}`,
+        subject: `Long-stay enquiry: ${b.name}${b.organisation ? `, ${b.organisation}` : ""}${b.reference ? `, ref ${b.reference}` : ""}`,
         html,
       }),
     });
