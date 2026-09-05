@@ -1,0 +1,19 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-has-content": "error",
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/aria-role": "error",
+    "jsx-a11y/label-has-associated-control": ["error", { "assert": "either", "depth": 4 }],
+    "jsx-a11y/no-redundant-roles": "error",
+    "jsx-a11y/role-has-required-aria-props": "error",
+
+    "react/jsx-no-target-blank": ["error", { "enforceDynamicLinks": "always" }],
+    "react-hooks/exhaustive-deps": "warn",
+
+    "eqeqeq": ["error", "smart"],
+    "no-console": ["warn", { "allow": ["warn", "error"] }]
+  }
+}

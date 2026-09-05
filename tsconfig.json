@@ -4,6 +4,22 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    /*
+      Unused locals and parameters are errors, not lint warnings.
+
+      This is the check that would have caught the accessibility bug in
+      components/ui/Field.tsx, where an id was computed for the hint and
+      another for the error message and then neither was ever used, so the
+      two were never wired to the input. Both variables sat there unread
+      through every build. The same pattern is how the ignored `delay` and
+      `once` props survived on the reveal components.
+
+      ESLint would normally do this, but the rule needs @typescript-eslint,
+      which is not a dependency here. The compiler already knows and it runs
+      on every build, so it does the job without adding one.
+    */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",

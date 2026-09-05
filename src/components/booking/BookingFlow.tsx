@@ -205,9 +205,65 @@ export default function BookingFlow() {
     is a value the guest would have been allowed to enter by hand.
   */
   useEffect(() => {
-    if (slug && from && to) setStep(2);
-    else if (from && to) setStep(1);
+    const start: StepIndex = slug && from && to ? 2 : from && to ? 1 : 0;
+    if (start !== 0) setStep(start);
+    /*
+      Label the entry the guest arrived on, so the first Back out of the flow is
+      a clean exit rather than a popstate carrying no step of ours. `replace`,
+      not `push`: arriving somewhere should not cost a history entry.
+    */
+    const url = new URL(window.location.href);
+    url.searchParams.set("step", String(start));
+    window.history.replaceState({ dunslimStep: start }, "", url.toString());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /*
+    THE BACK BUTTON.
+
+    Each step is a screen, so each step gets a history entry. It did not and on
+    a phone that is a real loss: Back is the primary navigation gesture and a
+    guest three steps into checkout who used it left the site altogether, taking
+    their name, their dates and their apartment with them. Measured before this:
+    the address never changed and `history.length` never grew across the whole
+    flow.
+
+    Native `history.pushState` rather than the router, deliberately. The router
+    would re-run this page's own search-parameter reading on every step and the
+    only thing that needs to change is one number. This writes the step into the
+    address, leaves everything else in it alone and never touches the server.
+
+    `popstate` is the other half: the browser has already moved the address by
+    the time it fires, so the step is read back out of it rather than assumed.
+    Forward works for the same reason.
+
+    One deliberate asymmetry: the confirmation screen does NOT push an entry.
+    Once a request is sent there is nothing to go back to and offering Back
+    there would drop a guest into a form they have already submitted.
+  */
+  const stepRef = useRef(step);
+  stepRef.current = step;
+
+  const pushStep = (s: StepIndex) => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("step", String(s));
+    window.history.pushState({ dunslimStep: s }, "", url.toString());
+  };
+
+  useEffect(() => {
+    const onPop = (e: PopStateEvent) => {
+      const fromState = (e.state as { dunslimStep?: number } | null)?.dunslimStep;
+      const fromUrl = Number(new URLSearchParams(window.location.search).get("step"));
+      const raw = Number.isInteger(fromState) ? Number(fromState) : fromUrl;
+      const target = Number.isInteger(raw) && raw >= 0 && raw <= 3 ? (raw as StepIndex) : 0;
+      if (target !== stepRef.current) {
+        setErrors({});
+        setStep(target);
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   // Move focus to the step heading on change, so keyboard and screen-reader
   // users are not left at the bottom of the previous step.
@@ -309,7 +365,14 @@ export default function BookingFlow() {
       setDatesUnchecked(res.status === "unknown");
     }
 
-    setStep((s) => Math.min(s + 1, 3) as StepIndex);
+    /*
+      Worked out here rather than inside the state updater. An updater has to be
+      pure: React is free to call it twice and pushing a history entry from
+      inside one would put two on the stack for a single press.
+    */
+    const target = Math.min(step + 1, 3) as StepIndex;
+    pushStep(target);
+    setStep(target);
   };
 
   /*
@@ -328,9 +391,17 @@ export default function BookingFlow() {
     else void next();
   };
 
+  /*
+    The in-page Back control now asks the browser to go back rather than moving
+    the step itself, so the two can never disagree about where the guest is. If
+    there is no entry of ours to return to, because the guest landed straight on
+    a later step from a link, it steps back without touching history.
+  */
   const back = () => {
     setErrors({});
-    setStep((s) => Math.max(s - 1, 0) as StepIndex);
+    const hasOurEntry = (window.history.state as { dunslimStep?: number } | null)?.dunslimStep;
+    if (Number.isInteger(hasOurEntry)) window.history.back();
+    else setStep((s) => Math.max(s - 1, 0) as StepIndex);
   };
 
   /*

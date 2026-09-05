@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { business, getResidence, arrival } from "@/lib/content";
+import { getResidence, arrival } from "@/lib/content";
 import { money, prettyDate, nightLabel, isValidIsoDate, isoToday } from "@/lib/format";
 import { quote as buildQuote } from "@/lib/pricing";
 import {

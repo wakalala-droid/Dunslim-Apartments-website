@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { business, rates, arrival, residences, fleet } from "@/lib/content";
 import { money, inWords } from "@/lib/format";
 import { publishedNightly, directNightly } from "@/lib/pricing";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 /**
  * BOOKING TERMS.
@@ -63,6 +64,10 @@ const cheapest = residences.reduce((a, b) =>
 export default function TermsPage() {
   return (
     <>
+      <BreadcrumbSchema
+        trail={[{ name: "Home", path: "/" }, { name: "Booking terms", path: "/terms" }]}
+      />
+
       <Section ground="stone" tight>
         <Container wide>
           <SectionHead

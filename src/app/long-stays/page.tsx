@@ -132,7 +132,7 @@ export default function LongStaysPage() {
                 intro="Long stays are priced properly rather than run through a calculator, so this goes to a person. Approximate dates are fine. We would rather hear from you early than exactly."
               />
               <ul className="mt-12 grid gap-px bg-navy/10">
-                {audience.map((who, i) => (
+                {audience.map((who) => (
                   <Reveal as="li" key={who} className="bg-stone py-4">
                     <span className="text-body text-charcoal">{who}</span>
                   </Reveal>

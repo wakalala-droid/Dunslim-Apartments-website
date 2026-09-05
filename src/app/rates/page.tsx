@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
@@ -7,6 +8,7 @@ import { Figure } from "@/components/ui/Figure";
 import { residences, rates, arrival, faqs, business } from "@/lib/content";
 import { money } from "@/lib/format";
 import { directNightly, publishedNightly, longStayBand } from "@/lib/pricing";
+import { BreadcrumbSchema, FaqSchema } from "@/components/seo/StructuredData";
 
 /*
   ITS OWN CANONICAL AND ITS OWN SHARE CARD.
@@ -41,6 +43,9 @@ export const metadata: Metadata = {
 const EXAMPLE_NIGHTS = 14;
 
 export default function RatesPage() {
+  // The rate card had no structured data at all, on the page that answers the
+  // question the whole site is built to win.
+
   const example = residences[1] ?? residences[0];
   /*
     The same band picker the pricing engine uses. This line chose the band with
@@ -53,6 +58,9 @@ export default function RatesPage() {
 
   return (
     <>
+      <BreadcrumbSchema trail={[{ name: "Home", path: "/" }, { name: "Rates", path: "/rates" }]} />
+      <FaqSchema items={faqs} />
+
       <Section ground="stone" tight>
         <Container wide>
           <SectionHead
@@ -75,7 +83,21 @@ export default function RatesPage() {
           <ul className="grid gap-px bg-navy/10 md:hidden">
             {residences.map((r) => (
               <li key={r.slug} className="bg-white py-6">
-                <p className="text-h3 font-light text-navy">{r.name}</p>
+                {/*
+                  The names were plain text in both the table and these cards. A
+                  guest reading the rate card and settling on one of them had to
+                  go back and find it and the three pages the site most wants
+                  found were getting no internal link from the page most likely
+                  to be read before booking.
+                */}
+                <p className="text-h3 font-light text-navy">
+                  <Link
+                    href={`/residences/${r.slug}`}
+                    className="inline-flex min-h-[44px] items-center underline-offset-4 hover:underline"
+                  >
+                    {r.name}
+                  </Link>
+                </p>
                 <p className="mt-1 text-caption text-charcoal-80">
                   {r.bedrooms} {r.bedrooms === 1 ? "bedroom" : "bedrooms"} · sleeps {r.sleeps}
                 </p>
@@ -120,7 +142,12 @@ export default function RatesPage() {
                 {residences.map((r) => (
                   <tr key={r.slug} className="border-b border-navy/10">
                     <th scope="row" className="py-6 pr-6 text-body text-navy">
-                      {r.name}
+                      <Link
+                        href={`/residences/${r.slug}`}
+                        className="inline-flex min-h-[44px] items-center underline-offset-4 hover:underline"
+                      >
+                        {r.name}
+                      </Link>
                       <span className="mt-1 block text-caption text-charcoal-80">
                         {r.bedrooms} {r.bedrooms === 1 ? "bedroom" : "bedrooms"}
                       </span>
@@ -286,7 +313,7 @@ export default function RatesPage() {
         <Container wide>
           <SectionHead eyebrow="Before you book" title="Questions we get asked" />
           <dl className="mt-12 max-w-[860px] divide-y divide-navy/10 border-y border-navy/10">
-            {faqs.map((f, i) => (
+            {faqs.map((f) => (
               <Reveal key={f.q} className="py-8">
                 <dt className="text-h3 font-light text-navy">{f.q}</dt>
                 <dd className="mt-3 max-w-measure text-body text-charcoal">{f.a}</dd>

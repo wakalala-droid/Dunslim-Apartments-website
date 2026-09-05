@@ -4,7 +4,10 @@ import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
 import { Reveal } from "@/components/ui/Reveal";
-import { business, neighbourhood, arrival, assurances, fleet, airportMinutes } from "@/lib/content";
+import { business, neighbourhood, arrival, assurances, fleet, airportMinutes, residences } from "@/lib/content";
+import { money } from "@/lib/format";
+import { directNightly } from "@/lib/pricing";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
   title: "Location",
@@ -20,9 +23,16 @@ export const metadata: Metadata = {
 };
 
 export default function LocationPage() {
+  const cheapest = residences.reduce((a, b) =>
+    a.directNightlyZmw <= b.directNightlyZmw ? a : b,
+  );
 
   return (
     <>
+      <BreadcrumbSchema
+        trail={[{ name: "Home", path: "/" }, { name: "Location", path: "/location" }]}
+      />
+
       <Section ground="stone" tight>
         <Container wide>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
@@ -98,7 +108,7 @@ export default function LocationPage() {
           />
 
           <ul className="mt-16 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
-            {neighbourhood.map((p, i) => (
+            {neighbourhood.map((p) => (
               <Reveal as="li" key={p.name} className="bg-white p-6">
                 <p className="label-caps text-charcoal-60">{p.kind}</p>
                 <p className="mt-3 text-body text-navy">{p.name}</p>
@@ -233,6 +243,24 @@ export default function LocationPage() {
                   </li>
                 ))}
               </ul>
+
+              {/*
+                THE PAGE ENDED HERE, WITH NOTHING TO DO.
+
+                Every booking link on this page came from the header and the
+                footer. A guest reads it for one reason, to work out whether the
+                address suits them and by the bottom they have their answer.
+                Leaving them to find the header again is the one place on the
+                site where a settled question had no next step.
+              */}
+              <div className="mt-12 flex flex-wrap items-center gap-4">
+                <ButtonLink href="/book" variant="onNavy" size="lg">
+                  Check availability
+                </ButtonLink>
+                <p className="text-caption text-navy-20">
+                  From {money(directNightly(cheapest))} a night, with the {fleet.model} included.
+                </p>
+              </div>
             </div>
           </div>
         </Container>

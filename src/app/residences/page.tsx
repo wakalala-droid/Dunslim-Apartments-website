@@ -5,6 +5,7 @@ import { Figure } from "@/components/ui/Figure";
 import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { Reveal } from "@/components/ui/Reveal";
 import { residences, rates, fleet } from "@/lib/content";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
   title: "Residences",
@@ -22,6 +23,10 @@ export const metadata: Metadata = {
 export default function ResidencesPage() {
   return (
     <>
+      <BreadcrumbSchema
+        trail={[{ name: "Home", path: "/" }, { name: "Residences", path: "/residences" }]}
+      />
+
       <Section ground="stone" tight>
         <Container wide>
           <SectionHead

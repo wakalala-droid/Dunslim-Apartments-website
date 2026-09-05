@@ -102,7 +102,7 @@ export default function HomePage() {
                 body: `Check out at ${arrival.lateCheckOut} instead of ${arrival.checkOut} when you book with us. Handy if your flight is in the afternoon.`,
                 note: "T&Cs apply",
               },
-            ].map((item, i) => (
+            ].map((item) => (
               <Reveal as="li" key={item.title} className="flex flex-col">
                 <item.icon size={22} strokeWidth={1.25} className="text-brass" aria-hidden />
                 <h2 className="mt-4 text-h3 font-light text-navy">{item.title}</h2>
@@ -120,8 +120,17 @@ export default function HomePage() {
                   disclaimer with nothing behind it is worse than no disclaimer.
                 */}
                 {item.note ? (
-                  <p className="mt-3 text-caption text-charcoal-60">
-                    <Link href="/terms" className="underline underline-offset-4 hover:text-navy">
+                  <p className="mt-1 text-caption text-charcoal-60">
+                    {/*
+                      A standalone link, so it owes a real target. It was 19px
+                      tall, under the 24px minimum and this is not the inline
+                      case the rule excuses: it sits on its own line rather than
+                      inside a sentence.
+                    */}
+                    <Link
+                      href="/terms"
+                      className="inline-flex min-h-[44px] items-center underline underline-offset-4 hover:text-navy"
+                    >
                       {item.note}
                     </Link>
                   </p>
@@ -196,7 +205,7 @@ export default function HomePage() {
             </Reveal>
 
             <ul className="grid content-between gap-x-12 gap-y-12 sm:grid-cols-2 lg:col-span-7">
-              {assurances.map((a, i) => (
+              {assurances.map((a) => (
                 <Reveal as="li" key={a.title}>
                   <RevealRule />
                   <h3 className="mt-6 text-h3 font-light text-white">{a.title}</h3>
@@ -456,7 +465,7 @@ export default function HomePage() {
           />
 
           <ul className="mt-12 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
-            {neighbourhood.slice(0, 6).map((p, i) => (
+            {neighbourhood.slice(0, 6).map((p) => (
               <Reveal as="li" key={p.name} className="bg-white p-6">
                 <p className="label-caps text-charcoal-60">{p.kind}</p>
                 <p className="mt-3 text-body text-navy">{p.name}</p>

@@ -140,6 +140,34 @@ export function ResidenceSchema({ residence }: { residence: Residence }) {
   });
 }
 
+/**
+ * The questions guests ask, in the form search engines read.
+ *
+ * The rate card carries eight real answers, written for guests and confirmed by
+ * the owner and it was publishing none of them as data. FAQ markup is one of
+ * the few things that can put an answer straight into a result, which for
+ * "can you pick me up from the airport lusaka" is the whole ball game.
+ *
+ * Generated from the same `faqs` array the page renders, so the marked-up
+ * answer and the visible answer are the same string. A schema that disagrees
+ * with the page is treated as deceptive, which is the note at the top of this
+ * file and the reason nothing here is written out by hand.
+ *
+ * Rendered ONLY on the page that shows them. Marking up an answer that is not
+ * visible on the page it is marked up on is against Google's own rule.
+ */
+export function FaqSchema({ items }: { items: readonly { q: string; a: string }[] }) {
+  return json({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  });
+}
+
 /** Breadcrumbs, so search shows the path rather than a bare URL. */
 export function BreadcrumbSchema({ trail }: { trail: { name: string; path: string }[] }) {
   return json({
