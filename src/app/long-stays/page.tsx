@@ -109,9 +109,20 @@ export default function LongStaysPage() {
               </ul>
             </div>
 
+            {/*
+              A kitchen, not a desk.
+
+              This slot held `r1-desk`, a stock photograph of somebody else's
+              studio, and the batch of real photographs the owner sent has no
+              desk in it. A kitchen is the better argument here anyway: the
+              block beside it is about being invoiced monthly and having
+              housekeeping on your own schedule, which is the difference between
+              living somewhere and staying in a hotel. Cooking for yourself is
+              what that difference looks like.
+            */}
             <Figure
-              name="r1-desk"
-              alt="A work desk in one of the residences"
+              name="r2-kitchen"
+              alt="The kitchen in Mulima, fridge, oven and microwave"
               ratio="4 / 5"
               reveal
               className="rounded-md lg:col-span-6"

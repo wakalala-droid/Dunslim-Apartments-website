@@ -12,6 +12,7 @@ import { site } from "@/lib/site";
 import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
+import { cn } from "@/lib/cn";
 
 export function generateStaticParams() {
   return residences.map((r) => ({ slug: r.slug }));
@@ -77,6 +78,23 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
   const { name, summary, description, amenities, photos, bedrooms, sleeps, slug, namedAfter } =
     residence;
 
+  /*
+    The photograph at the top of the page, and what is left for the gallery.
+
+    Each apartment now opens on its own front door, which carries a brass plaque
+    with the name on it. That is a different picture from the one on its card,
+    deliberately: see the note on `hero` in lib/content.ts.
+
+    The two lines move together. When the hero is the door, nothing has been
+    used up and the gallery below shows every room. When there is no door
+    photograph the page falls back to the first room, exactly as it used to, and
+    the gallery has to skip that first entry or the same picture appears twice
+    on one screen.
+  */
+  const heroId = residence.hero ?? photos[0]?.id ?? "";
+  const heroCaption = residence.hero ? "the front door" : (photos[0]?.caption ?? "interior");
+  const gallery = residence.hero ? photos : photos.slice(1);
+
   return (
     <>
       <ResidenceSchema residence={residence} />
@@ -88,18 +106,73 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         ]}
       />
 
-      {/* The room, before the words. */}
-      <section className="on-navy under-header relative isolate flex min-h-[420px] items-end bg-navy md:min-h-[68vh]">
+      {/*
+        THE DOOR, BEFORE THE WORDS.
+
+        Each apartment opens on its own front door, which carries a brass plaque
+        with the name on it. That photograph behaves differently from a room and
+        this section is built around the difference.
+
+        A room is a wide, forgiving picture: crop a strip off it in any
+        direction and it is still a room. A plaque is not. It runs across two
+        thirds of the width of its frame and about a third of the height, and
+        the moment either edge is cropped the name stops being readable, which
+        is the entire reason for leading with it. The first attempt at this
+        cropped `cover` into a tall band on a phone and opened the Kaunda page
+        on a door reading KAUND.
+
+        So there are two layouts, and the breakpoint is where the arithmetic
+        stops working rather than where a device is.
+
+        UNDER md, THE DOOR AND THE NAME ARE STACKED. On a 390px phone the header
+        takes 85px and the eyebrow and title take 171px more. For the plaque to
+        clear the header AND leave room for the title beneath it, the band would
+        have to be at least 365px tall, which at that width crops the sides and
+        eats the last letter. There is no height that satisfies both, so the
+        overlay is abandoned: the door runs as a band at 62vw, where the whole
+        plaque fits with about sixty pixels to spare either side, and the name
+        sits below it on navy. The scrim at the foot of the photograph runs into
+        that navy, so the two read as one block rather than as two.
+
+        FROM md UP, THE NAME SITS OVER THE DOOR, as it does on every other hero
+        on this site. The height is tied to the width rather than to the screen:
+        `min(68vh, 74vw)`. On a laptop 68vh is much the smaller of the two and
+        nothing changes. On a portrait tablet, where 68vh would be 696px against
+        768px of width and would crop the plaque to within half a per cent of
+        its edge, 74vw takes over and holds the frame at four to three.
+
+        The vertical crop is held above centre. The plaque sits a little above
+        the middle of its frame, so a centre crop puts its top edge underneath
+        the fixed header. 32 per cent drops the whole plaque clear and leaves
+        plain wood at the foot of the band for the name.
+
+        All of it is conditional on there BEING a door photograph. A residence
+        that falls back to a room keeps the old overlay and the centre crop,
+        which is what a room wants.
+      */}
+      <section
+        className={cn(
+          "on-navy under-header relative isolate bg-navy",
+          residence.hero
+            ? "md:flex md:h-[min(68vh,74vw)] md:items-end"
+            : "flex min-h-[420px] items-end md:min-h-[68vh]",
+        )}
+      >
         <Figure
-          name={photos[0]?.id ?? ""}
-          alt={`${name}, ${photos[0]?.caption ?? "interior"}`}
+          name={heroId}
+          alt={`${name}, ${heroCaption}`}
           cover
           priority
           scrim="bottom"
           sizes="100vw"
-          className="absolute inset-0 -z-10"
+          className={cn(
+            residence.hero
+              ? "relative h-[62vw] w-full md:absolute md:inset-0 md:h-auto md:-z-10"
+              : "absolute inset-0 -z-10",
+          )}
+          imgClassName={residence.hero ? "object-[center_32%]" : undefined}
         />
-        <Container wide className="pb-12 pt-12 md:pb-16 md:pt-16">
+        <Container wide className="relative pb-12 pt-8 md:pb-16 md:pt-16">
           <Eyebrow tone="onNavy">Residence</Eyebrow>
           <h1 className="mt-4 text-h1 font-extralight text-white md:text-[56px] md:leading-[1.05]">
             {name}
@@ -250,11 +323,11 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
         <Container wide>
           <SectionHead onNavy eyebrow="The rooms" title={`Inside ${name}.`} />
 
-          {/* The first photograph is already the page hero, so it is not repeated. */}
+          {/* `gallery` has already dropped anything the hero above is using. */}
           <CoverFlow
             className="mt-16"
             label={`${name}, photographs`}
-            slides={photos.slice(1).map((p) => ({
+            slides={gallery.map((p) => ({
               name: p.id,
               alt: `${name}, ${p.caption}`,
               caption: p.caption,

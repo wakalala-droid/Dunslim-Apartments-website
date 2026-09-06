@@ -250,6 +250,29 @@ export type Residence = {
    */
   amenities: string[];
   /**
+   * THE PHOTOGRAPH THAT OPENS THE APARTMENT'S OWN PAGE.
+   *
+   * A key in the photo manifest, exactly like the entries in `photos`, but held
+   * apart from them because it does a different job. Each of the three doors
+   * carries a brass plaque with the apartment's name on it, and that is the
+   * frame the owner asked to lead with: a guest arriving on /residences/kaunda
+   * sees the door they will actually stand in front of, with KAUNDA on it,
+   * before they see a single room.
+   *
+   * It is a separate field rather than simply the first entry in `photos`
+   * because `photos[0]` is not only the page hero. It is also the cover on
+   * every residence card, the thumbnail in the booking flow and the picture
+   * that renders when a link is pasted into WhatsApp, which is how this
+   * property spreads in Lusaka. Three cards side by side, each showing a
+   * close-up of a door, would give a guest choosing between them nothing to
+   * choose on. The door opens the page; a room still sells the card.
+   *
+   * Optional. Leave it out and the page falls back to `photos[0]`, exactly as
+   * it behaved before, so a fourth apartment added without a door photograph
+   * still renders.
+   */
+  hero?: string;
+  /**
    * Photo slots. `id` is a key in the photo manifest (src/lib/photos.ts),
    * which maps to a file in /public/photos. Replace the file, keep the key.
    */
@@ -295,11 +318,15 @@ export const residences: Residence[] = [
       "Air conditioning",
       "Secure parking, one vehicle",
     ],
+    hero: "r1-door",
     photos: [
       { id: "r1-living", caption: "Living room, from the entrance" },
-      { id: "r1-bedroom", caption: "Bedroom" },
+      { id: "r1-living-2", caption: "The armchairs, by the window" },
+      { id: "r1-dining", caption: "Dining table, by the window" },
+      { id: "r1-bedroom", caption: "Main bedroom" },
+      { id: "r1-bedroom-2", caption: "Second bedroom" },
       { id: "r1-kitchen", caption: "Kitchen" },
-      { id: "r1-desk", caption: "Work desk" },
+      { id: "r1-bath", caption: "Main bathroom" },
     ],
   },
   {
@@ -325,11 +352,15 @@ export const residences: Residence[] = [
       "Dining table, seats four",
       "Secure parking, one vehicle",
     ],
+    hero: "r2-door",
     photos: [
       { id: "r2-living", caption: "Living room" },
+      { id: "r2-living-2", caption: "The armchairs, in the afternoon" },
+      { id: "r2-dining", caption: "Dining table, seats four" },
       { id: "r2-bedroom-1", caption: "Main bedroom" },
       { id: "r2-bedroom-2", caption: "Second bedroom" },
-      { id: "r2-kitchen", caption: "Kitchen and dining" },
+      { id: "r2-kitchen", caption: "Kitchen" },
+      { id: "r2-bath", caption: "Main bathroom" },
     ],
   },
   {
@@ -360,11 +391,14 @@ export const residences: Residence[] = [
       "Dining table, seats six",
       "Secure parking, two vehicles",
     ],
+    hero: "r3-door",
     photos: [
       { id: "r3-living", caption: "Living room" },
+      { id: "r3-dining", caption: "Dining table" },
       { id: "r3-bedroom-1", caption: "Main bedroom" },
       { id: "r3-bedroom-2", caption: "Second bedroom" },
-      { id: "r3-kitchen", caption: "Kitchen and dining" },
+      { id: "r3-kitchen", caption: "Kitchen" },
+      { id: "r3-bath", caption: "Bathroom" },
     ],
   },
 ];
