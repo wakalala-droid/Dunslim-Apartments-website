@@ -455,14 +455,12 @@ export default function HomePage() {
             intro="Quiet enough to sleep, close enough that you are not leaving at dawn for a morning meeting."
           />
 
-          <Figure
-            name="exterior"
-            alt="The property seen from the road"
-            ratio="21 / 9"
-            reveal
-            className="mt-12 rounded-md"
-            sizes="100vw"
-          />
+          {/*
+            A wide banner of the property from the road belongs here and there
+            is no such photograph. What was here was a stock house in Australia.
+            The heading and the distances stand on their own until the owner
+            sends one taken at the gate.
+          */}
 
           <ul className="mt-12 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
             {neighbourhood.slice(0, 6).map((p) => (

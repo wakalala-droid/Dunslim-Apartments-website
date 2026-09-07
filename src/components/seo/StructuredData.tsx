@@ -74,7 +74,18 @@ export function LodgingSchema() {
       it in a result. Absolute, because a crawler has no page to resolve a
       relative path against.
     */
-    image: [`${site.url}/og-default.jpg`, `${site.url}/photos/exterior.jpg`],
+    /*
+      These must be files that exist. The second entry was
+      `/photos/exterior.jpg`, a stock photograph of a house in Australia, and
+      when that was deleted this line kept pointing at it, so the one field that
+      decides whether Google puts a picture beside the listing was aimed at a
+      404. Now the three apartments' own leading photographs, which are the
+      pictures a result should show anyway.
+    */
+    image: [
+      `${site.url}/og-default.jpg`,
+      ...residences.map((r) => `${site.url}/photos/${r.photos[0]?.id}.jpg`),
+    ],
     // Kwacha only. This said "ZMW, USD" long after the dollar switch was removed.
     currenciesAccepted: "ZMW",
     paymentAccepted: "Visa, Mastercard, MTN Mobile Money, Airtel Money, Bank transfer",

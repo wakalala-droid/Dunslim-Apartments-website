@@ -83,10 +83,12 @@ export function CoverFlow({
   const askedForIt = useRef(false);
   const [spoken, setSpoken] = useState("");
 
-  const go = useCallback(
-    (i: number) => setCurrent(((i % total) + total) % total),
-    [total],
-  );
+  /*
+    `go(i)`, a jump straight to a numbered slide, lived here for the row of
+    dots. The dots are gone (see the note beside the controls) and nothing else
+    ever jumped: the arrows, the keys and a swipe all step by one. Removed
+    rather than left unused.
+  */
   const next = useCallback(() => setCurrent((i) => (i + 1) % total), [total]);
   const prev = useCallback(() => setCurrent((i) => (i - 1 + total) % total), [total]);
 
@@ -210,18 +212,25 @@ export function CoverFlow({
             <ChevronLeft size={18} strokeWidth={1.75} aria-hidden />
           </button>
 
-          <div className="cf-dots">
-            {slides.map((s, i) => (
-              <button
-                key={s.name}
-                type="button"
-                onClick={() => byHand(() => go(i))}
-                aria-label={`Show photograph ${i + 1} of ${total}`}
-                aria-current={i === current ? "true" : undefined}
-                className={cn("cf-dot", i === current && "cf-dot-on")}
-              />
-            ))}
-          </div>
+          {/*
+            A COUNT, NOT A ROW OF DOTS.
+
+            There used to be one dot per photograph. That was reasonable when
+            each apartment had four; with twenty-nine it became a strip of
+            twenty-nine identical circles running the width of the page, which
+            the owner rightly called out. Nobody aims at the nineteenth dot of
+            twenty-nine, and on a phone they were 44px targets packed edge to
+            edge, so a thumb reaching for one hit its neighbour.
+
+            The count does the one job the dots actually did: it says where you
+            are and how many there are. Tabular figures so the number does not
+            jitter as it counts up.
+          */}
+          <p className="cf-count" aria-hidden>
+            <span className="cf-count-now">{current + 1}</span>
+            <span className="cf-count-sep">/</span>
+            {total}
+          </p>
 
           <button
             type="button"

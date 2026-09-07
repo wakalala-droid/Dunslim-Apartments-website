@@ -574,47 +574,45 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-.cf-dots {
-  display: flex;
-  align-items: center;
-}
-
 /*
-  The dot is 8px but its button is 44px, so the target is honest without the
-  marker being fat. Brass carries the current one: the brand book gives brass
-  rules and single moments of emphasis, which is exactly this.
+  THE COUNT BETWEEN THE ARROWS.
+
+  This was a row of dots, one per photograph. Fine at four; at twenty-nine it
+  was a strip of identical circles running the width of the page, each one a
+  44px target packed against its neighbours, and no one has ever aimed for the
+  nineteenth dot of twenty-nine.
+
+  The count says the same two things the dots said, where you are and how many
+  there are, in less room and without pretending to be a control. It is marked
+  aria-hidden because the live region above already announces "Photograph 4 of
+  29" whenever the guest moves, and hearing the number twice is worse than
+  hearing it once.
+
+  Tabular figures so the digits do not shift width as the number counts up.
 */
-.cf-dot {
-  position: relative;
-  /* 44px square, like every other icon control on the site. The marker inside
-     stays 8px; the target around it does not have to be visible to be real. */
-  width: 44px;
-  height: 44px;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
+.cf-count {
+  font-size: 15px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: rgba(15, 34, 52, 0.6);
+  /* Wide enough for "29 / 29" so the arrows do not slide as the count grows. */
+  min-width: 72px;
+  text-align: center;
+  user-select: none;
 }
-.cf-dot::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  height: 8px;
-  width: 8px;
-  transform: translate(-50%, -50%);
-  border-radius: 9999px;
-  background: rgba(15, 34, 52, 0.25);
-  transition:
-    width 300ms cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+.on-navy .cf-count {
+  color: rgba(255, 255, 255, 0.6);
 }
-.on-navy .cf-dot::after {
-  background: rgba(255, 255, 255, 0.3);
+.cf-count-now {
+  color: var(--navy);
 }
-.cf-dot-on::after,
-.on-navy .cf-dot-on::after {
-  width: 26px;
-  background: var(--brass);
+.on-navy .cf-count-now {
+  color: #ffffff;
+}
+.cf-count-sep {
+  margin: 0 6px;
+  opacity: 0.5;
 }
 
 /*

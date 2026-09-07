@@ -188,6 +188,20 @@ export const rates = {
     // The two that lead are the two no platform listing can offer.
     carLine,
     transferLine,
+    /*
+      ONE POOL, ON THE PROPERTY, SHARED BY THE THREE APARTMENTS.
+
+      Confirmed by the owner, 7 September 2026, including that it is shared
+      rather than one each. It sits in `included` and not in any apartment's
+      amenity list for exactly that reason: those lists are headed "With this
+      residence" and a guest reading three of them would otherwise count three
+      pools. The wording carries "shared" so nobody arrives expecting their own.
+
+      CONFIRM, and worth having before the summer: whether it is heated, whether
+      it is fenced or gated (the first thing a family with a small child asks),
+      and the hours it can be used. The site says none of these yet.
+    */
+    "The swimming pool, shared with the other two apartments",
     "Housekeeping",
     "Linen and towels",
     "Water and electricity",
@@ -651,6 +665,12 @@ export const faqs = [
   {
     q: "Do I really get a car?",
     a: `Yes. Each of the ${inWords(fleet.count)} residences has its own ${fleet.model} and it is not shared with anyone. We drive you in from the airport, then it is yours to use until you leave. It is included in the nightly rate.`,
+  },
+  {
+    q: "Is there a pool?",
+    // Worth adding once known: heated or not, whether it is gated, and the
+    // hours. A family with a small child asks the second of those first.
+    a: "Yes. There is one pool on the property, shared by the three apartments, and using it is included in your rate.",
   },
   {
     q: "Is there security at night?",

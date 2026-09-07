@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
-import { Figure } from "@/components/ui/Figure";
 import { Reveal } from "@/components/ui/Reveal";
 import { business, neighbourhood, arrival, assurances, fleet, airportMinutes, residences } from "@/lib/content";
 import { money } from "@/lib/format";
@@ -141,15 +140,34 @@ export default function LocationPage() {
       */}
       <Section ground="stone">
         <Container wide>
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-7">
+          {/*
+            The map ran seven columns wide with a photograph of the approach
+            beside it in the other five. That photograph was a stock house in
+            Australia captioned "The approach from Makeni Road", which is the
+            one thing on this page a guest could act on and be misled by. Taken
+            out rather than replaced: there is no photograph of the gate in the
+            owner's shoot, and an interior in that slot would answer a question
+            nobody asked. The map has the row to itself until there is a real
+            one, which is a better page than a true map beside a false picture.
+          */}
+          {/*
+            NOT the full width. Given all twelve columns the 768x512 map drew
+            1329px across and 886px tall, nearly a whole screen of street plan,
+            which is more page than a map of one road has any business taking.
+            Held at 880px and centred instead: the same map at its natural
+            three-to-two, about six hundred pixels tall, with the pin still in
+            the middle of it. `sizes` matches, so a phone is not sent a file
+            sized for a column that no longer exists.
+          */}
+          <div className="mx-auto max-w-[880px]">
+            <div>
               <div className="overflow-hidden rounded-md ring-1 ring-navy/10">
                 <Image
                   src="/map/makeni-road.png"
                   alt={`A street map of Makeni Road, Lusaka, with ${business.name} marked at its centre`}
                   width={768}
                   height={512}
-                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  sizes="(max-width: 920px) 100vw, 880px"
                   className="h-auto w-full"
                 />
               </div>
@@ -164,18 +182,6 @@ export default function LocationPage() {
                   OpenStreetMap
                 </a>{" "}
                 contributors. The brass ring is us.
-              </p>
-            </div>
-            <div className="lg:col-span-5">
-              <Figure
-                name="exterior"
-                alt="The approach to the property from Makeni Road"
-                ratio="4 / 3"
-                className="rounded-md"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
-              <p className="mt-3 text-caption text-charcoal-60">
-                The approach from Makeni Road.
               </p>
             </div>
           </div>
