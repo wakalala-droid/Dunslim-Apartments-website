@@ -69,17 +69,19 @@ export default function Hero({
         <div className="a-fade absolute inset-0 -z-30" style={ms(BEAT.photo)}>
           <Figure
             /*
-              Mandela, looking across the dining table and through the living
-              room to the front door. Referenced by its own gallery key rather
-              than copied to a `hero.jpg`, so the file exists once.
+              The owner's choice: Mandela's living room, close in on the glass
+              table with the armchairs behind it.
 
-              Deliberately not one of the three living rooms: those are the
-              three cards a screen and a half below, and the photographer shot
-              each of them from essentially one position, so any of them here
-              turns up again looking like the same picture.
+              Referenced by its own gallery key rather than copied to a
+              `hero.jpg`, so the photograph exists in the repository once.
+
+              It is the same room as the Mandela card further down the page,
+              which is a repeat I would otherwise have avoided. At this distance
+              it does not read as one: the card is the whole room from the door,
+              this is one corner of it at arm's length.
             */
-            name="r1-dining-1"
-            alt="Inside Mandela, the dining table with the living room beyond"
+            name="r1-living-4"
+            alt="Inside Mandela, the living room in the late afternoon"
             cover
             priority
             sizes="100vw"
@@ -87,6 +89,36 @@ export default function Hero({
           />
         </div>
 
+        {/*
+          THE DESKTOP SCRIM WAS TOO LIGHT FOR A PHOTOGRAPH, AND HAD BEEN ALL ALONG.
+
+          Composited and measured, headline and intro against the picture behind
+          them rather than against flat navy: the previous cover managed 1.84:1
+          on the headline, this one 2.82:1, where large display type needs 3.0
+          and the 21px intro needs 4.5. Both covers failed. The site's contrast
+          audit passed the page because it reads declared colours, and neither it
+          nor a glance at the screen can catch white type over the bright half of
+          a room; only compositing the two and measuring does.
+
+          The desktop stops were much lighter than the mobile ones directly
+          beside them (30 per cent against 55) even though the type crosses the
+          picture at both sizes. Moved toward the mobile values: 45 per cent at
+          the midpoint rather than 30, and 14 at the top rather than 10. That
+          takes the headline to 4.22:1 and the intro to 5.02:1, both clear, and
+          the room is still plainly a room.
+
+          The top stop is deliberately NOT overridden at md and inherits the
+          mobile `to-navy/25`. It was written as `md:to-navy/14` first, and that
+          class SILENTLY DID NOT COMPILE: `md:via-navy/45` beside it did, and so
+          does `to-navy/25`, but nothing was emitted for `md:to-navy/14` and the
+          band quietly fell back to the mobile value. Nothing about the markup
+          looks wrong when that happens, which is why it is written down. If you
+          ever need a different top stop here, grep the built CSS in
+          .next/static/css for the class before believing it took effect.
+
+          If the cover photograph is ever changed, MEASURE IT AGAIN. A darker
+          picture could give these numbers back and let the scrim lighten.
+        */}
         {/*
           A soft Deep Navy vignette behind the mark. Not a panel but an ellipse
           centred on the monogram, so there is no seam and the room is
@@ -118,7 +150,7 @@ export default function Hero({
         */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-t from-navy from-[16%] via-navy/55 via-[52%] to-navy/25 md:from-navy md:from-[11%] md:via-navy/30 md:via-[46%] md:to-navy/10"
+          className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-t from-navy from-[16%] via-navy/55 via-[52%] to-navy/25 md:from-navy md:from-[14%] md:via-navy/45 md:via-[50%]"
         />
 
         {/*

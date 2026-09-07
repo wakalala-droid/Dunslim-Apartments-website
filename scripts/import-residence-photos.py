@@ -42,7 +42,7 @@ LONG_EDGE = 2560
 LONG_EDGE_WIDE = 3200
 QUALITY = 82
 
-WIDE = {"r1-door", "r2-door", "r3-door", "r1-dining-1", "r2-living-2"}
+WIDE = {"r1-door", "r2-door", "r3-door", "r1-living-4", "r2-living-2"}
 
 # key -> (folder, file). The key is what src/lib/content.ts refers to.
 #
@@ -58,13 +58,13 @@ MAPPING = {
     "r1-living-1": ("Mandela", "untitled-2.jpg"),
     "r1-living-2": ("Mandela", "untitled.jpg"),
     "r1-living-3": ("Mandela", "untitled-9.jpg"),
+    # The homepage cover, chosen by the owner, which is why it is in the wide
+    # set: it is the only photograph on the site that runs the full width of a
+    # laptop screen.
     "r1-living-4": ("Mandela", "untitled-3.jpg"),
     "r1-living-5": ("Mandela", "untitled-7.jpg"),
     "r1-living-6": ("Mandela", "untitled-48.jpg"),
 
-    # Also the homepage cover, which is why it is in the wide set. It looks
-    # across the table, through the living room and out at the front door, so
-    # it reads as an apartment rather than as a sofa.
     "r1-dining-1": ("Mandela", "untitled-5.jpg"),
     "r1-dining-2": ("Mandela", "untitled-6.jpg"),
     "r1-dining-3": ("Mandela", "untitled-4.jpg"),
