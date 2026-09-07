@@ -23,6 +23,31 @@
  * `frame-ancestors` in the CSP and `X-Frame-Options` say the same thing twice,
  * on purpose: the header is what older browsers understand.
  */
+/*
+  WHERE THE BOOKING SYSTEM LIVES, AS FAR AS THE BROWSER IS CONCERNED.
+
+  `connect-src 'self'` was the whole policy, and it is exactly right until the
+  day this site starts asking another machine whether a date is free. Then it
+  becomes the quietest possible outage: the API answers correctly, CORS allows
+  it, and the BROWSER throws the response away before the page ever sees it.
+  What a guest gets is "we could not check those dates automatically", forever,
+  with nothing wrong at either end.
+
+  It is read from the same variable the booking code uses, so the policy cannot
+  drift away from the address it is supposed to allow. Unset, and the site is
+  not connected to AI-BOS anyway, so the policy stays exactly as strict as it
+  was.
+*/
+const AIBOS_API_ORIGIN = (() => {
+  const raw = (process.env.NEXT_PUBLIC_AIBOS_API_URL || "").trim();
+  if (!raw) return "";
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return "";
+  }
+})();
+
 const SECURITY_HEADERS = [
   {
     key: "Content-Security-Policy",
@@ -33,7 +58,7 @@ const SECURITY_HEADERS = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self'",
-      "connect-src 'self'",
+      ["connect-src 'self'", AIBOS_API_ORIGIN].filter(Boolean).join(" "),
       "form-action 'self'",
       "frame-ancestors 'none'",
       "base-uri 'self'",

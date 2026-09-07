@@ -18,7 +18,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -111,7 +111,44 @@ if (/vercel\.app|\/api\/proxy/.test(API)) {
   process.exit(1);
 }
 
-// 1. Is anything there?
+// 1. Will this site's OWN policy let the browser make the call?
+//
+// This check exists because everything else here passed while the site was
+// completely disconnected. The API answered, CORS allowed it, the token was
+// right, and the browser threw every response away because the site's
+// Content-Security-Policy said `connect-src 'self'`. Node has no CSP, so a
+// script that only talks to the API is blind to it. It is the quietest failure
+// in the whole connection and it belongs first.
+process.env.NEXT_PUBLIC_AIBOS_API_URL = API;
+try {
+  const config = await import(pathToFileURL(join(root, "next.config.mjs")).href);
+  const groups = await config.default.headers();
+  const csp = groups
+    .flatMap((g) => g.headers ?? [])
+    .find((h) => h.key === "Content-Security-Policy");
+
+  if (csp) {
+    const connect = csp.value
+      .split(";")
+      .map((d) => d.trim())
+      .find((d) => d.startsWith("connect-src"));
+    const origin = new URL(API).origin;
+    const allowed = !connect || connect.includes(origin) || connect.includes("*");
+    if (!allowed) {
+      bad("this site's Content-Security-Policy blocks the API.");
+      note(`  ${connect}`);
+      note(`  needs: ${origin}`);
+      note("Every date check would fail in a browser and nowhere else.");
+      note("Fixed in next.config.mjs, then redeploy.");
+      process.exit(1);
+    }
+    ok("the site's own policy allows the API");
+  }
+} catch (e) {
+  note(`(could not read next.config.mjs: ${e.message})`);
+}
+
+// 2. Is anything there?
 let health;
 try {
   health = await get(`${API}/health`);
@@ -122,7 +159,7 @@ try {
 if (health.status !== 200) stop(`The API answered ${health.status} on /health.`);
 ok(`API is up (build ${health.body?.build_sha ?? "?"} on ${health.body?.host ?? "?"})`);
 
-// 2. Does the token resolve to a property?
+// 3. Does the token resolve to a property?
 const units = await get(`${API}/public/stay/${TOKEN}/units`);
 
 if (units.status === 503) {
@@ -146,7 +183,7 @@ if (list.length === 0) {
     "Add them in AI-BOS -> Hospitality -> Units. Nothing can be booked until then.");
 }
 
-// 3. Do the handles match the ones this site uses?
+// 4. Do the handles match the ones this site uses?
 const wanted = siteSlugs();
 const have = new Set(list.map((u) => u.slug));
 const missing = wanted.filter((s) => !have.has(s));
@@ -170,7 +207,7 @@ if (missing.length) {
     "handle instead, so a unit named exactly Mandela already answers to mandela.");
 }
 
-// 4. Does a real availability question get a real answer?
+// 5. Does a real availability question get a real answer?
 const start = new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10);
 const end = new Date(Date.now() + 32 * 86_400_000).toISOString().slice(0, 10);
 const probe = await get(
