@@ -217,6 +217,22 @@ checked, and never blocked because the far end blipped.
 To take the site off AI-BOS, rotate or clear the token in the same card. The
 site falls back to the email path on its own.
 
+### Check it worked
+
+```
+npm run check:aibos
+```
+
+It asks the API the same questions this site asks, in order, and names the step
+that is wrong: no token, the wrong address, a token that matches nothing, a
+property with no units, a residence here with no unit behind it. It reads
+`.env.local` then the real environment, so it works locally and in a deploy log,
+and it only ever reads. No booking is ever sent.
+
+The check that matters most is the last one. A slug that does not match is the
+only failure with no visible symptom: the site deploys, looks perfect, and that
+one residence quietly answers "we could not check those dates" forever.
+
 ---
 
 ## Rules this site is built to
