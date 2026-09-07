@@ -226,7 +226,7 @@ export default function EnquiryForm() {
             id="eq-message"
             value={f.message}
             onChange={set("message")}
-            placeholder="Six weeks from mid-October for two consultants, one needs a desk and a quiet room for calls."
+            placeholder="Six weeks from mid-October for two consultants, one needs a quiet room for calls."
           />
         </Field>
       </div>

@@ -68,8 +68,18 @@ export default function Hero({
         {/* The photograph. */}
         <div className="a-fade absolute inset-0 -z-30" style={ms(BEAT.photo)}>
           <Figure
-            name="hero"
-            alt="A Dunslim living room in the late afternoon"
+            /*
+              Mandela, looking across the dining table and through the living
+              room to the front door. Referenced by its own gallery key rather
+              than copied to a `hero.jpg`, so the file exists once.
+
+              Deliberately not one of the three living rooms: those are the
+              three cards a screen and a half below, and the photographer shot
+              each of them from essentially one position, so any of them here
+              turns up again looking like the same picture.
+            */
+            name="r1-dining-1"
+            alt="Inside Mandela, the dining table with the living room beyond"
             cover
             priority
             sizes="100vw"

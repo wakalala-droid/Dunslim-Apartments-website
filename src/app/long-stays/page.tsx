@@ -121,7 +121,7 @@ export default function LongStaysPage() {
               what that difference looks like.
             */}
             <Figure
-              name="r2-kitchen"
+              name="r2-kitchen-1"
               alt="The kitchen in Mulima, fridge, oven and microwave"
               ratio="4 / 5"
               reveal

@@ -36,8 +36,8 @@ export default function ResidencesPage() {
             intro={`All three are furnished, serviced and run the same way. Each one comes with its own ${fleet.model} and a driver to meet your flight. The only real difference between them is how much space you need.`}
           />
           <Figure
-            name="detail-living"
-            alt="A Dunslim living room"
+            name="r2-living-2"
+            alt="The living room in Mulima"
             ratio="21 / 9"
             priority
             className="mt-12 rounded-md"

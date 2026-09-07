@@ -262,8 +262,8 @@ export default function RatesPage() {
                 intro="None of this is an extra. It is all in the nightly rate."
               />
               <Figure
-                name="r1-kitchen"
-                alt="A Dunslim kitchen"
+                name="r1-kitchen-1"
+                alt="The kitchen in Mandela, fridge and microwave"
                 ratio="4 / 3"
                 className="mt-12 rounded-md"
                 sizes="(max-width: 1024px) 100vw, 40vw"

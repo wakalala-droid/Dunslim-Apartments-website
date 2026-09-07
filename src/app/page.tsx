@@ -196,8 +196,8 @@ export default function HomePage() {
               className="relative hidden min-h-[260px] overflow-hidden rounded-md lg:col-span-5 lg:block"
             >
               <Figure
-                name="detail-bath"
-                alt="Bathroom detail"
+                name="r1-bath-5"
+                alt="The second bathroom in Mandela, shower and basin"
                 cover
                 className="absolute inset-0"
                 sizes="(max-width: 1024px) 0px, 42vw"
@@ -331,8 +331,8 @@ export default function HomePage() {
         <Container wide>
           <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <Figure
-              name="detail-living"
-              alt="A living room set up for a long stay"
+              name="r2-living-2"
+              alt="The living room in Mulima, from the dining end"
               ratio="5 / 4"
               reveal
               className="rounded-md lg:col-span-6"
