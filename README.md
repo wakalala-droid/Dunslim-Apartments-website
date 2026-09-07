@@ -172,18 +172,25 @@ ratio, measured off the master: horizontal 4.092:1, vertical 1:0.92, monogram
 
 ## Connecting AI-BOS
 
-[`src/lib/availability.ts`](src/lib/availability.ts) is the only file that
-changes. Set two environment variables and it switches from local to live:
+**The endpoints exist now.** They shipped in `aibos-api` on 2026-09-07 and the
+site needs two environment variables and nothing else.
 
 ```
-NEXT_PUBLIC_AIBOS_API_URL=https://…
-NEXT_PUBLIC_AIBOS_SITE_TOKEN=…
+NEXT_PUBLIC_AIBOS_API_URL=https://your-api-host
+NEXT_PUBLIC_AIBOS_SITE_TOKEN=the-token-from-the-dashboard
 ```
 
-It expects three public, token-scoped endpoints that do not exist yet. Every
-`/hospitality/*` route currently sits behind `require_user` + `require_feature`;
-the only unauthenticated route in the module is the iCal feed
-(`GET /hospitality/ical/{token}.ics`). These mirror that same token pattern:
+Get them from AI-BOS: **Hospitality -> Channels -> Your own website ->
+Connect my website**. That card shows both values with a copy button beside
+each. Set them in the Vercel project and redeploy: Next.js bakes
+`NEXT_PUBLIC_*` into the build, so saving them without a redeploy changes
+nothing and looks like the save failed.
+
+`NEXT_PUBLIC_AIBOS_API_URL` is the API's own address, not the AI-BOS website's.
+The website's `/api/proxy` attaches the signed-in owner's session, and this site
+has none.
+
+The three endpoints, all token-scoped and unauthenticated by design:
 
 ```
 GET  /public/stay/{site_token}/units
@@ -191,13 +198,24 @@ GET  /public/stay/{site_token}/availability?unit_slug=&from=&to=
 POST /public/stay/{site_token}/booking-request
 ```
 
-A booking request lands as `pending`, which is already a blocking status in the
-double-booking guard, so the request holds the dates by itself. The owner
-confirms in the dashboard and the existing spine bridge posts the Sale.
+**`unit_slug` is the residence slug this site already uses** (`mandela`,
+`mulima`, `kaunda`). Set each one in AI-BOS under Hospitality -> Units -> "Web
+address on your own site". Leave it blank there and the unit's name is turned
+into a handle instead, so check the two agree before going live: a slug that
+does not match returns "That residence does not exist."
 
-Until then the flow runs end to end locally: every date is offered and the
-confirmation screen says a person will confirm, which is true and never claims
-a booking is secured.
+A booking request lands as `pending`, which is already a blocking status in the
+double-booking guard, so the request holds the dates by itself. **It posts no
+revenue.** The owner confirms in the dashboard and that is what puts the stay in
+the books. The confirmation screen here still says a person will confirm,
+because that is still true.
+
+If the token is wrong or the API is asleep, availability comes back as
+`unknown`, not `available`: a guest is never told a date is free when nobody
+checked, and never blocked because the far end blipped.
+
+To take the site off AI-BOS, rotate or clear the token in the same card. The
+site falls back to the email path on its own.
 
 ---
 
