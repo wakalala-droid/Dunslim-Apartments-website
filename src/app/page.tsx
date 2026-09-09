@@ -57,7 +57,7 @@ export default function HomePage() {
       <Hero
         eyebrow="Serviced residences"
         headline="A room that works as well as it looks."
-        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate and a rate that is always lower than the platforms."
+        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate and a rate that is always lower than other platforms."
         metaLeft={`${business.city} · ${business.country}`}
         metaRight={`${business.street}`}
         /* The fixed brand line, exactly as the cover carries it. The parent
