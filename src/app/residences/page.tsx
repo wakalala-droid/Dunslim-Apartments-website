@@ -32,8 +32,8 @@ export default function ResidencesPage() {
           <SectionHead
             as="h1"
             eyebrow="The residences"
-            title="Three apartments, same standard."
-            intro={`All three are furnished, serviced and run the same way. Each one comes with its own ${fleet.model} and a driver to meet your flight. The only real difference between them is how much space you need.`}
+            title="VIP apartments, same standard."
+            intro={`All three are furnished, serviced and run the same way. Each one has its own ${fleet.model} available to hire. The only real difference between them is how much space you need.`}
           />
           <Figure
             name="r2-living-2"

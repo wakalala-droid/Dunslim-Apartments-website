@@ -153,8 +153,8 @@ export default function EnquiryForm() {
         </dl>
 
         <p className="mt-6 max-w-measure text-caption text-charcoal-80">
-          A {fleet.model} comes with the apartment for the whole engagement and we meet your
-          flight. Nothing is booked or charged until we have agreed the price with you.
+          A {fleet.model} can be hired separately for the whole engagement if you would like one.
+          Nothing is booked or charged until we have agreed the price with you.
         </p>
       </div>
     );

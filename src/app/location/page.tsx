@@ -203,8 +203,8 @@ export default function LocationPage() {
               <SectionHead
                 onNavy
                 eyebrow="Arrival"
-                title="You do not have to find us"
-                intro={`Give us your flight when you book. A driver meets it whatever time it lands, brings you in and hands over the ${fleet.model} that stays with you for the rest of the trip. The distances above are for planning, not for your first night.`}
+                title="Getting here"
+                intro={`The distances below are measured by road, for planning your trip in. If you would like a car for the stay, a ${fleet.model} can be hired at the apartment for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit}.`}
               />
             </div>
 
@@ -221,19 +221,15 @@ export default function LocationPage() {
                 <div>
                   <dt className="label-caps text-brass-60">From the airport</dt>
                   <dd className="mt-2 text-h3 font-light text-white">
-                    Driven
-                    <span className="mt-1 block text-caption text-navy-20">
-                      About {airportMinutes()} minutes
-                    </span>
+                    {airportMinutes()} min
+                    <span className="mt-1 block text-caption text-navy-20">By road</span>
                   </dd>
                 </div>
                 <div>
                   <dt className="label-caps text-brass-60">Your car</dt>
                   <dd className="mt-2 text-h3 font-light text-white">
                     {fleet.model}
-                    <span className="mt-1 block text-caption text-navy-20">
-                      Parked inside the gate
-                    </span>
+                    <span className="mt-1 block text-caption text-navy-20">Available to hire</span>
                   </dd>
                 </div>
               </dl>
@@ -264,7 +260,8 @@ export default function LocationPage() {
                   Check availability
                 </ButtonLink>
                 <p className="text-caption text-navy-20">
-                  From {money(directNightly(cheapest))} a night, with the {fleet.model} included.
+                  From {money(directNightly(cheapest))} a night. A {fleet.model} can be hired
+                  separately.
                 </p>
               </div>
             </div>

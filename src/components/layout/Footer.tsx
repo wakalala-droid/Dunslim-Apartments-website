@@ -135,16 +135,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <p className="label-caps text-brass-60">Licensed</p>
             <p className="mt-6 text-caption leading-relaxed text-navy-20">
-              {business.licence.label}
-              {business.licence.number ? (
-                <>
-                  <br />
-                  No. {business.licence.number}
-                </>
-              ) : null}
-              <br />
-              {/* The date holds together: "Valid to 30" over "June 2028" reads as a fragment. */}
-              Valid to <span className="whitespace-nowrap">{business.licence.validUntil}</span>
+              Registered with all regulatory bodies of Zambia.
             </p>
           </div>
         </div>

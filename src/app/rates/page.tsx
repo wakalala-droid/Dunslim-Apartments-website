@@ -279,7 +279,7 @@ export default function RatesPage() {
                 ))}
               </ul>
 
-              <dl className="mt-12 grid gap-8 sm:grid-cols-3">
+              <dl className="mt-12 grid gap-8 sm:grid-cols-2">
                 <div>
                   <dt className="label-caps text-charcoal-60">Check in</dt>
                   <dd className="mt-2 text-h3 font-light text-navy">{arrival.checkIn}</dd>
@@ -290,15 +290,6 @@ export default function RatesPage() {
                     {arrival.lateCheckOut}
                     <span className="mt-1 block text-caption text-charcoal-80">
                       Booked direct. Otherwise {arrival.checkOut}.
-                    </span>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="label-caps text-charcoal-60">Free cancellation</dt>
-                  <dd className="mt-2 text-h3 font-light text-navy">
-                    {arrival.cancellationHours}h
-                    <span className="mt-1 block text-caption text-charcoal-80">
-                      Before arrival.
                     </span>
                   </dd>
                 </div>

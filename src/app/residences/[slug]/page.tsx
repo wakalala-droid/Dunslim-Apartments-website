@@ -291,10 +291,6 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
                   </li>
                   <li className="flex gap-3">
                     <Check size={16} strokeWidth={2} className="mt-px shrink-0 text-brass" aria-hidden />
-                    Free cancellation to {arrival.cancellationHours}h before arrival
-                  </li>
-                  <li className="flex gap-3">
-                    <Check size={16} strokeWidth={2} className="mt-px shrink-0 text-brass" aria-hidden />
                     Checkout at {arrival.lateCheckOut}, at no charge
                   </li>
                   <li className="flex gap-3">

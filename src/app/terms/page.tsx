@@ -47,12 +47,12 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 export const metadata: Metadata = {
   title: "Booking terms",
   description:
-    "The terms behind every Dunslim booking: free cancellation up to 48 hours before arrival, late checkout, how long-stay rates are applied and what is included in the nightly rate.",
+    "The terms behind every Dunslim booking: cancelling, late checkout, how long-stay rates are applied and what is included in the nightly rate.",
   alternates: { canonical: "/terms" },
   openGraph: {
     title: "Booking terms | Dunslim Apartments",
     description:
-      "Free cancellation, late checkout, how the long-stay rates work and what is included in the nightly rate.",
+      "Cancelling, late checkout, how the long-stay rates work and what is included in the nightly rate.",
     url: "/terms",
   },
 };
@@ -84,14 +84,13 @@ export default function TermsPage() {
           <div className="max-w-measure">
             <h2 className="text-h3 font-light text-navy">Cancelling</h2>
             <p className="mt-3 text-body text-charcoal">
-              You can cancel free of charge up to {arrival.cancellationHours} hours before your
-              arrival date, at {arrival.checkIn} on the day you were due to arrive. Tell us by
-              WhatsApp, by email or by phone. Nothing is charged before we have confirmed your
-              booking, so a cancellation inside that window costs you nothing at all.
+              Cancellation terms are confirmed with you in writing when we confirm your booking,
+              before anything is charged. Tell us by WhatsApp, by email or by phone as soon as you
+              know, and we will let you know exactly where you stand.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              Cancelling later than that, or not arriving, is settled with us directly. We would
-              rather hear from you late than not hear from you.
+              Nothing is charged before we have confirmed your booking. We would rather hear from
+              you late than not hear from you.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">Arriving and leaving</h2>
@@ -101,9 +100,8 @@ export default function TermsPage() {
               That later checkout is part of the direct rate and you do not need to ask for it.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              Arriving late is normal here and it is not a problem. Give us your flight when you
-              book. A driver meets it whatever time it lands and brings you in, to someone waiting
-              at the apartment with the keys.
+              Arriving late is normal here and it is not a problem. Give us a rough time when you
+              book so someone is at the apartment with the keys when you get there.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">What you pay</h2>
@@ -139,23 +137,22 @@ export default function TermsPage() {
 
             <h2 className="mt-12 text-h3 font-light text-navy">The car</h2>
             <p className="mt-3 text-body text-charcoal">
-              There are {inWords(fleet.count)} {fleet.model}, one attached to each residence. Book an
-              apartment and that car is yours for the length of your stay. It is not a pool car and
-              it is not shared with the other apartments.
+              There are {inWords(fleet.count)} {fleet.model}, one attached to each residence. It is
+              not a pool car and it is not shared with the other apartments, but it is not
+              automatic either: hire it separately and it is yours for the length of your stay.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              A driver of ours meets your flight and brings you in. We drive you back out to the
-              airport when you leave. In between, you drive it yourself. It parks inside the gate
-              with you.
+              We do not offer a driver or an airport transfer. You collect the car at the apartment
+              and drive it yourself, start to finish. It parks inside the gate with you.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              The car is part of the nightly rate. There is no separate charge for it, no charge for
-              the airport runs and nothing to settle at the end.
+              Hiring it costs {money(fleet.hireFeeZmw)} a {fleet.hireFeeUnit}, on top of the room
+              rate. It is not part of the nightly rate and it is not charged unless you ask for it.
             </p>
             <p className="mt-3 text-body text-charcoal">
               The driving terms, which cover the licence we need to see, insurance and fuel, are
-              sent to you in writing when your booking is confirmed and before any keys change
-              hands. We would rather you read them in advance than be handed a form at the gate.
+              sent to you in writing when the hire is confirmed and before any keys change hands. We
+              would rather you read them in advance than be handed a form at the gate.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">What is included</h2>

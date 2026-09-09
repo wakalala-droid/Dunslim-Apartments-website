@@ -18,7 +18,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
 import { Honeypot } from "@/components/ui/Honeypot";
 import Summary from "./Summary";
-import { residences, getResidence, arrival, business, rates, maxGuests, fleet } from "@/lib/content";
+import { residences, getResidence, arrival, business, rates, maxGuests } from "@/lib/content";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
 import { money, isoToday, isoPlusDays, prettyDate, isValidIsoDate } from "@/lib/format";
 import { photo } from "@/lib/photos";
@@ -478,8 +478,8 @@ export default function BookingFlow() {
               </p>
               <p className="mt-4 max-w-measure text-body text-charcoal-80">
                 {arrivalTime
-                  ? `We have your arrival details. A driver will meet you and the ${fleet.model} stays with you for the whole stay.`
-                  : `When you reply, send us your flight number. A driver meets it whatever time it lands. The ${fleet.model} then stays with you for the whole stay.`}
+                  ? "We have your arrival time, so someone will be ready with the keys when you get here."
+                  : "When you reply, let us know roughly when you will arrive so someone can be ready with the keys."}
               </p>
             </>
           ) : (
@@ -564,7 +564,7 @@ export default function BookingFlow() {
 
           <p className="mt-8 text-caption text-charcoal-80">
             {recorded
-              ? `Nothing has been charged. You can cancel free of charge up to ${arrival.cancellationHours} hours before arrival.`
+              ? "Nothing has been charged yet. Cancellation terms are confirmed in writing along with the rest of your booking."
               : "Nothing has been charged and nothing has been booked. Message us and we will sort it out."}
           </p>
         </div>
@@ -925,7 +925,7 @@ export default function BookingFlow() {
                   <Field
                     label="Arrival time"
                     htmlFor="arrivalTime"
-                    hint={`Give us the flight number if you are flying in. A driver meets it, whatever time it lands, then drives you in.`}
+                    hint="Roughly when you will arrive, so someone can be ready with the keys."
                     className="sm:col-span-2"
                   >
                     <Input
@@ -1036,7 +1036,7 @@ export default function BookingFlow() {
                 </Button>
 
                 <p className="mt-4 text-caption text-charcoal-80">
-                  Free cancellation up to {arrival.cancellationHours} hours before arrival.{" "}
+                  Nothing is charged until your booking is confirmed. Full{" "}
                   <Link href="/terms" className="underline underline-offset-4 hover:text-navy">
                     Booking terms
                   </Link>

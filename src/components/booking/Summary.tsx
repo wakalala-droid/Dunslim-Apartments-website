@@ -108,7 +108,6 @@ export default function Summary({
           <ul className="mt-6 space-y-2">
             {[
               "No booking fee",
-              `Free cancellation to ${arrival.cancellationHours}h before arrival`,
               `Checkout at ${arrival.lateCheckOut}, no charge`,
               ...rates.included.map((i) => `${i} included`),
             ].map((line) => (

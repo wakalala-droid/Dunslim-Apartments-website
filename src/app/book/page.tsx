@@ -7,7 +7,7 @@ import { business } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Book",
   description:
-    "Check availability and book a Dunslim residence direct: the lowest rate, no booking fee and free cancellation up to 48 hours before arrival.",
+    "Check availability and book a Dunslim residence direct: the lowest rate, no booking fee and nothing added at checkout.",
   alternates: { canonical: "/book" },
   robots: { index: false, follow: true },
 };

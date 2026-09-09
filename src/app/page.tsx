@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Clock, BadgeCheck, PlaneLanding, Car, PlaneTakeoff } from "lucide-react";
+import { ArrowRight, Clock, BadgeCheck, MessageCircle, Car, RotateCcw } from "lucide-react";
 import Hero from "@/components/home/Hero";
 import SearchBar from "@/components/booking/SearchBar";
 import ResidenceCard from "@/components/residences/ResidenceCard";
@@ -18,10 +18,9 @@ import {
   neighbourhood,
   audience,
   fleet,
-  airportMinutes,
 } from "@/lib/content";
 import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
-import { money, inWords } from "@/lib/format";
+import { money } from "@/lib/format";
 import { directNightly, publishedNightly, quote as buildQuote } from "@/lib/pricing";
 import { isoPlusDays, isoToday } from "@/lib/format";
 
@@ -69,8 +68,8 @@ export default function HomePage() {
         <Container wide>
           <SearchBar layout="inline" className="shadow-3" />
           <p className="mt-4 text-caption text-charcoal-80">
-            From {money(directNightly(cheapest))} a night · no booking fee · free cancellation up
-            to {arrival.cancellationHours} hours before arrival · a {fleet.model} included
+            From {money(directNightly(cheapest))} a night · no booking fee · nothing added at
+            checkout
           </p>
         </Container>
       </Hero>
@@ -82,19 +81,13 @@ export default function HomePage() {
       ---------------------------------------------------------------- */}
       <Section tight>
         <Container wide>
-          <ul className="grid gap-12 border-t border-navy/10 pt-12 md:grid-cols-3">
+          <ul className="grid gap-12 border-t border-navy/10 pt-12 md:grid-cols-2">
             {[
               {
                 icon: BadgeCheck,
                 title: "Always cheaper here",
-                body: `Book with us and you pay ${rates.directDiscountPct}% less than on Booking.com or Airbnb. No booking fee. The price you see first is the price you pay.`,
+                body: `Book with us and you pay ${rates.directDiscountPct}% less than other online platforms. No booking fee. The price you see first is the price you pay.`,
                 note: "",
-              },
-              {
-                icon: ShieldCheck,
-                title: "Free cancellation",
-                body: `Cancel up to ${arrival.cancellationHours} hours before you arrive and it costs you nothing. Plans change.`,
-                note: "T&Cs apply",
               },
               {
                 icon: Clock,
@@ -149,7 +142,7 @@ export default function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-8">
             <SectionHead
               eyebrow="The residences"
-              title="Three apartments, same standard."
+              title="VIP apartments, same standard."
               intro="All three are furnished, serviced and run the same way. The only real difference is how much space you need."
             />
             <ButtonLink href="/residences" variant="secondary">
@@ -227,7 +220,8 @@ export default function HomePage() {
           single apartment had been shown. Three mentions before the product.
 
           An unusually generous claim made before any trust is built reads as a
-          gimmick. A free car with every booking is exactly that kind of claim.
+          gimmick, which is reason enough on its own to hold it back, car now
+          hired rather than included or not.
           The order now is: what this place is, why booking direct is cheaper,
           the three apartments, then the things a guest in Lusaka worries about
           (power, water, security, Wi-Fi). Only then the car. By that point
@@ -265,9 +259,9 @@ export default function HomePage() {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="self-start lg:sticky lg:top-24 lg:col-span-5">
               <SectionHead
-                eyebrow="Every booking"
-                title={`A ${fleet.model}, waiting when you land.`}
-                intro={`All ${inWords(fleet.count)} residences have their own car. It is not a pool and it is not shared: book one apartment and one car is yours until you leave. It is in the nightly rate, like everything else here.`}
+                eyebrow="The car"
+                title={`A ${fleet.model}, yours to hire.`}
+                intro={`Each residence has its own car. It is not a pool and it is not shared, but it is not part of the nightly rate either: hire it separately for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours for as long as you have it booked.`}
               />
             </div>
 
@@ -275,19 +269,19 @@ export default function HomePage() {
               <RevealGroup as="ol" className="divide-y divide-navy/10 border-y border-navy/10">
                 {[
                   {
-                    icon: PlaneLanding,
-                    title: "We meet the flight",
-                    body: `A driver of ours is at Kenneth Kaunda International whatever time you land, then drives you in. About ${airportMinutes()} minutes by road.`,
+                    icon: MessageCircle,
+                    title: "Ask when you book",
+                    body: `Let us know you would like the ${fleet.model} and we will have it ready and waiting at the apartment.`,
                   },
                   {
                     icon: Car,
-                    title: "Then the car is yours",
-                    body: `The ${fleet.model} stays with you for the whole stay and parks inside the gate with you. You drive it yourself, wherever you need to be.`,
+                    title: "Collect it yourself",
+                    body: "Pick up the keys at the residence. From there it is yours to drive, wherever you need to be, for as long as you have hired it.",
                   },
                   {
-                    icon: PlaneTakeoff,
-                    title: "And we drive you back",
-                    body: "Tell us your departure and a driver takes you out to the airport. Nothing to arrange and nothing to settle at the end.",
+                    icon: RotateCcw,
+                    title: "Return it before you leave",
+                    body: "Drop it back at the apartment before checkout. There is no driver either way, just the car.",
                   },
                 ].map((step, i) => (
                   <RevealItem as="li" key={step.title} index={i} className="flex gap-6 py-8">
@@ -312,8 +306,8 @@ export default function HomePage() {
 
               <Reveal>
                 <p className="mt-8 max-w-measure text-caption text-charcoal-80">
-                  Give us your flight number when you book. That is the only thing we need from you
-                  to have somebody there.
+                  Let us know when you book if you would like the {fleet.model} waiting for you.
+                  That is the only thing we need in advance.
                 </p>
               </Reveal>
             </div>
@@ -509,8 +503,8 @@ export default function HomePage() {
               Check your dates
             </h2>
             <p className="mt-6 text-lead text-white/85">
-              From {money(directNightly(cheapest))} a night, with free cancellation up to{" "}
-              {arrival.cancellationHours} hours before you arrive.
+              From {money(directNightly(cheapest))} a night, no booking fee and nothing added at
+              checkout.
             </p>
             <ButtonLink href="/book" variant="onNavy" size="lg" className="mt-8">
               Check availability

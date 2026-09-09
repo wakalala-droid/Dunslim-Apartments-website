@@ -82,7 +82,7 @@ export default function ResidenceCard({
           */}
           <li className="flex items-center gap-2">
             <Car size={15} strokeWidth={1.5} className="text-brass" aria-hidden />
-            {fleet.model} included
+            {fleet.model} to hire
           </li>
         </ul>
 

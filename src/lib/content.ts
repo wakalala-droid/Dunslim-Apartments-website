@@ -1,4 +1,4 @@
-import { inWords } from "./format";
+import { inWords, money } from "./format";
 
 /**
  * DUNSLIM APARTMENTS: SINGLE SOURCE OF CONTENT
@@ -84,12 +84,12 @@ export const audience = [
 // ---------------------------------------------------------------------------
 
 /**
- * THREE TOYOTA MARK X, ONE PER RESIDENCE.
+ * THREE TOYOTA MARK X, ONE PER RESIDENCE. HIRED SEPARATELY, NOT INCLUDED.
  *
- * Confirmed by the owner, 3 September 2026, with the two details that decide how
- * it can honestly be described: a driver of ours does the airport runs, the guest
- * drives it themselves in between and it sits inside the nightly rate rather
- * than being charged for.
+ * Confirmed by the owner, 8 September 2026, reversing what this block said
+ * before. There is no driver and no airport run any more: the car is a
+ * standalone hire, arranged like any other extra, picked up and dropped off at
+ * the apartment rather than met at the gate.
  *
  * WHY THIS IS A BLOCK OF DATA AND NOT A LINE OF COPY.
  *
@@ -120,26 +120,26 @@ export const fleet = {
   model: "Toyota Mark X",
   /** The whole fleet. Three apartments, three cars. */
   count: 3,
-  /** What a single booking gets. One and it is not shared. */
+  /** What a single hire gets. One and it is not shared. */
   perResidence: 1,
-  /** A driver of ours meets the flight and drives the guest in. */
-  drivenFromAirport: true,
-  /** The guest drives it themselves for the rest of the stay. */
+  /** No driver, no airport meet. Withdrawn 8 September 2026. */
+  drivenFromAirport: false,
+  /** The guest collects it and drives it themselves, start to finish. */
   selfDriveDuringStay: true,
-  /** Inside the nightly rate. Nothing is added at checkout for it. */
-  included: true,
+  /** Not in the nightly rate. A separate, clearly priced extra. */
+  included: false,
+  /** What hiring one costs, on top of the room. */
+  hireFeeZmw: 1000,
+  hireFeeUnit: "day",
 } as const;
 
 /**
- * The car as one line, for a list of amenities or inclusions.
+ * The car as one line, for a list of amenities or extras.
  *
  * Singular on purpose. A guest reading their own apartment's page cares that
- * they get a car, not that the business owns three.
+ * they can hire a car, not that the business owns three.
  */
-export const carLine = `A ${fleet.model}, yours for the stay`;
-
-/** The airport runs, as one line. Separate because it is a different promise. */
-export const transferLine = "Airport pick-up and drop-off, driven by us";
+export const carLine = `A ${fleet.model}, available to hire for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit}`;
 
 // ---------------------------------------------------------------------------
 // Rates
@@ -185,9 +185,6 @@ export const rates = {
    * declared here and shown from the first price the guest ever sees.
    */
   included: [
-    // The two that lead are the two no platform listing can offer.
-    carLine,
-    transferLine,
     /*
       ONE POOL, ON THE PROPERTY, SHARED BY THE THREE APARTMENTS.
 
@@ -308,7 +305,7 @@ export const residences: Residence[] = [
     slug: "mandela",
     name: "Mandela",
     summary: "Two bedrooms, and a table long enough to work at.",
-    standout: `A table for six a step inside the front door, the living room beyond it and its own ${fleet.model}`,
+    standout: `A table for six a step inside the front door, the living room beyond it and a ${fleet.model} to hire if you need one`,
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -324,7 +321,6 @@ export const residences: Residence[] = [
     ],
     amenities: [
       carLine,
-      transferLine,
       "Two bedrooms",
       "Dining table, seats six",
       "Full kitchen",
@@ -369,7 +365,7 @@ export const residences: Residence[] = [
     slug: "mulima",
     name: "Mulima",
     summary: "Two bedrooms. Works for two colleagues, or a family.",
-    standout: `A cot fits in the second bedroom, the living room holds a meeting and its own ${fleet.model}`,
+    standout: `A cot fits in the second bedroom, the living room holds a meeting and a ${fleet.model} to hire if you need one`,
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -380,7 +376,6 @@ export const residences: Residence[] = [
     ],
     amenities: [
       carLine,
-      transferLine,
       "Two bedrooms",
       "Dining table, seats six",
       "Full kitchen",
@@ -424,7 +419,7 @@ export const residences: Residence[] = [
     slug: "kaunda",
     name: "Kaunda",
     summary: "Two bedrooms. Room for a team, or family visiting.",
-    standout: `A wall of open shelving between the dining table and the hall, parking for two vehicles and its own ${fleet.model}`,
+    standout: `A wall of open shelving between the dining table and the hall, parking for two vehicles and a ${fleet.model} to hire if you need one`,
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -440,7 +435,6 @@ export const residences: Residence[] = [
     ],
     amenities: [
       carLine,
-      transferLine,
       "Two bedrooms",
       "Dining table, seats six",
       "Full kitchen",
@@ -529,8 +523,8 @@ export const assurances = [
     detail: "Confirmed. Still worth having: guarding hours and which company.",
   },
   {
-    title: "Wi-Fi that handles video calls",
-    body: "Fast enough for Zoom and Teams, in all three apartments.",
+    title: "Wifi that caters for all needs",
+    body: "Reliable, high-speed Wi-Fi throughout all three apartments.",
     detail: "Confirmed. Still worth having: the measured speed, up and down.",
   },
 ] as const;
@@ -544,13 +538,18 @@ export const arrival = {
   checkOut: "10:00",
   /** Direct-booking perk, honoured at checkout. */
   lateCheckOut: "12:00",
-  /** Free cancellation window, in hours before check-in. */
-  cancellationHours: 48,
+  /*
+    CONFIRM: the free-cancellation window was withdrawn 8 September 2026 and no
+    replacement figure has been set. Do not put an hours number back here, or
+    on any page that used to read one from here, until the owner gives one.
+    Until then the terms page says plainly that cancellation terms are agreed
+    in writing at confirmation, which needs no number to be true.
+  */
   /*
     CONFIRM: is self check-in available, or is it always a met-on-arrival
-    handover? Less pressing than it was. The real anxiety for a late arrival is
-    getting from the airport to the door at midnight and that is now answered:
-    a driver meets the flight. Do not claim self check-in until it is in place.
+    handover? A driver no longer meets the flight, so this now matters more
+    than it used to, not less: a late arrival's only route in is whatever this
+    answers.
   */
   selfCheckIn: false,
 } as const;
@@ -643,28 +642,23 @@ export const faqs = [
   },
   {
     q: "How do I get in if I arrive late?",
-    // Worth adding once known: the latest arrival that can be met.
-    a: "Give us your flight when you book. A driver meets it, whatever time it lands, then takes you straight to the apartment where someone hands over the keys.",
+    a: "Give us your rough arrival time when you book. Whatever time you land, someone will be at the apartment with the keys.",
   },
   {
     q: "How do I pay?",
     a: "Visa, Mastercard, MTN Mobile Money, Airtel Money or bank transfer. You see the full total before you pay anything.",
   },
   /*
-    PUT BACK, WITH A REAL ANSWER.
-
-    This question was deleted rather than answered, because nobody knew whether
-    an airport pick-up existed. The note left in its place said to restore it the
-    moment there was something true to say. There is: a driver of ours meets the
-    flight and the car then stays with the guest.
+    Withdrawn 8 September 2026. There is no driver and no transfer any more, so
+    the honest answer is no, not the invented one this comment used to record.
   */
   {
     q: "Can you pick me up from the airport?",
-    a: `Yes, at no extra charge. A driver meets your flight at Kenneth Kaunda International and brings you in, about ${airportMinutes()} minutes by road. The ${fleet.model} then stays with you for the rest of your stay and we drive you back out for your flight home.`,
+    a: `No, there is no airport transfer. Kenneth Kaunda International is about ${airportMinutes()} minutes by road. If you would like a car for the stay, a ${fleet.model} is yours to hire separately, ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit}, picked up and dropped off at the apartment.`,
   },
   {
     q: "Do I really get a car?",
-    a: `Yes. Each of the ${inWords(fleet.count)} residences has its own ${fleet.model} and it is not shared with anyone. We drive you in from the airport, then it is yours to use until you leave. It is included in the nightly rate.`,
+    a: `Each of the ${inWords(fleet.count)} residences has its own ${fleet.model} and it is not shared with anyone, but it is not automatic. Hire it for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours to drive for as long as you have it booked.`,
   },
   {
     q: "Is there a pool?",
@@ -682,7 +676,7 @@ export const faqs = [
     a: "Yes. The rate drops at seven nights and again at twenty-eight. If you are staying more than a month, just talk to us and we will work something out.",
   },
   {
-    q: "Is it cheaper to book here than on Booking.com?",
+    q: "Is it cheaper to book here than on other platforms?",
     a: `Yes. Booking here is ${rates.directDiscountPct}% cheaper than the platforms, every time. There is no booking fee.`,
   },
 ] as const;

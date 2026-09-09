@@ -48,7 +48,7 @@ export default function LongStaysPage() {
             as="h1"
             eyebrow="Long stays"
             title="Here for the engagement, not the weekend."
-            intro={`Most of our guests are working. A consultant on a six-week posting, an NGO team between houses, a family waiting on a lease. None of that fits a nightly booking form, so this is the way in for stays measured in weeks. The ${fleet.model} comes with it, for the whole engagement.`}
+            intro={`Most of our guests are working. A consultant on a six-week posting, an NGO team between houses, a family waiting on a lease. None of that fits a nightly booking form, so this is the way in for stays measured in weeks. The ${fleet.model} can be hired alongside it, for the whole engagement.`}
           />
         </Container>
       </Section>
@@ -96,7 +96,7 @@ export default function LongStaysPage() {
                   // "in USD or kwacha" while every price on the site is kwacha only
                   // and the dollar switch was removed for quoting a stale rate.
                   "Invoiced monthly, in kwacha",
-                  `A ${fleet.model} for the whole engagement, included`,
+                  `A ${fleet.model} available to hire for the whole engagement`,
                   "Housekeeping on a schedule that suits you, not us",
                   `Checkout at ${arrival.lateCheckOut} on your last day`,
                   "One point of contact for the whole stay",
