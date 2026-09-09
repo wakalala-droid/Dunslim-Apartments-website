@@ -67,10 +67,6 @@ export default function HomePage() {
       >
         <Container wide>
           <SearchBar layout="inline" className="shadow-3" />
-          <p className="mt-4 text-caption text-charcoal-80">
-            From {money(directNightly(cheapest))} a night · no booking fee · nothing added at
-            checkout
-          </p>
         </Container>
       </Hero>
 
