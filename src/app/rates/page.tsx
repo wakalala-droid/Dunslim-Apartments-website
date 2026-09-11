@@ -5,7 +5,8 @@ import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Figure } from "@/components/ui/Figure";
-import { residences, rates, arrival, faqs, business } from "@/lib/content";
+import { residences, rates, arrival, faqs, business, fleet } from "@/lib/content";
+import { CurrencyConverter } from "@/components/ui/Currency";
 import { money } from "@/lib/format";
 import { directNightly, publishedNightly, longStayBand } from "@/lib/pricing";
 import { BreadcrumbSchema, FaqSchema } from "@/components/seo/StructuredData";
@@ -29,7 +30,7 @@ import { BreadcrumbSchema, FaqSchema } from "@/components/seo/StructuredData";
 export const metadata: Metadata = {
   title: "Rates",
   description:
-    "Nightly rates for all three Dunslim residences, the long-stay ladder, what is included and what booking direct saves. No booking fee and nothing added at checkout.",
+    "Nightly rates for every Dunslim residence, the long-stay ladder, what is included and what booking direct saves. No booking fee and nothing added at checkout.",
   alternates: { canonical: "/rates" },
   openGraph: {
     title: "Rates | Dunslim Apartments",
@@ -177,6 +178,25 @@ export default function RatesPage() {
             figure is what the same night costs on a booking platform. Booking here is always{" "}
             {rates.directDiscountPct} per cent below it.
           </p>
+
+          {/*
+            The same prices in the currency the guest budgets in. It converts at
+            a live rate and disappears entirely if that rate cannot be fetched,
+            rather than falling back to a stored one. See components/ui/Currency.
+          */}
+          <CurrencyConverter
+            className="mt-10 max-w-[560px]"
+            amounts={[
+              ...residences.map((r) => ({
+                label: `${r.name}, a night`,
+                zmw: directNightly(r),
+              })),
+              {
+                label: `${fleet.model}, a ${fleet.hireFeeUnit}`,
+                zmw: fleet.hireFeeZmw,
+              },
+            ]}
+          />
         </Container>
       </Section>
 
@@ -203,7 +223,7 @@ export default function RatesPage() {
             <div className="lg:col-span-6">
               <dl className="divide-y divide-white/15 border-y border-white/15">
                 <div className="flex items-baseline justify-between gap-6 py-6">
-                  <dt className="text-body text-navy-20">One to six nights</dt>
+                  <dt className="text-body text-navy-20">One to five nights</dt>
                   <dd className="text-h3 font-light text-white">{rates.directDiscountPct}%</dd>
                 </div>
                 {rates.longStay.map((b) => (
@@ -223,7 +243,7 @@ export default function RatesPage() {
 
               <p className="mt-6 max-w-measure text-caption text-navy-20">
                 Each rate comes off the direct price rather than off the one above it, so they do
-                not add up to 25 per cent. The worked example below is the real figure.
+                not simply add up. The worked example below is the real figure.
               </p>
 
               {band ? (

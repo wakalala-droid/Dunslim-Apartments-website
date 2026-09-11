@@ -1,4 +1,4 @@
-import { inWords, money } from "./format";
+import { money } from "./format";
 
 /**
  * DUNSLIM APARTMENTS: SINGLE SOURCE OF CONTENT
@@ -42,9 +42,12 @@ export const business = {
   whatsapp: "260778707540", // digits only, international format, no +
   phoneAlt: "+260 76 760 0735",
   whatsappAlt: "260767600735",
-  // CONFIRM: the reservations inbox. `brand@dunslim-apartments.com` in the brand
-  // guidelines is the artwork custodian address, not a place to send bookings.
-  email: "stay@dunslim-apartments.com",
+  /*
+    The reservations inbox, confirmed by the owner on 11 September 2026. It
+    replaces stay@dunslim-apartments.com, which was a placeholder on a domain
+    with no mailbox behind it, so anything a guest sent there bounced.
+  */
+  email: "dunslimapartments03@gmail.com",
 
   /** Growth Proposal §2: licence runs through 30 June 2028. */
   licence: {
@@ -111,7 +114,8 @@ export const audience = [
  *   - what licence is needed and whether an international permit is asked for
  *   - insurance: who is covered and the excess on a claim
  *   - fuel: handed over full and returned full, or metered
- *   - any mileage limit, or a boundary outside Lusaka
+ *   - any mileage limit. There is no boundary: within Lusaka or beyond,
+ *     confirmed by the owner, 11 September 2026
  *   - a minimum driver age
  *   - whether a second guest on the booking may drive it
  * The terms page carries the same list. Answer them there first.
@@ -173,9 +177,18 @@ export const rates = {
   directDiscountPct: 10,
 
   /** Long-stay ladder. Applied automatically, shown before payment. */
+  /*
+    Set by the owner, 11 September 2026: one to five nights at the flat rate,
+    ten per cent off from six nights and fifteen per cent from fifteen. Each
+    band comes off the direct rate, not off the band above it.
+
+    ELEVEN TO FOURTEEN NIGHTS sits in the gap the owner left between "6 to 10
+    days, 10%" and "15+ days, 15%". It takes ten per cent, because a stay is
+    never charged more per night for being longer.
+  */
   longStay: [
-    { minNights: 7, discountPct: 15, label: "Seven nights or more" },
-    { minNights: 28, discountPct: 25, label: "A month or more" },
+    { minNights: 6, discountPct: 10, label: "Six nights or more" },
+    { minNights: 15, discountPct: 15, label: "Fifteen nights or more" },
   ],
 
   /**
@@ -198,7 +211,7 @@ export const rates = {
       it is fenced or gated (the first thing a family with a small child asks),
       and the hours it can be used. The site says none of these yet.
     */
-    "The swimming pool, shared with the other two apartments",
+    "The swimming pool, shared with the other apartments",
     "Housekeeping",
     "Linen and towels",
     "Water and electricity",
@@ -524,7 +537,7 @@ export const assurances = [
   },
   {
     title: "Wifi that caters for all needs",
-    body: "Reliable, high-speed Wi-Fi throughout all three apartments.",
+    body: "Reliable, high-speed Wi-Fi throughout the apartment.",
     detail: "Confirmed. Still worth having: the measured speed, up and down.",
   },
 ] as const;
@@ -658,13 +671,13 @@ export const faqs = [
   },
   {
     q: "Do I really get a car?",
-    a: `Each of the ${inWords(fleet.count)} residences has its own ${fleet.model} and it is not shared with anyone, but it is not automatic. Hire it for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours to drive for as long as you have it booked.`,
+    a: `Each residence has its own ${fleet.model} and it is not shared with anyone, but it is not automatic. Hire it for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours to drive, within Lusaka or beyond, for as long as you have it booked.`,
   },
   {
     q: "Is there a pool?",
     // Worth adding once known: heated or not, whether it is gated, and the
     // hours. A family with a small child asks the second of those first.
-    a: "Yes. There is one pool on the property, shared by the three apartments, and using it is included in your rate.",
+    a: "Yes. There is one pool on the property, shared by the apartments, and using it is included in your rate.",
   },
   {
     q: "Is there security at night?",
@@ -673,7 +686,13 @@ export const faqs = [
   },
   {
     q: "Can I stay for a month or longer?",
-    a: "Yes. The rate drops at seven nights and again at twenty-eight. If you are staying more than a month, just talk to us and we will work something out.",
+    /*
+      Read from the ladder rather than written out. This answer said "seven
+      nights and again at twenty-eight" and stayed saying it after the owner
+      moved the bands to six and fifteen, so the FAQ contradicted the rate card
+      two pages away.
+    */
+    a: `Yes. The rate drops at ${rates.longStay[0]!.minNights} nights and again at ${rates.longStay[1]!.minNights}. If you are staying more than a month, just talk to us and we will work something out.`,
   },
   {
     q: "Is it cheaper to book here than on other platforms?",

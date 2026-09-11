@@ -57,7 +57,7 @@ export default function HomePage() {
       <Hero
         eyebrow="Serviced residences"
         headline="A room that works as well as it looks."
-        intro="Three serviced apartments on Makeni Road. Backup power, parking inside the gate and a rate that is always lower than other platforms."
+        intro="VIP serviced apartments on Makeni Road. Backup power, parking inside the gate and a rate that is always lower than other platforms."
         metaLeft={`${business.city} · ${business.country}`}
         metaRight={`${business.street}`}
         /* The fixed brand line, exactly as the cover carries it. The parent
@@ -131,7 +131,7 @@ export default function HomePage() {
       </Section>
 
       {/* ---------------------------------------------------------------
-          THE THREE RESIDENCES
+          THE RESIDENCES
       ---------------------------------------------------------------- */}
       <Section id="residences" ground="stone">
         <Container wide>
@@ -139,7 +139,7 @@ export default function HomePage() {
             <SectionHead
               eyebrow="The residences"
               title="VIP apartments, same standard."
-              intro="All three are furnished, serviced and run the same way. The only real difference is how much space you need."
+              intro="All of them are furnished, serviced and run the same way. The only real difference is how much space you need."
             />
             <ButtonLink href="/residences" variant="secondary">
               All residences
@@ -257,7 +257,7 @@ export default function HomePage() {
               <SectionHead
                 eyebrow="The car"
                 title={`A ${fleet.model}, yours to hire.`}
-                intro={`Each residence has its own car. It is not a pool and it is not shared, but it is not part of the nightly rate either: hire it separately for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours for as long as you have it booked.`}
+                intro={`Each residence has its own car. It is not a pool and it is not shared, but it is not part of the nightly rate either: hire it separately for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours to drive, within Lusaka or beyond, for as long as you have it booked.`}
               />
             </div>
 
@@ -272,7 +272,7 @@ export default function HomePage() {
                   {
                     icon: Car,
                     title: "Collect it yourself",
-                    body: "Pick up the keys at the residence. From there it is yours to drive, wherever you need to be, for as long as you have hired it.",
+                    body: "Pick up the keys at the residence. From there it is yours to drive, within Lusaka or beyond, for as long as you have hired it.",
                   },
                   {
                     icon: RotateCcw,
@@ -338,7 +338,7 @@ export default function HomePage() {
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
                 <Reveal as="div" className="flex items-baseline justify-between gap-6 py-6">
-                  <dt className="text-body text-charcoal">One to six nights</dt>
+                  <dt className="text-body text-charcoal">One to five nights</dt>
                   <dd className="text-h3 font-light text-navy">{rates.directDiscountPct}% off</dd>
                 </Reveal>
                 {rates.longStay.map((band) => (

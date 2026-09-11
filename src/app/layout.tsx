@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Dunslim Apartments: Official Site",
     description:
-      "Three serviced apartments on Makeni Road, Lusaka. Each one has its own Toyota Mark X available to hire. Always lower booked direct.",
+      "VIP serviced apartments on Makeni Road, Lusaka. Each one has its own Toyota Mark X available to hire. Always lower booked direct.",
     type: "website",
     locale: "en_ZM",
     siteName: business.name,

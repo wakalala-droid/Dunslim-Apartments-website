@@ -10,12 +10,12 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 export const metadata: Metadata = {
   title: "Residences",
   description:
-    "Three serviced apartments on Makeni Road, Lusaka, two bedrooms each. Furnished, serviced and lower booked direct.",
+    "VIP serviced apartments on Makeni Road, Lusaka, two bedrooms each. Furnished, serviced and lower booked direct.",
   alternates: { canonical: "/residences" },
   openGraph: {
     title: "The residences | Dunslim Apartments",
     description:
-      "Mandela, Mulima and Kaunda. Three serviced apartments on Makeni Road, Lusaka, two bedrooms each.",
+      "Mandela, Mulima and Kaunda. VIP serviced apartments on Makeni Road, Lusaka, two bedrooms each.",
     url: "/residences",
   },
 };
@@ -33,7 +33,7 @@ export default function ResidencesPage() {
             as="h1"
             eyebrow="The residences"
             title="VIP apartments, same standard."
-            intro={`All three are furnished, serviced and run the same way. Each one has its own ${fleet.model} available to hire. The only real difference between them is how much space you need.`}
+            intro={`All of them are furnished, serviced and run the same way. Each one has its own ${fleet.model} available to hire. The only real difference between them is how much space you need.`}
           />
           <Figure
             name="r2-living-2"
@@ -63,7 +63,8 @@ export default function ResidencesPage() {
           <p className="mt-16 max-w-measure text-caption text-charcoal-80">
             Every rate shown is the direct rate, {rates.directDiscountPct} per cent below the
             platform price, with no booking fee and nothing added at checkout. Rates step down
-            further at seven nights and again at twenty-eight.
+            further at {rates.longStay[0]!.minNights} nights and again at{" "}
+            {rates.longStay[1]!.minNights}.
           </p>
         </Container>
       </Section>

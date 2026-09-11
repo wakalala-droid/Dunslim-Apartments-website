@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prettyDate } from "@/lib/format";
+import { business } from "@/lib/content";
 import {
   rateLimit,
   clientKey,
@@ -100,7 +101,7 @@ export async function POST(request: Request) {
   }
 
   const key = process.env.RESEND_API_KEY;
-  const to = process.env.BOOKING_NOTIFY_EMAIL;
+  const to = process.env.BOOKING_NOTIFY_EMAIL || business.email;
   const from = process.env.BOOKING_FROM_EMAIL;
 
   if (!key || !to || !from) {

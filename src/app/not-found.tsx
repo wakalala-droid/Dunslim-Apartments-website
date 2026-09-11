@@ -29,7 +29,7 @@ export default function NotFound() {
             That page is not here.
           </h1>
           <p className="mt-6 text-lead text-charcoal">
-            The link may be old, or the address slightly off. The three residences and their rates
+            The link may be old, or the address slightly off. The residences and their rates
             are all a click away.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">

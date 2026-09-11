@@ -5,6 +5,7 @@ import { money, prettyDate, nightLabel, guestLabel } from "@/lib/format";
 import { type Quote } from "@/lib/pricing";
 import { rates, arrival, type Residence } from "@/lib/content";
 import { cn } from "@/lib/cn";
+import { CurrencyNote } from "@/components/ui/Currency";
 
 /**
  * The price panel.
@@ -97,6 +98,9 @@ export default function Summary({
           <p className="mt-2 text-right text-caption text-charcoal-80">
             {money(quote.perNightZmw)} a night, all in
           </p>
+
+          {/* The same total, roughly, in the money the guest thinks in. */}
+          <CurrencyNote zmw={quote.totalZmw} className="mt-3" />
 
           <div className="mt-6 rounded-sm bg-white p-4">
             <p className="text-caption text-charcoal-80">

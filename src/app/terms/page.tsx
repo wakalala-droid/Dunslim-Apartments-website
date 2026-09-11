@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { business, rates, arrival, residences, fleet } from "@/lib/content";
-import { money, inWords } from "@/lib/format";
+import { money } from "@/lib/format";
 import { publishedNightly, directNightly } from "@/lib/pricing";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
@@ -37,7 +37,7 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
  *   - what licence is needed and whether an international permit is required
  *   - insurance: who is covered to drive and the excess on a claim
  *   - fuel: handed over full and returned full, or metered
- *   - any mileage limit, or a boundary outside Lusaka
+ *   - any mileage limit. No boundary: within Lusaka or beyond, owner, 11 Sept 2026
  *   - a minimum driver age
  *   - whether a second guest on the booking may drive it
  * The page below describes only what the owner has confirmed and says openly
@@ -137,9 +137,9 @@ export default function TermsPage() {
 
             <h2 className="mt-12 text-h3 font-light text-navy">The car</h2>
             <p className="mt-3 text-body text-charcoal">
-              There are {inWords(fleet.count)} {fleet.model}, one attached to each residence. It is
-              not a pool car and it is not shared with the other apartments, but it is not
-              automatic either: hire it separately and it is yours for the length of your stay.
+              Each residence has its own {fleet.model}. It is not a pool car and it is not shared
+              with the other apartments, but it is not automatic either: hire it separately and it
+              is yours for the length of your stay, to drive within Lusaka or beyond.
             </p>
             <p className="mt-3 text-body text-charcoal">
               We do not offer a driver or an airport transfer. You collect the car at the apartment

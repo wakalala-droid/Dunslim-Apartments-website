@@ -65,7 +65,7 @@ export default function LongStaysPage() {
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
                 <div className="flex items-baseline justify-between gap-6 py-6">
-                  <dt className="text-body text-charcoal">One to six nights</dt>
+                  <dt className="text-body text-charcoal">One to five nights</dt>
                   <dd className="text-h3 font-light text-navy">{rates.directDiscountPct}% off</dd>
                 </div>
                 {rates.longStay.map((b) => (

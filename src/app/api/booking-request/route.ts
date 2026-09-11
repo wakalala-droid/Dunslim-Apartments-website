@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getResidence, arrival } from "@/lib/content";
+import { getResidence, arrival, business } from "@/lib/content";
 import { money, prettyDate, nightLabel, isValidIsoDate, isoToday } from "@/lib/format";
 import { quote as buildQuote } from "@/lib/pricing";
 import {
@@ -174,7 +174,9 @@ export async function POST(request: Request) {
   }
 
   const key = process.env.RESEND_API_KEY;
-  const to = process.env.BOOKING_NOTIFY_EMAIL;
+  // Falls back to the reservations inbox in lib/content, so a request still
+  // reaches a person if the environment variable was never set.
+  const to = process.env.BOOKING_NOTIFY_EMAIL || business.email;
   const from = process.env.BOOKING_FROM_EMAIL;
 
   if (!key || !to || !from) {

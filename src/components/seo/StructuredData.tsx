@@ -56,6 +56,7 @@ export function LodgingSchema() {
     slogan: business.brandLine,
     address,
     ...(CONFIRMED_PHONE ? { telephone: business.phone } : {}),
+    email: business.email,
     /*
       Kwacha, with the symbol that matches. This read "$2000+" for a while after
       the site moved to pricing in Kwacha: the number changed underneath a
