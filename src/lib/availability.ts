@@ -8,10 +8,14 @@ import { nightsBetween } from "./pricing";
  * AI-BOS. Everything else in the app calls `checkAvailability` and
  * `submitBookingRequest` and does not care where the answer comes from.
  *
- * Today both functions run locally: every date is offered and a booking request
- * is held in memory so the whole flow can be walked end to end. Nothing is
- * written anywhere and no guest is told their booking is confirmed. The
- * confirmation screen says a person will confirm it, which is true.
+ * CONNECTED, since 12 September 2026. `NEXT_PUBLIC_AIBOS_API_URL` and
+ * `NEXT_PUBLIC_AIBOS_SITE_TOKEN` point at the hospitality module, which answers
+ * with the three real units and the real calendar. `npm run check:aibos` says
+ * so in one command and names the step that is wrong when it is not.
+ *
+ * Without both variables nothing is checked and every answer is "unknown",
+ * never "available". A guest is never blocked by that and never told a date is
+ * free when nobody asked.
  *
  * To connect AI-BOS, the hospitality module needs a public, token-scoped surface.
  * Today every /hospitality/* route sits behind require_user + require_feature;
@@ -106,7 +110,30 @@ export async function checkAvailability(
     }
   }
 
-  return { status: "available", nights };
+  /*
+    NOT CONNECTED IS NOT THE SAME AS FREE, and this line used to say it was.
+
+    With no API address and no site token the function fell through to here and
+    reported every date on the calendar as available, having asked nobody. That
+    is the exact failure this file already fixed once for the connected path,
+    where a blip on the far end used to come back as "available": a guest was
+    offered dates that may already have gone, and the site read as working while
+    doing nothing at all.
+
+    It matters more now than it did as a local stub. The connection is real and
+    lives in two environment variables, so it can be broken by a missing paste
+    in Vercel or by a token rotated in the dashboard, silently, at any time.
+    Answering "unknown" turns that into something a guest sees and somebody
+    fixes, instead of a calendar that quietly says yes to everything.
+
+    Nobody is blocked either way: a request is still a request and a person
+    still confirms it.
+  */
+  return {
+    status: "unknown",
+    nights,
+    reason: "We could not check those dates automatically.",
+  };
 }
 
 // ---------------------------------------------------------------------------

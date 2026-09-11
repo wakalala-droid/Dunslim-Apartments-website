@@ -107,10 +107,25 @@ seeing "Paid" having paid nothing is worse than no automation at all.
    It must refuse to render unless the upstream reports live mode, so the
    simulation can never reach a guest.
 
-### Also broken, and blocking more than payments
+### The availability 404 was mine, not the server's
 
-`GET /public/stay/{site_token}/units` returns **404** on the live API with the
-token this site holds. The hospitality connection did not survive the September
-outage, which is why every date check falls back to "we could not check those
-dates". Availability, the double-booking guard and stage two all sit behind
-fixing that.
+Recorded here because the wrong version of it was in this file for a day.
+
+The live API is fine and always was. `/public/stay/{token}/units` returned
+`{"detail":"Not Found"}` for one reason: the token on the machine doing the
+asking was an empty string, so the request went to `/public/stay//units`, which
+matches no route at all. FastAPI's default 404 looks identical to a real one
+and says nothing about why.
+
+**The tell is in the body.** A route that does not exist answers
+`{"detail":"Not Found"}`. A token that does not resolve answers
+`{"detail":"Unknown site."}` from the handler. Probe with a deliberately
+nonsense token before concluding anything: if that returns "Unknown site." the
+API, the database and the hospitality tables are all healthy and the problem is
+on this side.
+
+Production was never affected: both variables have been set on Vercel since
+8 September and the token is baked into the deployed bundle. Verified on
+12 September, against the real calendar: Mandela for 23 to 25 September comes
+back "Those dates are already taken", November comes back free, and the booking
+POST accepts the token and validates the unit.
