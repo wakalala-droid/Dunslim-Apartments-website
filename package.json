@@ -8,7 +8,8 @@
     "start": "next start -p 3100",
     "lint": "next lint",
     "start:preview": "next start -p 3101",
-    "check:aibos": "node scripts/check-aibos.mjs"
+    "check:aibos": "node scripts/check-aibos.mjs",
+    "flags": "node scripts/copy-flags.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -23,6 +24,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "country-flag-icons": "^1.6.20",
     "eslint": "^8",
     "eslint-config-next": "14.2.29",
     "postcss": "^8",

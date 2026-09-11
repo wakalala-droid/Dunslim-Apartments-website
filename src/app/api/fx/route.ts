@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { CURRENCY_CODES } from "@/lib/currencies";
 
 /**
  * LIVE EXCHANGE RATES, FOR GUIDANCE ONLY
@@ -25,8 +26,13 @@ import { NextResponse } from "next/server";
 
 export const revalidate = 21600; // six hours
 
-/** The currencies a Dunslim guest actually arrives with. */
-const CURRENCIES = ["USD", "EUR", "GBP", "ZAR"] as const;
+/*
+  The list lives in lib/currencies.ts, beside the names and the flags, so the
+  feed is asked for exactly what the picker can show. Asking for all 160 the
+  upstream carries would put currencies in the dropdown that nobody here needs
+  and a couple that would convert into a misleading figure.
+*/
+const CURRENCIES = CURRENCY_CODES;
 
 export async function GET() {
   try {

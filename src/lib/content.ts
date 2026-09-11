@@ -567,6 +567,67 @@ export const arrival = {
   selfCheckIn: false,
 } as const;
 
+// ---------------------------------------------------------------------------
+// How a guest actually pays
+// ---------------------------------------------------------------------------
+
+export type MobileMoneyAccount = {
+  /** As a guest would recognise it: "MTN Mobile Money", "Airtel Money". */
+  network: string;
+  /** International form, spaced for reading: "+260 76 760 0735". */
+  number: string;
+  /** The name that comes up on the payer's screen before they confirm. */
+  accountName: string;
+};
+
+/**
+ * WHERE THE MONEY GOES, AND WHY THIS IS EMPTY UNTIL THE OWNER FILLS IT
+ * ---------------------------------------------------------------------------
+ * Until 12 September 2026 a guest finished the booking form and was told that
+ * payment instructions would follow "within a few hours". A guest ready to pay
+ * at midnight could not, and every booking needed the owner awake to progress.
+ * The confirmation screen and /pay now show exactly how to pay, the moment the
+ * request is sent.
+ *
+ * THEY SHOW NOTHING UNTIL THESE ARE FILLED IN. Every field below is empty on
+ * purpose and the site degrades to the old wording while they are. A wrong
+ * mobile money number is not a typo on a website: it is a guest's money gone to
+ * a stranger, unrecoverable, with the business named on the receipt.
+ *
+ * CONFIRM, from the owner, in writing, then paste them in here:
+ *   - the MTN Mobile Money number and the exact registered name on it
+ *   - the Airtel Money number and the exact registered name on it
+ *   - the bank, branch, account name, account number and swift code
+ *   - whether the full amount is wanted up front or a deposit holds the dates
+ *
+ * The two phone numbers already on this page are NOT assumed to be the mobile
+ * money numbers, even though the prefixes fit (in Zambia 076 is MTN and 077 is
+ * Airtel). Money is not a thing to infer from a prefix.
+ */
+export const payments = {
+  mobileMoney: [] as MobileMoneyAccount[],
+
+  bank: {
+    bankName: "",
+    branch: "",
+    accountName: "",
+    accountNumber: "",
+    /** For a guest paying from outside Zambia. */
+    swift: "",
+  },
+
+  /**
+   * CONFIRM: is the full amount wanted before arrival, or does a deposit hold
+   * the dates? The panel says "the total" until this is answered, because that
+   * is the only figure the site knows to be right.
+   */
+  depositPct: 0,
+};
+
+/** Is there anything real to show a guest yet? */
+export const canPayNow = () =>
+  payments.mobileMoney.length > 0 || Boolean(payments.bank.accountNumber);
+
 /**
  * Road time from the airport, in minutes.
  *

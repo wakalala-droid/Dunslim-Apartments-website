@@ -19,7 +19,8 @@ import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
 import { Honeypot } from "@/components/ui/Honeypot";
 import Summary from "./Summary";
-import { residences, getResidence, arrival, business, rates, maxGuests } from "@/lib/content";
+import { residences, getResidence, arrival, business, rates, maxGuests, canPayNow } from "@/lib/content";
+import PayNow from "@/components/booking/PayNow";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
 import { money, isoToday, isoPlusDays, prettyDate, isValidIsoDate } from "@/lib/format";
 import { photo } from "@/lib/photos";
@@ -135,13 +136,17 @@ const PAYMENT_METHODS: {
   {
     id: "mobile-money",
     label: "Mobile money",
-    detail: "MTN Mobile Money or Airtel Money. We send the number to pay to once your dates are confirmed.",
+    detail: canPayNow()
+      ? "MTN Mobile Money or Airtel Money. The number to pay to is on the next screen, so you can pay as soon as you send this."
+      : "MTN Mobile Money or Airtel Money. We send the number to pay to once your dates are confirmed.",
     icon: Smartphone,
   },
   {
     id: "bank-transfer",
     label: "Bank transfer",
-    detail: "We send our account details once your dates are confirmed, with the reference to quote.",
+    detail: canPayNow()
+      ? "Our account details are on the next screen, with the reference to quote."
+      : "We send our account details once your dates are confirmed, with the reference to quote.",
     icon: Landmark,
   },
   {
@@ -550,8 +555,9 @@ export default function BookingFlow() {
                 Thank you, {firstName}. We have your request.
               </h1>
               <p className="mt-6 max-w-measure text-lead text-charcoal">
-                Your dates are held while we look at it. Someone will confirm your booking and send
-                payment instructions within a few hours, sooner during the day.
+                {canPayNow()
+                  ? "Your dates are held while we look at it. You can pay now, below, or wait until we confirm. Either way someone comes back to you within a few hours, sooner during the day."
+                  : "Your dates are held while we look at it. Someone will confirm your booking and send payment instructions within a few hours, sooner during the day."}
               </p>
               <p className="mt-4 max-w-measure text-body text-charcoal-80">
                 {arrivalTime
@@ -630,6 +636,20 @@ export default function BookingFlow() {
               </div>
             ))}
           </dl>
+
+          {/*
+            Everything a guest needs to pay, on the screen they are already on.
+            Only when the request was actually accepted: a guest whose request
+            never arrived must not be sent money into a booking nobody holds.
+          */}
+          {accepted ? (
+            <PayNow
+              className="mt-12"
+              amountZmw={quote.totalZmw}
+              reference={outcome.reference}
+              guestName={firstName}
+            />
+          ) : null}
 
           <div className="mt-12 rounded-md bg-stone p-6">
             <p className="text-body text-charcoal">
