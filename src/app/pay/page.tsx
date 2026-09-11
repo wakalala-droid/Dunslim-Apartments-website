@@ -67,9 +67,9 @@ export default function PayPage() {
               </div>
 
               <div className="mt-12 border-t border-navy/10 pt-8">
-                <p className="text-body text-charcoal">
-                  {payments.depositPct > 0
-                    ? `A deposit of ${payments.depositPct} per cent holds your dates. The balance is due before you check in at ${arrival.checkIn}.`
+                <p className="max-w-measure text-body text-charcoal">
+                  {payments.fullAmountUpFront
+                    ? `The full amount is due up front. Your dates are confirmed once it reaches us, and the keys are ready for you from ${arrival.checkIn} on the day you arrive.`
                     : "Unless we have agreed otherwise with you in writing, the amount to send is the total on your booking."}
                 </p>
               </div>

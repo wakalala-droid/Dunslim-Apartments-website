@@ -576,8 +576,23 @@ export type MobileMoneyAccount = {
   network: string;
   /** International form, spaced for reading: "+260 76 760 0735". */
   number: string;
-  /** The name that comes up on the payer's screen before they confirm. */
-  accountName: string;
+  /**
+   * The name that comes up on the payer's screen before they confirm.
+   *
+   * Optional, and not set yet. When it is, the panel prints it and tells the
+   * guest to stop if the screen says anything else, which is the cheapest fraud
+   * check this site has. Until then the panel still tells them to check the
+   * name, it just cannot say what to expect.
+   */
+  accountName?: string;
+};
+
+export type BankAccount = {
+  /** ISO code, for the guest: "ZMW", "USD". */
+  currency: string;
+  /** How it reads on screen: "Kwacha account". */
+  label: string;
+  number: string;
 };
 
 /**
@@ -589,44 +604,54 @@ export type MobileMoneyAccount = {
  * The confirmation screen and /pay now show exactly how to pay, the moment the
  * request is sent.
  *
- * THEY SHOW NOTHING UNTIL THESE ARE FILLED IN. Every field below is empty on
- * purpose and the site degrades to the old wording while they are. A wrong
- * mobile money number is not a typo on a website: it is a guest's money gone to
- * a stranger, unrecoverable, with the business named on the receipt.
+ * THE ACCOUNTS BELOW CAME FROM THE OWNER ON 12 SEPTEMBER 2026. The bank lines
+ * are quoted exactly as they were sent. A wrong account number is not a typo on
+ * a website: it is a guest's money gone to a stranger, unrecoverable, with the
+ * business named on the receipt. Change nothing here from memory or inference.
  *
- * CONFIRM, from the owner, in writing, then paste them in here:
- *   - the MTN Mobile Money number and the exact registered name on it
- *   - the Airtel Money number and the exact registered name on it
- *   - the bank, branch, account name, account number and swift code
- *   - whether the full amount is wanted up front or a deposit holds the dates
- *
- * The two phone numbers already on this page are NOT assumed to be the mobile
- * money numbers, even though the prefixes fit (in Zambia 076 is MTN and 077 is
- * Airtel). Money is not a thing to infer from a prefix.
+ * STILL CONFIRM, and the panel is written so that none of it is asserted until
+ * it is:
+ *   - the registered name on each mobile money wallet, so the panel can tell a
+ *     guest what name to expect before they press confirm
+ *   - which network each of the two numbers is really on. The networks below
+ *     are read off the Zambian prefixes (076 MTN, 077 Airtel) and a ported
+ *     number would make that wrong
+ *   - the swift code, for a guest paying the dollar account from abroad
+ *   - the exact registered account name, if it is not plain "Dunslim Apartments"
  */
 export const payments = {
-  mobileMoney: [] as MobileMoneyAccount[],
+  mobileMoney: [
+    { network: "MTN Mobile Money", number: business.phoneAlt },
+    { network: "Airtel Money", number: business.phone },
+  ] as MobileMoneyAccount[],
 
   bank: {
-    bankName: "",
-    branch: "",
-    accountName: "",
-    accountNumber: "",
-    /** For a guest paying from outside Zambia. */
+    /* Atlas Mara Zambia became Access Bank Zambia in 2022. Both names are here
+       because the branch, the paperwork and half of Lusaka still say the first
+       one, while a guest searching their banking app needs the second. */
+    bankName: "Access Bank Zambia, formerly Atlas Mara",
+    branch: "001, Lusaka Corporate",
+    accountName: business.name,
+    accounts: [
+      { currency: "ZMW", label: "Kwacha account", number: "0016170469013" },
+      { currency: "USD", label: "US dollar account", number: "0016170469024" },
+    ] as BankAccount[],
+    /** For a guest paying the dollar account from abroad. CONFIRM with the bank. */
     swift: "",
   },
 
   /**
-   * CONFIRM: is the full amount wanted before arrival, or does a deposit hold
-   * the dates? The panel says "the total" until this is answered, because that
-   * is the only figure the site knows to be right.
+   * The full amount, before the stay. Set by the owner, 12 September 2026.
+   *
+   * This is why "Pay on arrival" is no longer one of the payment choices: it
+   * contradicted this policy on the same screen that states it.
    */
-  depositPct: 0,
+  fullAmountUpFront: true,
 };
 
 /** Is there anything real to show a guest yet? */
 export const canPayNow = () =>
-  payments.mobileMoney.length > 0 || Boolean(payments.bank.accountNumber);
+  payments.mobileMoney.length > 0 || payments.bank.accounts.length > 0;
 
 /**
  * Road time from the airport, in minutes.
@@ -720,7 +745,14 @@ export const faqs = [
   },
   {
     q: "How do I pay?",
-    a: "Visa, Mastercard, MTN Mobile Money, Airtel Money or bank transfer. You see the full total before you pay anything.",
+    /*
+      THE CARDS CAME OUT, 12 September 2026. This said "Visa, Mastercard" while
+      nothing on the site or behind it can take a card: there is no processor,
+      no terminal named anywhere, and the owner asks for the full amount before
+      arrival, which rules out a machine at the desk. It is now the two things
+      that genuinely work, and it points at the page that shows the accounts.
+    */
+    a: "MTN Mobile Money, Airtel Money or a bank transfer, to the accounts shown the moment you book and again on our payment page. The full amount is due up front and you see the whole total before you pay anything. If you can only pay by card, ask us and we will work something out.",
   },
   /*
     Withdrawn 8 September 2026. There is no driver and no transfer any more, so

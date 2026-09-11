@@ -1,56 +1,72 @@
 # Taking money
 
-Two stages. The first is live and needs four numbers from you. The second needs
-a merchant account and cannot be finished from a keyboard.
+Two stages. The first is live: a guest can pay the minute they book. The second
+needs a merchant account and cannot be finished from a keyboard.
 
-## Stage one: a guest can pay the moment they book (LIVE, waiting on you)
+## Stage one: a guest can pay the moment they book (LIVE since 12 Sept 2026)
 
 The booking flow now ends on a **Pay now** panel: the total, the guest's own
 reference, your accounts with a copy button on each, and a WhatsApp button that
 sends you proof with the reference already written in it. The same panel is at
 **/pay**, which is the link to send anyone who booked over the phone.
 
-**It shows nothing at all until the accounts are filled in.** Until then the
-site keeps its old wording, which is that we send instructions when we confirm.
-That is deliberate: a wrong mobile money number is a guest's money gone to a
-stranger, with your name on the receipt.
+### What is live now
 
-### What to send
+| | |
+|---|---|
+| Bank | Access Bank Zambia, formerly Atlas Mara, branch 001 Lusaka Corporate |
+| Account name | Dunslim Apartments |
+| Kwacha account | 0016170469013 |
+| US dollar account | 0016170469024 |
+| MTN Mobile Money | +260 76 760 0735 |
+| Airtel Money | +260 77 870 7540 |
+| Terms | Full amount up front |
 
-1. MTN Mobile Money number, and the **exact registered name** on it.
-2. Airtel Money number, and the exact registered name on it.
-3. Bank: bank name, branch, account name, account number, and the swift code
-   for guests paying from abroad.
-4. Whether the **full amount** is wanted before arrival, or a deposit holds the
-   dates. If a deposit, what percentage.
+Cards came out of the booking form and out of the FAQ at the same time: nothing
+on this site or behind it can take one. Pay on arrival came out too, because it
+contradicted "full amount up front" on the same screen. Say the word and either
+goes back.
 
-### Where it goes
+### Four things still to confirm
+
+1. **The registered name on each mobile money wallet.** The panel currently
+   tells a guest to check the name on their screen before confirming, but it
+   cannot say what name to expect. That line is the cheapest fraud check the
+   site has, so it is worth the two minutes.
+2. **Which network each number is really on.** MTN and Airtel are read off the
+   Zambian prefixes, 076 and 077. A ported number would make the labels wrong.
+3. **The swift code** for the dollar account, for guests paying from abroad.
+4. **The exact registered account name**, if the bank holds anything other than
+   plain "Dunslim Apartments".
+
+### Where the numbers live
 
 `src/lib/content.ts`, the `payments` block. Nothing else changes:
 
 ```ts
 export const payments = {
   mobileMoney: [
-    { network: "MTN Mobile Money", number: "+260 76 ...", accountName: "..." },
-    { network: "Airtel Money",     number: "+260 77 ...", accountName: "..." },
+    { network: "MTN Mobile Money", number: business.phoneAlt },
+    { network: "Airtel Money",     number: business.phone },
   ] as MobileMoneyAccount[],
 
   bank: {
-    bankName: "...",
-    branch: "...",
-    accountName: "...",
-    accountNumber: "...",
-    swift: "...",
+    bankName: "Access Bank Zambia, formerly Atlas Mara",
+    branch: "001, Lusaka Corporate",
+    accountName: business.name,
+    accounts: [
+      { currency: "ZMW", label: "Kwacha account",    number: "0016170469013" },
+      { currency: "USD", label: "US dollar account", number: "0016170469024" },
+    ] as BankAccount[],
+    swift: "",
   },
 
-  depositPct: 0,
+  fullAmountUpFront: true,
 };
 ```
 
-Commit, push, and it is live on the next deploy. The registered name matters:
-the panel tells the guest what name should come up before they confirm, and to
-stop if it says anything else. That one line is the cheapest fraud protection
-this site has.
+Add `accountName: "..."` to a mobile money entry and the panel starts naming
+it. Commit, push, and it is live on the next deploy.
 
 ## Stage two: the prompt on the guest's phone (needs a merchant account)
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { business, rates, arrival, residences, fleet } from "@/lib/content";
@@ -108,7 +109,19 @@ export default function TermsPage() {
             <p className="mt-3 text-body text-charcoal">
               The price you are shown is the price you pay. There is no booking fee, no cleaning
               fee, no service charge and nothing added at the payment step. Every rate on this site
-              is in Kwacha and you are charged in Kwacha.
+              is in Kwacha and you are charged in Kwacha. We also hold a US dollar account for
+              guests who would rather send a transfer in dollars; the amount is agreed with you
+              first, because your bank sets that rate and not us.
+            </p>
+            <p className="mt-3 text-body text-charcoal">
+              The full amount is due up front. Your dates are confirmed once the payment reaches
+              us, and the accounts to pay into are shown the moment you finish the booking form and
+              again on our{" "}
+              <Link href="/pay" className="underline underline-offset-4 hover:text-navy">
+                payment page
+              </Link>
+              . We never ask for a card number, a PIN or a mobile money code, on this site or in a
+              message.
             </p>
             <p className="mt-3 text-body text-charcoal">
               Booking direct is {rates.directDiscountPct} per cent below the rate the same
@@ -166,8 +179,8 @@ export default function TermsPage() {
               What you send from this site is a request, not a confirmed stay. It reaches our
               reservations inbox and a person answers it, usually within a few hours. Your dates are
               not held until we have confirmed them and we will tell you plainly if they have
-              already gone. Payment instructions follow the confirmation, for whichever method you
-              chose.
+              already gone. The accounts to pay into are on screen as soon as you send the
+              request, so you never wait on us to be able to pay.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">Anything else</h2>

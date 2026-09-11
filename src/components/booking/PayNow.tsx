@@ -94,7 +94,7 @@ export default function PayNow({
 }) {
   if (!canPayNow()) return null;
 
-  const hasBank = Boolean(payments.bank.accountNumber);
+  const hasBank = payments.bank.accounts.length > 0;
 
   /*
     The message the guest sends us. It carries the reference and the amount, so
@@ -147,9 +147,18 @@ export default function PayNow({
               <div key={account.number} className="py-2">
                 <CopyField label={account.network} value={account.number} />
                 <p className="pb-3 text-caption text-navy-20">
-                  The name that comes up before you confirm is{" "}
-                  <span className="text-white">{account.accountName}</span>. If it says anything
-                  else, stop and message us.
+                  {account.accountName ? (
+                    <>
+                      The name that comes up before you confirm is{" "}
+                      <span className="text-white">{account.accountName}</span>. If it says
+                      anything else, stop and message us.
+                    </>
+                  ) : (
+                    <>
+                      Check the name your phone shows before you confirm. If it is not us, stop and
+                      message us.
+                    </>
+                  )}
                 </p>
               </div>
             ))}
@@ -165,7 +174,9 @@ export default function PayNow({
           </p>
           <div className="mt-2 divide-y divide-white/10 rounded-sm bg-white/5 px-4">
             <CopyField label="Account name" value={payments.bank.accountName} />
-            <CopyField label="Account number" value={payments.bank.accountNumber} />
+            {payments.bank.accounts.map((account) => (
+              <CopyField key={account.number} label={account.label} value={account.number} />
+            ))}
             {payments.bank.bankName ? (
               <CopyField
                 label="Bank"
@@ -176,6 +187,22 @@ export default function PayNow({
               <CopyField label="Swift, from outside Zambia" value={payments.bank.swift} />
             ) : null}
           </div>
+
+          {/*
+            THE DOLLAR ACCOUNT NEEDS ITS OWN SENTENCE, because this site now
+            carries a currency converter and a guest can read an approximate
+            dollar figure off it. That figure is a mid-market conversion of a
+            Kwacha price, not a price in dollars: what actually lands in the
+            account is whatever their bank decides, and a shortfall discovered
+            on arrival is exactly the kind of surprise this site exists to
+            avoid. So the dollar amount is agreed with a person, first.
+          */}
+          {payments.bank.accounts.some((a) => a.currency !== "ZMW") ? (
+            <p className="mt-3 max-w-measure text-caption text-navy-20">
+              Paying in dollars? Message us for the exact amount before you send it. Your bank sets
+              the rate, not the converter on this site, so the two will not agree.
+            </p>
+          ) : null}
         </div>
       ) : null}
 

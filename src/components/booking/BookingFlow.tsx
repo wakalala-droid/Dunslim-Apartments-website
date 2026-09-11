@@ -9,10 +9,8 @@ import {
   Check,
   AlertTriangle,
   CalendarX,
-  CreditCard,
   Smartphone,
   Landmark,
-  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
@@ -125,14 +123,8 @@ const PAYMENT_METHODS: {
   id: PaymentMethod;
   label: string;
   detail: string;
-  icon: typeof CreditCard;
+  icon: typeof Smartphone;
 }[] = [
-  {
-    id: "card",
-    label: "Card",
-    detail: "Visa or Mastercard. We send you a secure payment link once your dates are confirmed. Card details are never entered on this site.",
-    icon: CreditCard,
-  },
   {
     id: "mobile-money",
     label: "Mobile money",
@@ -145,15 +137,9 @@ const PAYMENT_METHODS: {
     id: "bank-transfer",
     label: "Bank transfer",
     detail: canPayNow()
-      ? "Our account details are on the next screen, with the reference to quote."
+      ? "Kwacha or US dollars, at Access Bank. The account details are on the next screen, with the reference to quote."
       : "We send our account details once your dates are confirmed, with the reference to quote.",
     icon: Landmark,
-  },
-  {
-    id: "on-arrival",
-    label: "Pay on arrival",
-    detail: "Settle when you check in. We will confirm your dates before you travel either way.",
-    icon: Banknote,
   },
 ];
 
