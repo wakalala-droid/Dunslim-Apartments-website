@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   Check,
   AlertTriangle,
+  CalendarX,
   CreditCard,
   Smartphone,
   Landmark,
@@ -25,6 +26,8 @@ import { photo } from "@/lib/photos";
 import {
   checkAvailability,
   submitBookingRequest,
+  makeReference,
+  type BookingOutcome,
   type PaymentMethod,
 } from "@/lib/availability";
 import { cn } from "@/lib/cn";
@@ -185,17 +188,28 @@ export default function BookingFlow() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [availability, setAvailability] = useState<string>("");
+  /**
+   * Why a guest is back on a step they had already passed.
+   *
+   * Only ever set when a refusal sends them back. Landing in a form you thought
+   * you had finished, with nothing on screen to say why, reads as the form
+   * having thrown your work away.
+   */
+  const [resumeNote, setResumeNote] = useState("");
   /** The dates could not be checked. Said plainly rather than assumed away. */
   const [datesUnchecked, setDatesUnchecked] = useState(false);
   const [checking, setChecking] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [trap, setTrap] = useState("");
-  const [reference, setReference] = useState("");
   /**
-   * Whether a person was actually told. The confirmation screen says one thing
-   * or the other based on this. Never "we have your request" when nobody does.
+   * How the request ended: accepted, refused or undelivered. Null until it has
+   * been sent, which is also what puts the confirmation screen on screen.
+   *
+   * Three states rather than the boolean this used to be, because "nobody was
+   * told" and "we were told no" need completely different things said to a
+   * guest. See BookingOutcome in lib/availability.ts.
    */
-  const [recorded, setRecorded] = useState(false);
+  const [outcome, setOutcome] = useState<BookingOutcome | null>(null);
 
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -420,7 +434,37 @@ export default function BookingFlow() {
     if (submitting) return;
     if (!validate(3) || !residence || !quote) return;
     setSubmitting(true);
-    const outcome = await submitBookingRequest({
+
+    /*
+      Ask about the dates one more time, now, before sending anything.
+
+      The check on step one is two screens old by the time a guest presses this:
+      a name, an email, a phone number and a payment choice ago. That gap is
+      exactly the window in which somebody else books the same apartment, and it
+      is the one moment where losing the race is most expensive, because the
+      guest has already handed over everything. Refusing here costs one request
+      and nothing is sent to anyone.
+    */
+    const fresh = await checkAvailability(slug, from, to);
+    if (fresh.status === "unavailable" || fresh.status === "invalid") {
+      /*
+        A reference is minted for the shape of the outcome, not for the guest:
+        the refused screen deliberately does not show one, because there is no
+        request anywhere for it to refer to and a code on screen reads like
+        something is being held.
+      */
+      setOutcome({
+        status: "refused",
+        refusal: "dates",
+        reference: makeReference(),
+        reason: fresh.reason,
+      });
+      setSubmitting(false);
+      track("booking_submitted", { residence: slug, nights: quote.nights, status: "refused" });
+      return;
+    }
+
+    const result = await submitBookingRequest({
       slug,
       from,
       to,
@@ -437,49 +481,112 @@ export default function BookingFlow() {
       totalZmw: quote.totalZmw,
       company_website: trap,
     });
-    setReference(outcome.reference);
-    setRecorded(outcome.recorded);
+    setOutcome(result);
     setSubmitting(false);
 
     /*
-      The one event that matters. `recorded` distinguishes a request that
-      reached a person from one that did not, so a run of failures shows up as
-      itself rather than as a sudden drop in bookings.
+      The one event that matters. The status separates a request that reached a
+      person, one that was turned down and one that was lost on the way, so a
+      run of failures shows up as itself rather than as a sudden drop in
+      bookings, and a week of refusals shows up as a full calendar rather than
+      as a broken form.
     */
-    track("booking_submitted", { residence: slug, nights: quote.nights, recorded: outcome.recorded });
+    track("booking_submitted", { residence: slug, nights: quote.nights, status: result.status });
+  };
+
+  /*
+    Back into the form after a refusal, at the step that can actually fix it:
+    the dates when the apartment went, the details when something in them was
+    not accepted. Everything the guest typed is kept, because none of it is the
+    problem and asking for it twice would be its own insult. The reason travels
+    with them.
+  */
+  const resumeAt = (s: StepIndex, note: string) => {
+    setOutcome(null);
+    setErrors({});
+    setAvailability("");
+    setResumeNote(note);
+    pushStep(s);
+    setStep(s);
   };
 
   // ---- confirmation ------------------------------------------------------
-  if (reference && residence && quote) {
+  /*
+    Three endings, not two.
+
+    A request that reached a person, a request that was answered no, and a
+    request that never arrived are three different things to be told, and this
+    screen used to have copy for only two of them. The missing one is the
+    common one: somebody else booked the apartment while this guest was typing
+    their phone number. They were shown "this did not send ... Nothing is wrong
+    on your end", which is untrue in both halves.
+  */
+  if (outcome && residence && quote) {
+    const accepted = outcome.status === "accepted";
+    const refused = outcome.status === "refused";
+    const lostDates = refused && outcome.refusal === "dates";
+
     return (
       <Container wide>
         <div className="mx-auto max-w-[720px] py-16 md:py-24">
           <div
             className={cn(
               "flex h-12 w-12 items-center justify-center rounded-full",
-              recorded ? "bg-navy" : "bg-warning",
+              accepted ? "bg-navy" : "bg-warning",
             )}
           >
-            {recorded ? (
+            {accepted ? (
               <Check size={22} strokeWidth={2} className="text-white" aria-hidden />
+            ) : lostDates ? (
+              <CalendarX size={22} strokeWidth={2} className="text-white" aria-hidden />
             ) : (
               <AlertTriangle size={22} strokeWidth={2} className="text-white" aria-hidden />
             )}
           </div>
 
-          {recorded ? (
+          {accepted ? (
             <>
               <h1 className="mt-8 text-h1 font-extralight text-navy">
                 Thank you, {firstName}. We have your request.
               </h1>
               <p className="mt-6 max-w-measure text-lead text-charcoal">
-                It has reached our reservations inbox. Someone will confirm your booking and send
+                Your dates are held while we look at it. Someone will confirm your booking and send
                 payment instructions within a few hours, sooner during the day.
               </p>
               <p className="mt-4 max-w-measure text-body text-charcoal-80">
                 {arrivalTime
                   ? "We have your arrival time, so someone will be ready with the keys when you get here."
                   : "When you reply, let us know roughly when you will arrive so someone can be ready with the keys."}
+              </p>
+            </>
+          ) : lostDates ? (
+            <>
+              {/*
+                Somebody else got there first. That is a full calendar, not a
+                broken form, and saying so is the difference between a guest who
+                picks another date and one who assumes the site does not work.
+                No apology for a fault that did not happen.
+              */}
+              <h1 className="mt-8 text-h1 font-extralight text-navy">
+                {firstName}, those dates have just gone.
+              </h1>
+              <p className="mt-6 max-w-measure text-lead text-charcoal">
+                {outcome.reason ?? "Someone booked this residence while you were filling this in."}{" "}
+                Nothing has been sent and nothing is held, so nothing needs cancelling.
+              </p>
+              <p className="mt-4 max-w-measure text-body text-charcoal-80">
+                Everything you have typed is still here. Pick different dates and it carries
+                straight over, or try one of the other residences for the same nights.
+              </p>
+            </>
+          ) : refused ? (
+            <>
+              <h1 className="mt-8 text-h1 font-extralight text-navy">
+                {firstName}, one detail needs another look.
+              </h1>
+              <p className="mt-6 max-w-measure text-lead text-charcoal">
+                {outcome.reason ?? "Some of these details were not accepted."} Nothing has been
+                sent yet. Go back, change it, and send it again.
               </p>
             </>
           ) : (
@@ -501,15 +608,22 @@ export default function BookingFlow() {
           )}
 
           <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
-            {[
-              ["Reference", reference],
-              ["Residence", residence.name],
-              ["Arrive", `${prettyDate(from)}, from ${arrival.checkIn}`],
-              ["Depart", `${prettyDate(to)}, by ${arrival.lateCheckOut}`],
-              ["Total", money(quote.totalZmw)],
-              ["Paying by", PAYMENT_METHODS.find((m) => m.id === payment)?.label ?? "Not chosen"],
-              ["Confirmation to", email],
-            ].map(([k, v]) => (
+            {(
+              [
+                /*
+                  A reference is only shown when one exists to be quoted. On a
+                  refusal there is no request anywhere for it to refer to, and a
+                  code on screen reads like something is being held.
+                */
+                ...(refused ? [] : [["Reference", outcome.reference] as const]),
+                ["Residence", residence.name],
+                ["Arrive", `${prettyDate(from)}, from ${arrival.checkIn}`],
+                ["Depart", `${prettyDate(to)}, by ${arrival.lateCheckOut}`],
+                ["Total", money(quote.totalZmw)],
+                ["Paying by", PAYMENT_METHODS.find((m) => m.id === payment)?.label ?? "Not chosen"],
+                ["Confirmation to", email],
+              ] as ReadonlyArray<readonly [string, string]>
+            ).map(([k, v]) => (
               <div key={k} className="flex justify-between gap-6 py-4">
                 <dt className="text-body text-charcoal-60">{k}</dt>
                 <dd className="text-right text-body text-charcoal">{v}</dd>
@@ -519,19 +633,37 @@ export default function BookingFlow() {
 
           <div className="mt-12 rounded-md bg-stone p-6">
             <p className="text-body text-charcoal">
-              {recorded ? (
+              {accepted ? (
                 <>
-                  Quote reference <span className="text-navy">{reference}</span> if you message us.
-                  The fastest way to reach a person is WhatsApp.
+                  Quote reference <span className="text-navy">{outcome.reference}</span> if you
+                  message us. The fastest way to reach a person is WhatsApp.
+                </>
+              ) : refused ? (
+                <>
+                  Change it below and send it again. If you would rather a person sorted it out,
+                  WhatsApp reaches one fastest.
                 </>
               ) : (
                 <>
-                  Send us reference <span className="text-navy">{reference}</span> and your dates.
-                  WhatsApp reaches a person fastest.
+                  Send us reference <span className="text-navy">{outcome.reference}</span> and your
+                  dates. WhatsApp reaches a person fastest.
                 </>
               )}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
+              {refused && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    lostDates
+                      ? resumeAt(0, "Those dates went. Pick new ones and the rest is still filled in.")
+                      : resumeAt(2, outcome.reason ?? "Please check these details.")
+                  }
+                  className="inline-flex min-h-[44px] items-center rounded-md bg-navy px-6 text-[15px] font-medium text-white transition-colors duration-micro hover:bg-navy-80"
+                >
+                  {lostDates ? "Pick different dates" : "Change my details"}
+                </button>
+              )}
               <a
                 /*
                   When the send failed, the message carries the whole request.
@@ -539,17 +671,25 @@ export default function BookingFlow() {
                   because our form let them down.
                 */
                 href={`https://wa.me/${business.whatsapp}?text=${encodeURIComponent(
-                  recorded
-                    ? `Hello, I have just requested a booking. Reference ${reference}.`
-                    : `Hello, I tried to book on your website and it did not go through.\n\n` +
-                      `Reference ${reference}\n` +
-                      `${residence.name}\n` +
-                      `${prettyDate(from)} to ${prettyDate(to)}, ${guests} ${guests === 1 ? "guest" : "guests"}\n` +
-                      `${firstName} ${lastName}`,
+                  accepted
+                    ? `Hello, I have just requested a booking. Reference ${outcome.reference}.`
+                    : refused
+                      ? `Hello, I tried to book ${residence.name} for ${prettyDate(from)} to ${prettyDate(to)} ` +
+                        `and the website said those dates are not available. Could you help me find something?`
+                      : `Hello, I tried to book on your website and it did not go through.\n\n` +
+                        `Reference ${outcome.reference}\n` +
+                        `${residence.name}\n` +
+                        `${prettyDate(from)} to ${prettyDate(to)}, ${guests} ${guests === 1 ? "guest" : "guests"}\n` +
+                        `${firstName} ${lastName}`,
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[44px] items-center rounded-md bg-navy px-6 text-[15px] font-medium text-white transition-colors duration-micro hover:bg-navy-80"
+                className={cn(
+                  "inline-flex min-h-[44px] items-center rounded-md px-6 text-[15px] font-medium transition-colors duration-micro",
+                  refused
+                    ? "border border-navy/20 bg-white text-navy hover:border-navy/50"
+                    : "bg-navy text-white hover:bg-navy-80",
+                )}
               >
                 Message us on WhatsApp
               </a>
@@ -563,15 +703,16 @@ export default function BookingFlow() {
           </div>
 
           <p className="mt-8 text-caption text-charcoal-80">
-            {recorded
+            {accepted
               ? "Nothing has been charged yet. Cancellation terms are confirmed in writing along with the rest of your booking."
-              : "Nothing has been charged and nothing has been booked. Message us and we will sort it out."}
+              : refused
+                ? "Nothing has been charged and nothing has been sent."
+                : "Nothing has been charged and nothing has been booked. Message us and we will sort it out."}
           </p>
         </div>
       </Container>
     );
   }
-
   // ---- flow --------------------------------------------------------------
   return (
     <Container wide>
@@ -608,6 +749,28 @@ export default function BookingFlow() {
             ))}
           </ol>
         </nav>
+
+        {/*
+          Why they are back on a step they had already finished. Without this a
+          guest sent back from a refusal lands in a form they thought they had
+          completed, with nothing on screen explaining it, which reads as the
+          form having thrown their work away. role="status" so a screen reader
+          announces it on arrival rather than leaving it to be found.
+        */}
+        {resumeNote ? (
+          <div
+            role="status"
+            className="mt-8 flex items-start gap-3 rounded-md border border-warning/30 bg-warning/10 p-4"
+          >
+            <AlertTriangle
+              size={18}
+              strokeWidth={2}
+              className="mt-[2px] shrink-0 text-warning"
+              aria-hidden
+            />
+            <p className="text-body text-charcoal">{resumeNote}</p>
+          </div>
+        ) : null}
 
         <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">

@@ -79,6 +79,14 @@ export async function checkAvailability(
       url.searchParams.set("from", from);
       url.searchParams.set("to", to);
       const res = await fetch(url.toString(), { cache: "no-store" });
+      /*
+        Every non-2xx here is genuinely unknown, and that is deliberately
+        different from the booking POST below. This route answers a question:
+        taken dates come back 200 with `available: false`, so a status code is
+        never the way it says no. A code means the question did not get asked
+        properly (404, 503, a malformed query), which is not an answer either
+        way and must never be read as "the dates are free".
+      */
       if (!res.ok) throw new Error(`availability ${res.status}`);
       const data = (await res.json()) as { available?: boolean; reason?: string };
       return data.available
@@ -126,11 +134,61 @@ export type BookingRequest = {
 
 export type PaymentMethod = "card" | "mobile-money" | "bank-transfer" | "on-arrival" | "";
 
+/**
+ * What happened to a booking request. Three outcomes, not two.
+ *
+ * It used to be one boolean, `recorded`, and that boolean could not tell the
+ * difference between the two things it was asked to cover:
+ *
+ *   the request never reached anyone   (our fault, nothing is lost, chase us)
+ *   the request reached AI-BOS and was refused  (answered, the dates are gone)
+ *
+ * Both came back false, so a guest whose dates had just been taken was shown
+ * "this did not send ... Nothing is wrong on your end", which is wrong twice:
+ * something IS wrong, and it is not delivery. Worse, a refusal fell through to
+ * the fallback email, and when that email sent the guest was told "We have your
+ * request" for a booking AI-BOS had already turned down. Someone could walk away
+ * believing they hold a room that is not theirs.
+ *
+ * `reason` is the server's own words, and only ever set on `refused`.
+ *
+ * `refusal` says which kind, because there are two and the screen would
+ * otherwise have to guess. "Those dates have just gone" is the right thing to
+ * say to a guest who lost the race for an apartment and a flat untruth to one
+ * whose email address was typed wrong, which is the same class of mistake this
+ * whole change exists to stop making.
+ */
 export type BookingOutcome = {
+  status: "accepted" | "refused" | "undelivered";
   reference: string;
-  /** True only when a real system accepted it. Never used to imply a confirmed stay. */
-  recorded: boolean;
+  reason?: string;
+  refusal?: "dates" | "details";
 };
+
+/**
+ * The server's explanation, when it gave one we can actually show a guest.
+ *
+ * FastAPI sends `detail` as a plain string for an error we raised on purpose
+ * and as an array of validation objects for one the framework raised itself, so
+ * the type is checked rather than assumed: anything that is not a usable string
+ * falls back to our own wording. The body may also be empty or not JSON at all,
+ * which `res.json()` throws on.
+ *
+ * Trimmed to a sentence or two. This text is printed straight onto the
+ * confirmation screen and a stack trace leaking into that space would be both
+ * frightening and useless to a guest.
+ */
+async function serverReason(res: Response, fallback: string): Promise<string> {
+  try {
+    const data = (await res.json()) as { detail?: unknown };
+    if (typeof data.detail === "string" && data.detail.trim()) {
+      return data.detail.trim().slice(0, 200);
+    }
+  } catch {
+    /* No body, or not JSON. The fallback is still true. */
+  }
+  return fallback;
+}
 
 /**
  * A short, human-readable reference a guest can quote on WhatsApp.
@@ -170,8 +228,21 @@ export function makeReference(prefix = "DA"): string {
  *  2. The site's own /api/booking-request route, which emails the reservations
  *     inbox. This is the floor: it always runs when AI-BOS is not connected.
  *
- * If both fail, `recorded` comes back false and the confirmation screen says
- * so plainly. It must never claim a request was received when nobody was told.
+ * THE FALLBACK IS FOR LOST REQUESTS, NOT REFUSED ONES.
+ *
+ * That distinction is the whole of this function. The old version tested only
+ * `res.ok`, so every unhappy answer from AI-BOS looked identical to a dropped
+ * connection and every one of them went on to send the email. A 409 means
+ * another guest took those dates a moment ago. Emailing the inbox anyway puts a
+ * request for an occupied apartment in front of a person and, if the email
+ * sends, tells the guest we have them down for a room AI-BOS has already said
+ * no to. So the status code is read, and an answer is treated as an answer:
+ *
+ *   409  the dates went. Refused. No email.
+ *   400  something they typed was not accepted. Refused, with the reason. No email.
+ *   404 / 503  our setup is broken at this end. They did not get an answer, so
+ *        the email still runs.
+ *   a thrown fetch  no answer at all. The email still runs.
  */
 export async function submitBookingRequest(req: BookingRequest): Promise<BookingOutcome> {
   const reference = makeReference();
@@ -183,9 +254,33 @@ export async function submitBookingRequest(req: BookingRequest): Promise<Booking
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...req, reference }),
       });
-      if (res.ok) return { reference, recorded: true };
+
+      if (res.ok) return { status: "accepted", reference };
+
+      if (res.status === 409) {
+        return {
+          status: "refused",
+          refusal: "dates",
+          reference,
+          reason: await serverReason(
+            res,
+            "Those dates have just been taken. Please choose different dates.",
+          ),
+        };
+      }
+
+      if (res.status === 400) {
+        return {
+          status: "refused",
+          refusal: "details",
+          reference,
+          reason: await serverReason(res, "Some of these details were not accepted."),
+        };
+      }
+
+      /* Anything else is ours to answer for. Fall through to the mail path. */
     } catch {
-      /* fall through to the mail path below */
+      /* No answer at all. Fall through to the mail path below. */
     }
   }
 
@@ -197,11 +292,11 @@ export async function submitBookingRequest(req: BookingRequest): Promise<Booking
     });
     if (res.ok) {
       const data = (await res.json()) as { recorded?: boolean };
-      if (data.recorded) return { reference, recorded: true };
+      if (data.recorded) return { status: "accepted", reference };
     }
   } catch {
     /* fall through */
   }
 
-  return { reference, recorded: false };
+  return { status: "undelivered", reference };
 }
