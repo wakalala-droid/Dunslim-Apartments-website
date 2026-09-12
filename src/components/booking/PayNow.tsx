@@ -51,11 +51,24 @@ function CopyField({
     }
   };
 
+  /*
+    ON NAVY, BECAUSE THE PANEL IS NAVY.
+
+    This was written in the light-ground palette and dropped into a navy panel:
+    the label came out charcoal-60 and the value came out `text-navy`, which is
+    the panel's own background colour. The account numbers were invisible. Not
+    dim, not low contrast: the same colour as the thing behind them.
+
+    Everything here is now set against Deep Navy and measured on it. The value
+    is white (15.8:1) because it is an account number somebody is about to copy
+    by eye, the label is Navy 20 (10:1) and the button reads against it at every
+    state. Nothing in this component may use a token meant for white ground.
+  */
   return (
     <div className={cn("flex items-center justify-between gap-4 py-3", wide && "w-full")}>
       <div className="min-w-0">
-        <p className="label-caps text-charcoal-60">{label}</p>
-        <p className="mt-1 break-words text-body text-navy">{value}</p>
+        <p className="label-caps text-navy-20">{label}</p>
+        <p className="mt-1 break-words text-body text-white">{value}</p>
       </div>
       <button
         type="button"
@@ -65,8 +78,10 @@ function CopyField({
           "inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-sm border px-3 text-caption",
           "transition-colors duration-micro",
           copied
-            ? "border-success/40 text-success"
-            : "border-navy/20 text-charcoal hover:border-navy/50",
+            ? /* The success green is a colour for white ground and sits at 1.8:1
+                 on navy. The tick and the word carry the state instead. */
+              "border-white/60 bg-white/10 text-white"
+            : "border-white/25 text-navy-20 hover:border-white/60 hover:text-white",
         )}
       >
         {copied ? (
