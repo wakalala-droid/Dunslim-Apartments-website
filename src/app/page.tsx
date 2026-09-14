@@ -437,20 +437,23 @@ export default function HomePage() {
           />
 
           {/*
-            THE WHOLE PROPERTY, IN ONE WIDE BANNER.
+            THE PROPERTY, IN ONE WIDE BANNER.
 
             This spot held a stock house in Australia, then nothing, waiting for
-            a wide photograph of the real place. The photographer's panorama of
-            the lawn and the whole row arrived on 14 September 2026, full size,
-            so it can finally run the width of the page. Three to one from md up;
-            on a phone that would be a strip 125px tall, so it crops to two to
-            one there instead. The pool at night is not here because it closes
-            the page, and one photograph twice on a page reads as padding.
+            a wide photograph of the real place. It is the front of the row from
+            the courtyard, Mandela's door nearest, chosen by the owner on 14
+            September 2026 over the lawn panorama that was here for an hour.
+
+            Two to one from md up, sixteen to nine on a phone. The photograph is
+            about 1.75 to 1, so two to one keeps nearly all of it; the three to
+            one the panorama used would have cut the roofline and the paving
+            and left a strip of wall. The pool at night is not here because it
+            closes the page, and one photograph twice on a page reads as padding.
           */}
-          <div className="relative mt-12 aspect-[2/1] overflow-hidden rounded-md md:aspect-[3/1]">
+          <div className="relative mt-12 aspect-[16/9] overflow-hidden rounded-md md:aspect-[2/1]">
             <Figure
-              name="grounds-panorama"
-              alt="The lawn in front of the Dunslim apartments, the whole row behind the slatted fence on a clear afternoon"
+              name="grounds-front"
+              alt="The row of Dunslim apartments from the paved courtyard on a clear afternoon, Mandela's front door nearest"
               cover
               className="absolute inset-0"
               sizes="(max-width: 1440px) 100vw, 1440px"
