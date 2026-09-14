@@ -21,7 +21,7 @@ import {
 } from "@/lib/content";
 import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
-import { directNightly, publishedNightly, quote as buildQuote } from "@/lib/pricing";
+import { directNightly, quote as buildQuote, rateLadder } from "@/lib/pricing";
 import { isoPlusDays, isoToday } from "@/lib/format";
 
 export default function HomePage() {
@@ -337,39 +337,30 @@ export default function HomePage() {
               />
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
-                <Reveal as="div" className="flex items-baseline justify-between gap-6 py-6">
-                  <dt className="text-body text-charcoal">One to five nights</dt>
-                  <dd className="text-h3 font-light text-navy">{rates.directDiscountPct}% off</dd>
-                </Reveal>
-                {rates.longStay.map((band) => (
+                {/* Rows and wording come from rateLadder(); see the note there. */}
+                {rateLadder(cheapest).map((row) => (
                   <Reveal
                     as="div"
-                    key={band.minNights}
+                    key={row.key}
                     className="flex items-baseline justify-between gap-6 py-6"
                   >
-                    <dt className="text-body text-charcoal">{band.label}</dt>
-                    <dd className="text-h3 font-light text-navy">
-                      {band.discountPct}%
-                      <span className="ml-2 text-caption text-charcoal-80">on top</span>
-                    </dd>
+                    <dt className="text-body text-charcoal">
+                      {row.label}
+                      <span className="mt-1 block text-caption text-charcoal-80">
+                        {money(row.perNightZmw)} a night
+                      </span>
+                    </dt>
+                    <dd className="text-h3 font-light text-navy">{row.value}</dd>
                   </Reveal>
                 ))}
               </dl>
 
-              {/*
-                The ladder reads as though the percentages add up and they do
-                not: each one comes off the direct rate rather than off the one
-                above it. A guest doing the arithmetic in their head gets 25 per
-                cent and pays 23.5, which is the sort of small surprise this site
-                is built to avoid. A real total settles it without asking anyone
-                to do the sum.
-              */}
+              {/* A real total, so nobody has to do the sum in their head. */}
               {weekQuote ? (
                 <Reveal>
                   <p className="mt-6 max-w-measure text-caption text-charcoal-80">
-                    Each rate comes off the direct price rather than off the one above it. Seven
-                    nights in {cheapest.name} is {money(weekQuote.totalZmw)}, against{" "}
-                    {money(publishedNightly(cheapest) * 7)} on a platform.
+                    Seven nights in {cheapest.name} is {money(weekQuote.totalZmw)}, instead of{" "}
+                    {money(directNightly(cheapest) * 7)} at the standard price.
                   </p>
                 </Reveal>
               ) : null}
@@ -446,32 +437,23 @@ export default function HomePage() {
           />
 
           {/*
-            THE PLACE ITSELF, BY DAY AND BY NIGHT.
+            THE WHOLE PROPERTY, IN ONE WIDE BANNER.
 
             This spot held a stock house in Australia, then nothing, waiting for
-            a photograph of the real building. The owner's arrived on 14
-            September 2026. A pair rather than one banner: the files came over
-            WhatsApp at 1080px and a single one stretched the width of a laptop
-            goes soft, where half the width holds up. Front by day, pool by
-            night, which between them answer "what is it like to arrive" and
-            "what is there to do in the evening".
+            a wide photograph of the real place. The photographer's panorama of
+            the lawn and the whole row arrived on 14 September 2026, full size,
+            so it can finally run the width of the page. Three to one from md up;
+            on a phone that would be a strip 125px tall, so it crops to two to
+            one there instead. The pool at night is not here because it closes
+            the page, and one photograph twice on a page reads as padding.
           */}
-          <div className="mt-12 grid gap-8 md:grid-cols-2">
+          <div className="relative mt-12 aspect-[2/1] overflow-hidden rounded-md md:aspect-[3/1]">
             <Figure
-              name="grounds-front"
-              alt="The row of Dunslim apartments from the paved courtyard, on a clear afternoon"
-              ratio="16 / 9"
-              reveal
-              className="rounded-md"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <Figure
-              name="grounds-pool-1"
-              alt="The shared pool lit up at night, with two of the apartments behind it"
-              ratio="16 / 9"
-              reveal
-              className="rounded-md"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              name="grounds-panorama"
+              alt="The lawn in front of the Dunslim apartments, the whole row behind the slatted fence on a clear afternoon"
+              cover
+              className="absolute inset-0"
+              sizes="(max-width: 1440px) 100vw, 1440px"
             />
           </div>
 
@@ -505,14 +487,28 @@ export default function HomePage() {
           CLOSE
       ---------------------------------------------------------------- */}
       <section className="on-navy relative isolate bg-navy">
+        {/*
+          The pool at night, replacing a bedroom that read as a stock photograph
+          under its scrim (the owner's call, 14 September 2026). Held low in the
+          frame so the lit water sits behind the words rather than the bright
+          wall lamps above it.
+
+          A 70 per cent wash, not the shared 60 per cent "strong" scrim. Measured
+          in Pillow at 1440 and 375 wide: at 60 the brightest water behind the
+          21px line under the heading gave 3.65:1, under the 4.5 it needs. At 70
+          it is 4.9 at worst and the heading 6.0. Re-measure if this photograph
+          or its crop changes.
+        */}
         <Figure
-          name="r2-bedroom-1"
-          alt="A Dunslim bedroom in the evening"
+          name="grounds-pool-1"
+          alt="The shared pool lit up at night, with two of the apartments behind it"
           cover
-          scrim="strong"
+          scrim="none"
           sizes="100vw"
           className="absolute inset-0 -z-10"
+          imgClassName="object-[center_75%]"
         />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-navy/70" />
         <Container wide>
           <div className="mx-auto max-w-[46ch] py-24 text-center md:py-32">
             <Eyebrow tone="onNavy" className="justify-center">

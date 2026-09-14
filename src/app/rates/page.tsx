@@ -7,8 +7,8 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Figure } from "@/components/ui/Figure";
 import { residences, rates, arrival, faqs, business, fleet } from "@/lib/content";
 import { CurrencyConverter } from "@/components/ui/Currency";
-import { money } from "@/lib/format";
-import { directNightly, publishedNightly, longStayBand } from "@/lib/pricing";
+import { money, inWords } from "@/lib/format";
+import { directNightly, publishedNightly, longStayBand, rateLadder } from "@/lib/pricing";
 import { BreadcrumbSchema, FaqSchema } from "@/components/seo/StructuredData";
 
 /*
@@ -222,45 +222,35 @@ export default function RatesPage() {
 
             <div className="lg:col-span-6">
               <dl className="divide-y divide-white/15 border-y border-white/15">
-                <div className="flex items-baseline justify-between gap-6 py-6">
-                  <dt className="text-body text-navy-20">One to five nights</dt>
-                  <dd className="text-h3 font-light text-white">{rates.directDiscountPct}%</dd>
-                </div>
-                {rates.longStay.map((b) => (
-                  <div key={b.minNights} className="flex items-baseline justify-between gap-6 py-6">
+                {/* Rows and wording come from rateLadder(); see the note there. */}
+                {rateLadder(example).map((row) => (
+                  <div key={row.key} className="flex items-baseline justify-between gap-6 py-6">
                     <dt className="text-body text-navy-20">
-                      {b.label}
-                      <span className="mt-1 block text-caption text-navy-40">
-                        {b.minNights} nights or more
+                      {row.label}
+                      <span className="mt-1 block text-caption text-navy-20">
+                        {money(row.perNightZmw)} a night
                       </span>
                     </dt>
-                    <dd className="text-h3 font-light text-white">
-                      +{b.discountPct}%
-                    </dd>
+                    <dd className="text-h3 font-light text-white">{row.value}</dd>
                   </div>
                 ))}
               </dl>
 
               <p className="mt-6 max-w-measure text-caption text-navy-20">
-                Each rate comes off the direct price rather than off the one above it, so they do
-                not simply add up. The worked example below is the real figure.
+                The discount comes off the standard price and the longest band you reach is the one
+                you get. They do not add together.
               </p>
 
               {band ? (
                 <div className="mt-8 rounded-md bg-white/5 p-6 ring-1 ring-white/10">
                   <Eyebrow tone="onNavy">For example</Eyebrow>
                   <p className="mt-4 text-body text-navy-20">
-                    {example.name}, {EXAMPLE_NIGHTS} nights. Published at{" "}
-                    {money(publishedNightly(example))} a night, that is{" "}
-                    {money(publishedNightly(example) * EXAMPLE_NIGHTS)}. Booked direct with the{" "}
-                    {band.discountPct} per cent long-stay rate applied, you pay{" "}
+                    {example.name}, {EXAMPLE_NIGHTS} nights. At the standard{" "}
+                    {money(directNightly(example))} a night that is{" "}
+                    {money(directNightly(example) * EXAMPLE_NIGHTS)}. With {band.discountPct} per
+                    cent off for staying {inWords(band.minNights)} nights or more, you pay{" "}
                     <span className="text-white">
-                      {money(
-                        publishedNightly(example) *
-                          EXAMPLE_NIGHTS *
-                          (1 - rates.directDiscountPct / 100) *
-                          (1 - band.discountPct / 100),
-                      )}
+                      {money(directNightly(example) * EXAMPLE_NIGHTS * (1 - band.discountPct / 100))}
                     </span>
                     .
                   </p>

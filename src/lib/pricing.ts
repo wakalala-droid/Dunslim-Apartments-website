@@ -1,4 +1,5 @@
 import { rates, type Residence } from "./content";
+import { inWords } from "./format";
 
 /**
  * Pricing engine.
@@ -142,3 +143,31 @@ export const directNightly = (r: Residence) => r.directNightlyZmw;
  */
 export const publishedNightly = (r: Residence) =>
   r.directNightlyZmw / (1 - rates.directDiscountPct / 100);
+
+/**
+ * THE RATE LADDER AS A GUEST READS IT, one row per band.
+ *
+ * The owner's words, 14 September 2026: one to five nights is the STANDARD
+ * price, then ten per cent off, then fifteen. Three pages used to show the first
+ * row as "10% off" (the book-direct saving against a platform) and the later
+ * rows as "+10%" or "10% on top", so a guest read a stay of six nights as twenty
+ * per cent off. The engine always charged the right amount; only the words were
+ * wrong. Every page now reads its rows from here, with the real price per night
+ * beside each one, so no page can word the ladder differently again.
+ */
+export function rateLadder(r: Residence) {
+  const standard = directNightly(r);
+  const firstBand = [...rates.longStay].sort((a, b) => a.minNights - b.minNights)[0];
+  const shortLabel = firstBand
+    ? `One to ${inWords(firstBand.minNights - 1)} nights`
+    : "Any stay";
+  return [
+    { key: "standard", label: shortLabel, value: "Standard price", perNightZmw: standard },
+    ...rates.longStay.map((b) => ({
+      key: String(b.minNights),
+      label: b.label,
+      value: `${b.discountPct}% off`,
+      perNightZmw: standard * (1 - b.discountPct / 100),
+    })),
+  ];
+}

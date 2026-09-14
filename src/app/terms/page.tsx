@@ -139,7 +139,7 @@ export default function TermsPage() {
             <ul className="mt-4 space-y-2">
               {rates.longStay.map((b) => (
                 <li key={b.minNights} className="text-body text-charcoal">
-                  {b.minNights} nights or more: a further {b.discountPct} per cent off.
+                  {b.minNights} nights or more: {b.discountPct} per cent off the standard price.
                 </li>
               ))}
             </ul>

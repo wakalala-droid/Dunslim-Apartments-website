@@ -4,9 +4,9 @@ import { Figure } from "@/components/ui/Figure";
 import { Reveal } from "@/components/ui/Reveal";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import EnquiryForm from "@/components/booking/EnquiryForm";
-import { rates, audience, residences, arrival, fleet } from "@/lib/content";
+import { audience, residences, arrival, fleet } from "@/lib/content";
 import { money } from "@/lib/format";
-import { directNightly, longStayBand } from "@/lib/pricing";
+import { directNightly, longStayBand, rateLadder } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Long stays",
@@ -64,19 +64,16 @@ export default function LongStaysPage() {
               />
 
               <dl className="mt-12 divide-y divide-navy/10 border-y border-navy/10">
-                <div className="flex items-baseline justify-between gap-6 py-6">
-                  <dt className="text-body text-charcoal">One to five nights</dt>
-                  <dd className="text-h3 font-light text-navy">{rates.directDiscountPct}% off</dd>
-                </div>
-                {rates.longStay.map((b) => (
-                  <div key={b.minNights} className="flex items-baseline justify-between gap-6 py-6">
+                {/* Rows and wording come from rateLadder(); see the note there. */}
+                {rateLadder(example).map((row) => (
+                  <div key={row.key} className="flex items-baseline justify-between gap-6 py-6">
                     <dt className="text-body text-charcoal">
-                      {b.label}
+                      {row.label}
                       <span className="mt-1 block text-caption text-charcoal-80">
-                        {b.minNights} nights or more
+                        {money(row.perNightZmw)} a night
                       </span>
                     </dt>
-                    <dd className="text-h3 font-light text-navy">+{b.discountPct}%</dd>
+                    <dd className="text-h3 font-light text-navy">{row.value}</dd>
                   </div>
                 ))}
               </dl>

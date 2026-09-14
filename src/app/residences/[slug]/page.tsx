@@ -339,10 +339,10 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
             loses more than half its width in one and stops showing anything.
             Here each keeps a wide 16:9 frame.
 
-            Two across at most. These files came over WhatsApp at 1080px, so a
-            single one stretched across a laptop would go soft. Captions sit
-            below the picture rather than over it, so none of them needs a scrim
-            to stay readable.
+            Two across, so each one is big enough to read as a place. They are
+            the photographer's full-size files (replaced the WhatsApp copies on
+            14 September 2026). Captions sit below the picture rather than over
+            it, so none of them needs a scrim to stay readable.
           */}
           <div className="mt-24 border-t border-white/15 pt-12">
             <h3 className="text-h3 font-light text-white">Outside and the pool</h3>
