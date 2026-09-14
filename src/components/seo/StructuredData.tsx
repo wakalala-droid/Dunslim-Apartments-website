@@ -81,15 +81,19 @@ export function LodgingSchema() {
       when that was deleted this line kept pointing at it, so the one field that
       decides whether Google puts a picture beside the listing was aimed at a
       404. Now the three apartments' own leading photographs, which are the
-      pictures a result should show anyway.
+      pictures a result should show anyway. The front of the building went in
+      first on 14 September 2026, when the owner's photograph of it arrived.
     */
     image: [
       `${site.url}/og-default.jpg`,
+      `${site.url}/photos/grounds-front.jpg`,
       ...residences.map((r) => `${site.url}/photos/${r.photos[0]?.id}.jpg`),
     ],
     // Kwacha only. This said "ZMW, USD" long after the dollar switch was removed.
     currenciesAccepted: "ZMW",
-    paymentAccepted: "Visa, Mastercard, MTN Mobile Money, Airtel Money, Bank transfer",
+    // No cards: there is no card processor and the checkout stopped offering
+    // them on 12 September 2026. This line kept telling search engines otherwise.
+    paymentAccepted: "MTN Mobile Money, Airtel Money, Bank transfer",
     checkinTime: arrival.checkIn,
     checkoutTime: arrival.lateCheckOut,
     numberOfRooms: residences.length,

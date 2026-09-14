@@ -7,7 +7,7 @@ import { Figure } from "@/components/ui/Figure";
 import { CoverFlow } from "@/components/ui/CoverFlow";
 import { Reveal } from "@/components/ui/Reveal";
 import ResidenceCard from "@/components/residences/ResidenceCard";
-import { residences, getResidence, rates, arrival, business } from "@/lib/content";
+import { residences, getResidence, rates, arrival, business, grounds } from "@/lib/content";
 import { site } from "@/lib/site";
 import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
@@ -329,6 +329,44 @@ export default function ResidencePage({ params }: { params: { slug: string } }) 
               caption: p.caption,
             }))}
           />
+
+          {/*
+            OUTSIDE, IN THE SAME SECTION AS THE ROOMS.
+
+            The owner asked for the outside and the pool to go in with the
+            rooms. They are not slides in the gallery above because its cards
+            are tall portrait crops: a wide photograph of a row of buildings
+            loses more than half its width in one and stops showing anything.
+            Here each keeps a wide 16:9 frame.
+
+            Two across at most. These files came over WhatsApp at 1080px, so a
+            single one stretched across a laptop would go soft. Captions sit
+            below the picture rather than over it, so none of them needs a scrim
+            to stay readable.
+          */}
+          <div className="mt-24 border-t border-white/15 pt-12">
+            <h3 className="text-h3 font-light text-white">Outside and the pool</h3>
+            <p className="mt-3 max-w-measure text-body text-navy-20">
+              Shared by all three apartments. The pool is included in your rate.
+            </p>
+            <ul className="mt-12 grid gap-x-8 gap-y-12 md:grid-cols-2">
+              {grounds.map((g) => (
+                <Reveal as="li" key={g.id}>
+                  <Figure
+                    name={g.id}
+                    alt={g.caption}
+                    ratio="16 / 9"
+                    className="rounded-md"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  {/* The alt text already says this, so it is not read twice. */}
+                  <p aria-hidden className="mt-3 text-caption text-navy-20">
+                    {g.caption}
+                  </p>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
         </Container>
       </Section>
 

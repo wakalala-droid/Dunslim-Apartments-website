@@ -169,11 +169,9 @@ MAPPING = {
 
     "r3-detail-1": ("Kaunda", "untitled-47.jpg"),
 
-    # `exterior` is deliberately absent. There is no photograph of the building
-    # or the approach from Makeni Road in this batch, and the location page
-    # captions that slot "The approach from Makeni Road". Leaving the stock file
-    # in place is wrong, but replacing it with an interior would be worse. It
-    # needs one photograph from the owner, taken at the gate.
+    # The outside of the building and the pool are not here. They arrived
+    # separately on 14 September 2026 and are imported by
+    # import-grounds-photos.py under keys starting `grounds-`.
 }
 
 
@@ -212,10 +210,12 @@ def main() -> None:
         raise SystemExit("mapping is not complete; nothing written")
 
     # Anything in the folder that this mapping does not name is from an earlier
-    # pass and goes, EXCEPT the stock exterior, which nothing here replaces.
-    keep = set(MAPPING) | {"exterior"}
+    # pass and goes, EXCEPT the outside and pool photographs, which belong to
+    # no one apartment and come in through import-grounds-photos.py.
+    keep = set(MAPPING)
     for path in sorted(glob.glob(os.path.join(PHOTOS, "*.jpg"))):
-        if os.path.splitext(os.path.basename(path))[0] not in keep:
+        stem = os.path.splitext(os.path.basename(path))[0]
+        if stem not in keep and not stem.startswith("grounds-"):
             os.remove(path)
             print(f"removed  {os.path.basename(path)}")
 

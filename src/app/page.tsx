@@ -446,11 +446,34 @@ export default function HomePage() {
           />
 
           {/*
-            A wide banner of the property from the road belongs here and there
-            is no such photograph. What was here was a stock house in Australia.
-            The heading and the distances stand on their own until the owner
-            sends one taken at the gate.
+            THE PLACE ITSELF, BY DAY AND BY NIGHT.
+
+            This spot held a stock house in Australia, then nothing, waiting for
+            a photograph of the real building. The owner's arrived on 14
+            September 2026. A pair rather than one banner: the files came over
+            WhatsApp at 1080px and a single one stretched the width of a laptop
+            goes soft, where half the width holds up. Front by day, pool by
+            night, which between them answer "what is it like to arrive" and
+            "what is there to do in the evening".
           */}
+          <div className="mt-12 grid gap-8 md:grid-cols-2">
+            <Figure
+              name="grounds-front"
+              alt="The row of Dunslim apartments from the paved courtyard, on a clear afternoon"
+              ratio="16 / 9"
+              reveal
+              className="rounded-md"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+            <Figure
+              name="grounds-pool-1"
+              alt="The shared pool lit up at night, with two of the apartments behind it"
+              ratio="16 / 9"
+              reveal
+              className="rounded-md"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
 
           <ul className="mt-12 grid gap-px bg-navy/10 sm:grid-cols-2 lg:grid-cols-3">
             {neighbourhood.slice(0, 6).map((p) => (

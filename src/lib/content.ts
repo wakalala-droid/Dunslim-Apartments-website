@@ -221,6 +221,32 @@ export const rates = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// The grounds: outside the apartments and the pool
+// ---------------------------------------------------------------------------
+
+/**
+ * The owner's photographs of the outside, sent 14 September 2026.
+ *
+ * Shared by all three apartments, so they live here and not in any one
+ * residence's `photos`. That list feeds the card cover, the checkout thumbnail
+ * and the WhatsApp share image and a building shot there would make three
+ * different apartments look identical.
+ *
+ * Captions say only what is in the frame. The pool shots show a lit section in
+ * red and another in blue; that is not written up as a children's pool or a
+ * second pool, because nobody has said so. One pool, shared, is what is
+ * confirmed (see `rates.included`).
+ */
+export const grounds = [
+  { id: "grounds-front", caption: "The apartments from the courtyard" },
+  { id: "grounds-pool-1", caption: "The pool at night, shared by the apartments" },
+  { id: "grounds-terrace", caption: "Tables outside, for eating in the open air" },
+  { id: "grounds-lawn", caption: "The lawn in front of the apartments" },
+  { id: "grounds-pool-2", caption: "The pool, lit up after dark" },
+  { id: "grounds-pool-3", caption: "The water feature at the edge of the pool" },
+] as const;
+
+// ---------------------------------------------------------------------------
 // The residences
 // ---------------------------------------------------------------------------
 
@@ -778,14 +804,15 @@ export const faqs = [
     a: "Yes. The gate is manned overnight and you park inside it.",
   },
   {
-    q: "Can I stay for a month or longer?",
     /*
-      Read from the ladder rather than written out. This answer said "seven
-      nights and again at twenty-eight" and stayed saying it after the owner
-      moved the bands to six and fifteen, so the FAQ contradicted the rate card
-      two pages away.
+      Replaced "Can I stay for a month or longer?" on the owner's instruction,
+      14 September 2026. The long-stay ladder is already on the rate card and
+      has its own page, so nothing a guest needs went with it. The owner's
+      words: hand washing at a charge and laundry shops nearby. No price is
+      given because none has been.
     */
-    a: `Yes. The rate drops at ${rates.longStay[0]!.minNights} nights and again at ${rates.longStay[1]!.minNights}. If you are staying more than a month, just talk to us and we will work something out.`,
+    q: "Do you offer laundry services?",
+    a: "Yes. We can hand wash your clothes for a charge. There are also laundry shops close by.",
   },
   {
     q: "Is it cheaper to book here than on other platforms?",

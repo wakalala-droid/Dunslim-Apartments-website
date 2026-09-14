@@ -63,6 +63,32 @@ export default function EnquiryForm() {
         : e.target.value,
     }));
 
+  // The enquiry written out as a WhatsApp message, for when the form fails.
+  // The year is written out: an enquiry is often for next year and "1 Sept"
+  // alone leaves the reader guessing which one.
+  const withYear = (iso: string) => {
+    const pretty = prettyDate(iso);
+    return pretty ? `${pretty} ${iso.slice(0, 4)}` : iso;
+  };
+  const enquiryText = () => {
+    const details = [
+      reference ? `Reference ${reference}` : "",
+      `Name: ${f.name}`,
+      f.organisation ? `Organisation: ${f.organisation}` : "",
+      `Email: ${f.email}`,
+      f.phone ? `Phone: ${f.phone}` : "",
+      f.from ? `Arriving: ${withYear(f.from)}` : "",
+      f.to ? `Leaving: ${withYear(f.to)}` : "",
+      f.people ? `People: ${f.people}` : "",
+      f.invoice ? "I will need an invoice." : "",
+    ].filter(Boolean);
+    return [
+      "Hello, I sent a long-stay enquiry on your website and it did not go through.",
+      details.join("\n"),
+      f.message.trim(),
+    ].join("\n\n");
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (state === "sending") return;
@@ -124,8 +150,8 @@ export default function EnquiryForm() {
       ["Reference", reference],
       ["Name", f.name],
       ...(f.organisation ? ([["Organisation", f.organisation]] as [string, string][]) : []),
-      ...(f.from ? ([["Arriving", prettyDate(f.from) || f.from]] as [string, string][]) : []),
-      ...(f.to ? ([["Leaving", prettyDate(f.to) || f.to]] as [string, string][]) : []),
+      ...(f.from ? ([["Arriving", withYear(f.from)]] as [string, string][]) : []),
+      ...(f.to ? ([["Leaving", withYear(f.to)]] as [string, string][]) : []),
       ...(f.people ? ([["People", f.people]] as [string, string][]) : []),
       ["Invoice needed", f.invoice ? "Yes" : "No"],
       ["Reply to", f.email],
@@ -231,22 +257,33 @@ export default function EnquiryForm() {
         </Field>
       </div>
 
+      {/*
+        WHEN IT CANNOT SEND, WHATSAPP CARRIES THE WHOLE ENQUIRY.
+
+        The owner tested this on 14 September 2026 and got the failure: the
+        live site has no mail keys, so every enquiry was refused. The old notice
+        was honest but it sent the guest to a blank WhatsApp chat to type six
+        weeks of dates and a paragraph out a second time, which most people
+        will not do. The button below opens WhatsApp with everything they wrote
+        already in the message. One tap to send and nothing is lost.
+      */}
       {state === "failed" ? (
-        <div role="alert" className="mt-6 flex gap-3 rounded-md bg-stone p-4">
-          <AlertTriangle size={20} strokeWidth={1.75} className="mt-px shrink-0 text-warning" aria-hidden />
-          <p className="text-caption text-charcoal">
-            This did not send and nobody has seen it. Nothing is wrong on your end, so please message
-            us on{" "}
-            <a
-              href={`https://wa.me/${business.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-navy underline underline-offset-4"
-            >
-              WhatsApp
-            </a>{" "}
-            instead and we will pick it up straight away.
-          </p>
+        <div role="alert" className="mt-6 rounded-md bg-stone p-6">
+          <div className="flex gap-3">
+            <AlertTriangle size={20} strokeWidth={1.75} className="mt-1 shrink-0 text-warning" aria-hidden />
+            <p className="text-body text-charcoal">
+              Our form could not send this, so nobody has seen it yet. Nothing is wrong on your end.
+              Send it to us on WhatsApp instead: everything you typed is already in the message.
+            </p>
+          </div>
+          <a
+            href={`https://wa.me/${business.whatsapp}?text=${encodeURIComponent(enquiryText())}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex min-h-[44px] items-center rounded-md bg-navy px-6 text-[15px] font-medium text-white transition-colors duration-micro hover:bg-navy-80"
+          >
+            Send it on WhatsApp
+          </a>
         </div>
       ) : null}
 

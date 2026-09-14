@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { CURRENCIES, findCurrency, flagSrc, type Currency } from "@/lib/currencies";
@@ -197,6 +197,37 @@ function CurrencyPicker({
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
 
+  /*
+    WHERE THE LIST OPENS, WORKED OUT FROM WHERE THE BUTTON ACTUALLY IS.
+
+    The list used to hang from the button's right edge, always. On /rates the
+    button sits beside its label on a laptop, at the right of the card and that
+    was fine. On a phone the label takes the whole row, the button wraps under
+    it at the LEFT and a 310px list lined up with its right edge ran more than 100px
+    off the left of the screen: the owner's screenshot showed "rrencies" and
+    "an rupiah". So the list is placed in the space there is, kept 16px inside
+    the screen on both sides and never wider than the screen allows.
+  */
+  const [place, setPlace] = useState<{ left: number; width: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!open) return;
+    const measure = () => {
+      const w = wrap.current;
+      if (!w) return;
+      const gutter = 16;
+      const vw = document.documentElement.clientWidth;
+      const box = w.getBoundingClientRect();
+      const width = Math.min(310, vw - gutter * 2);
+      // Prefer lining up with the button's right edge, then slide it back on.
+      const wanted = box.right - width;
+      const onScreen = Math.min(Math.max(wanted, gutter), vw - gutter - width);
+      setPlace({ left: onScreen - box.left, width });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [open]);
+
   // Keep the highlighted row in view as the arrows walk the list.
   useEffect(() => {
     if (!open) return;
@@ -261,8 +292,10 @@ function CurrencyPicker({
       {open ? (
         <div
           onKeyDown={onKeyDown}
+          style={place ? { left: place.left, width: place.width } : undefined}
           className={cn(
-            "absolute right-0 z-30 mt-2 w-[310px] max-w-[86vw] overflow-hidden rounded-md",
+            "absolute z-30 mt-2 overflow-hidden rounded-md",
+            !place && "right-0 w-[310px] max-w-[86vw]",
             "border border-navy/15 bg-white shadow-3",
           )}
         >
