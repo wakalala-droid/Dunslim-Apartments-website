@@ -550,6 +550,12 @@ export default function BookingFlow() {
                   ? "We have your arrival time, so someone will be ready with the keys when you get here."
                   : "When you reply, let us know roughly when you will arrive so someone can be ready with the keys."}
               </p>
+              {outcome.emailed && (
+                <p className="mt-4 max-w-measure text-body text-charcoal-80">
+                  We have emailed a copy of your request to {email}. If it is not there in a few
+                  minutes, look in your spam folder.
+                </p>
+              )}
             </>
           ) : lostDates ? (
             <>

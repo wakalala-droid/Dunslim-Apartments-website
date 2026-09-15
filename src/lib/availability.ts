@@ -190,6 +190,12 @@ export type BookingOutcome = {
   reference: string;
   reason?: string;
   refusal?: "dates" | "details";
+  /**
+   * AI-BOS has emailed the guest a copy of their request. Only ever true when
+   * the send actually went, so the screen never promises an email that is not
+   * coming.
+   */
+  emailed?: boolean;
 };
 
 /**
@@ -282,7 +288,16 @@ export async function submitBookingRequest(req: BookingRequest): Promise<Booking
         body: JSON.stringify({ ...req, reference }),
       });
 
-      if (res.ok) return { status: "accepted", reference };
+      if (res.ok) {
+        let emailed = false;
+        try {
+          const data = (await res.json()) as { guest_emailed?: boolean };
+          emailed = data.guest_emailed === true;
+        } catch {
+          /* An answer without a body is still an accepted request. */
+        }
+        return { status: "accepted", reference, emailed };
+      }
 
       if (res.status === 409) {
         return {
