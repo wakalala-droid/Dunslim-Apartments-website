@@ -17,7 +17,16 @@ import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Container } from "@/components/ui/Layout";
 import { Honeypot } from "@/components/ui/Honeypot";
 import Summary from "./Summary";
-import { residences, getResidence, arrival, business, rates, maxGuests, canPayNow } from "@/lib/content";
+import {
+  residences,
+  getResidence,
+  arrival,
+  business,
+  rates,
+  maxGuests,
+  canPayNow,
+  allExtraServices,
+} from "@/lib/content";
 import PayNow from "@/components/booking/PayNow";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
 import { money, isoToday, isoPlusDays, prettyDate, isValidIsoDate } from "@/lib/format";
@@ -175,6 +184,25 @@ export default function BookingFlow() {
   const [purpose, setPurpose] = useState<"" | "business" | "leisure" | "relocation" | "other">("");
   const [arrivalTime, setArrivalTime] = useState("");
   const [notes, setNotes] = useState("");
+  /**
+   * The extra services the guest ticked, by id, in the order they appear.
+   *
+   * There is no field for these in the request AI-BOS accepts, so they travel
+   * at the top of the guest's notes, which AI-BOS stores as `guest_notes` and
+   * the owner reads with the booking. Top, not bottom, because AI-BOS keeps
+   * the first thousand characters of the notes and a long message must never
+   * be what pushes "airport pick-up" off the end.
+   *
+   * No price is attached and none is added to the total. Every extra is priced
+   * by a person afterwards, which is what the /extra-services page promises.
+   */
+  const [extras, setExtras] = useState<string[]>([]);
+  const extrasLine = extras.length
+    ? `Extra services requested: ${allExtraServices
+        .filter((s) => extras.includes(s.id))
+        .map((s) => s.title)
+        .join("; ")}.`
+    : "";
   const [payment, setPayment] = useState<PaymentMethod>("");
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -467,7 +495,7 @@ export default function BookingFlow() {
       organisation,
       purpose,
       arrivalTime,
-      notes,
+      notes: [extrasLine, notes.trim()].filter(Boolean).join("\n\n"),
       payment,
       totalZmw: quote.totalZmw,
       company_website: trap,
@@ -550,6 +578,12 @@ export default function BookingFlow() {
                   ? "We have your arrival time, so someone will be ready with the keys when you get here."
                   : "When you reply, let us know roughly when you will arrive so someone can be ready with the keys."}
               </p>
+              {extras.length > 0 && (
+                <p className="mt-4 max-w-measure text-body text-charcoal-80">
+                  We have the extra services you ticked and will send you their prices when we
+                  reply. Nothing is booked until you agree.
+                </p>
+              )}
               {outcome.emailed && (
                 <p className="mt-4 max-w-measure text-body text-charcoal-80">
                   We have emailed a copy of your request to {email}. If it is not there in a few
@@ -692,7 +726,8 @@ export default function BookingFlow() {
                         `Reference ${outcome.reference}\n` +
                         `${residence.name}\n` +
                         `${prettyDate(from)} to ${prettyDate(to)}, ${guests} ${guests === 1 ? "guest" : "guests"}\n` +
-                        `${firstName} ${lastName}`,
+                        `${firstName} ${lastName}` +
+                        (extrasLine ? `\n${extrasLine}` : ""),
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -1110,6 +1145,51 @@ export default function BookingFlow() {
                       placeholder="e.g. flight KQ 794, or 23:40 by road"
                     />
                   </Field>
+
+                  {/*
+                    EXTRA SERVICES, ticked here rather than typed. The
+                    /extra-services page tells a guest to "tick it on the
+                    booking form", so this is where that promise is kept. One
+                    tick per service and nothing is added to the total: each one
+                    is priced by a person once the request arrives.
+                  */}
+                  <fieldset className="sm:col-span-2">
+                    <legend className="label-caps text-charcoal-80">Extra services</legend>
+                    <p id="extras-hint" className="mt-2 text-caption text-charcoal-80">
+                      Optional. Tick anything you would like and we will send you the price. Nothing
+                      is added to your total here.{" "}
+                      <Link
+                        href="/extra-services"
+                        target="_blank"
+                        className="underline underline-offset-4 hover:text-navy"
+                      >
+                        What each one is
+                      </Link>
+                    </p>
+                    <div className="mt-4 grid gap-x-6 sm:grid-cols-2">
+                      {allExtraServices.map((s) => (
+                        <label
+                          key={s.id}
+                          className="flex min-h-[44px] cursor-pointer items-center gap-3 py-1"
+                        >
+                          <input
+                            type="checkbox"
+                            aria-describedby="extras-hint"
+                            checked={extras.includes(s.id)}
+                            onChange={(e) =>
+                              setExtras((prev) =>
+                                e.target.checked
+                                  ? [...prev, s.id]
+                                  : prev.filter((id) => id !== s.id),
+                              )
+                            }
+                            className="h-4 w-4 shrink-0 accent-navy"
+                          />
+                          <span className="text-body text-charcoal">{s.title}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
 
                   <Field label="Anything we should know" htmlFor="notes" className="sm:col-span-2">
                     <Textarea

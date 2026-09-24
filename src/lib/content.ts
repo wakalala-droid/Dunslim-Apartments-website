@@ -83,34 +83,27 @@ export const audience = [
 ] as const;
 
 // ---------------------------------------------------------------------------
-// The cars
+// Self-drive car hire
 // ---------------------------------------------------------------------------
 
 /**
- * THREE TOYOTA MARK X, ONE PER RESIDENCE. HIRED SEPARATELY, NOT INCLUDED.
+ * SELF-DRIVE HIRE FROM THE PROPERTY'S OWN POOL OF CARS. NOT IN THE RATE.
  *
- * Confirmed by the owner, 8 September 2026, reversing what this block said
- * before. There is no driver and no airport run any more: the car is a
- * standalone hire, arranged like any other extra, picked up and dropped off at
- * the apartment rather than met at the gate.
+ * The one extra service with a confirmed price, so it keeps a block of its own:
+ * the rate card's converter, the FAQ and the terms all quote the figure and none
+ * of them may disagree.
  *
- * WHY THIS IS A BLOCK OF DATA AND NOT A LINE OF COPY.
- *
- * It has to appear in a dozen places at once: the hero, the residence cards and
- * pages, the rate card, the checkout summary, the long-stay page, the terms, the
- * FAQ, the arrival section and the machine-readable description search engines
- * read. Written by hand into each, the count would eventually say three in one
- * place and one in another, which is precisely the disagreement across listings
- * that this site exists to end. Every one of those places reads from here.
- *
- * `count` is the FLEET, not what one guest gets. Three apartments, three cars,
- * one attached to each: a booked guest has a car of their own and never shares
- * it. Add a fourth apartment and a fourth car has to arrive with it, or
- * `perResidence` quietly stops being true.
+ * HISTORY, SO NOBODY RESTORES AN OLD VERSION. Until 24 September 2026 this was
+ * `fleet`: three Toyota Mark X, one tied to each apartment, "not a pool and not
+ * shared", with no driver and no airport run. The owner reversed all three on
+ * 24 September. The cars are a pool, a driver can be hired with one and
+ * pick-ups are offered at a fee. See `extraServices` below, which is now where
+ * a car is described.
  *
  * CONFIRM. Until each of these is answered the site says nothing about it. Every
  * one is a question a guest will ask before they take the keys and inventing an
  * answer would be worse than the silence:
+ *   - whether the pool is still Toyota Mark X only
  *   - what licence is needed and whether an international permit is asked for
  *   - insurance: who is covered and the excess on a claim
  *   - fuel: handed over full and returned full, or metered
@@ -120,30 +113,12 @@ export const audience = [
  *   - whether a second guest on the booking may drive it
  * The terms page carries the same list. Answer them there first.
  */
-export const fleet = {
+export const carHire = {
   model: "Toyota Mark X",
-  /** The whole fleet. Three apartments, three cars. */
-  count: 3,
-  /** What a single hire gets. One and it is not shared. */
-  perResidence: 1,
-  /** No driver, no airport meet. Withdrawn 8 September 2026. */
-  drivenFromAirport: false,
-  /** The guest collects it and drives it themselves, start to finish. */
-  selfDriveDuringStay: true,
-  /** Not in the nightly rate. A separate, clearly priced extra. */
-  included: false,
-  /** What hiring one costs, on top of the room. */
-  hireFeeZmw: 1000,
-  hireFeeUnit: "day",
+  /** Self-drive, a day, on top of the room. Owner, 8 September 2026. */
+  selfDriveZmw: 1000,
+  unit: "day",
 } as const;
-
-/**
- * The car as one line, for a list of amenities or extras.
- *
- * Singular on purpose. A guest reading their own apartment's page cares that
- * they can hire a car, not that the business owns three.
- */
-export const carLine = `A ${fleet.model}, available to hire for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit}`;
 
 // ---------------------------------------------------------------------------
 // Rates
@@ -292,11 +267,12 @@ export type Residence = {
   /**
    * What comes with this residence.
    *
-   * The car and the airport runs lead every one of these lists, because they are
-   * the two things a guest cannot get from a platform listing at any price. They
-   * are written into each residence rather than bolted on in the component so
-   * that the machine-readable description of each apartment carries them too:
-   * search engines read `amenityFeature` per unit, not per business.
+   * Only what is in or attached to this apartment. The car used to lead every
+   * list, back when each apartment had one of its own; since 24 September 2026
+   * the cars are a shared pool hired as an extra, so it sits with the other
+   * extras in `extraServices` and not here. These are written into each
+   * residence so that the machine-readable description of each apartment
+   * carries them too: search engines read `amenityFeature` per unit.
    */
   amenities: string[];
   /**
@@ -344,7 +320,7 @@ export const residences: Residence[] = [
     slug: "mandela",
     name: "Mandela",
     summary: "Two bedrooms, and a table long enough to work at.",
-    standout: `A table for six a step inside the front door, the living room beyond it and a ${fleet.model} to hire if you need one`,
+    standout: "A table for six a step inside the front door, with the living room beyond it",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -359,7 +335,6 @@ export const residences: Residence[] = [
       "Housekeeping comes on set days, so you know when to expect us. The entrance is your own.",
     ],
     amenities: [
-      carLine,
       "Two bedrooms",
       "Dining table, seats six",
       "Full kitchen",
@@ -404,7 +379,7 @@ export const residences: Residence[] = [
     slug: "mulima",
     name: "Mulima",
     summary: "Two bedrooms. Works for two colleagues, or a family.",
-    standout: `A cot fits in the second bedroom, the living room holds a meeting and a ${fleet.model} to hire if you need one`,
+    standout: "A cot fits in the second bedroom and the living room holds a meeting",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -414,7 +389,6 @@ export const residences: Residence[] = [
       "We can put a cot in the second bedroom if you need one. The living room is big enough to hold a meeting without shifting furniture.",
     ],
     amenities: [
-      carLine,
       "Two bedrooms",
       "Dining table, seats six",
       "Full kitchen",
@@ -458,7 +432,7 @@ export const residences: Residence[] = [
     slug: "kaunda",
     name: "Kaunda",
     summary: "Two bedrooms. Room for a team, or family visiting.",
-    standout: `A wall of open shelving between the dining table and the hall, parking for two vehicles and a ${fleet.model} to hire if you need one`,
+    standout: "Parking for two vehicles and a wall of open shelving between the dining table and the hall",
     bedrooms: 2,
     sleeps: 4,
     area: 0,
@@ -473,7 +447,6 @@ export const residences: Residence[] = [
       "Best value on a longer stay, where the weekly and monthly rates really start to count.",
     ],
     amenities: [
-      carLine,
       "Two bedrooms",
       "Dining table, seats six",
       "Full kitchen",
@@ -586,9 +559,9 @@ export const arrival = {
   */
   /*
     CONFIRM: is self check-in available, or is it always a met-on-arrival
-    handover? A driver no longer meets the flight, so this now matters more
-    than it used to, not less: a late arrival's only route in is whatever this
-    answers.
+    handover? An airport pick-up is an extra a guest may not book (24
+    September 2026), so a late arrival who comes by taxi still needs whatever
+    this answers.
   */
   selfCheckIn: false,
 } as const;
@@ -731,6 +704,122 @@ export const neighbourhood: Place[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Extra services
+// ---------------------------------------------------------------------------
+
+/**
+ * EVERYTHING A GUEST CAN ADD TO A STAY, EACH AT A FEE ON TOP OF THE ROOM.
+ *
+ * The owner's list, 24 September 2026. It replaced the homepage band "A Toyota
+ * Mark X, yours to hire", which the owner turned down: the band said the car
+ * was not a pool and that there was "no driver either way". Neither is
+ * true any more. The owner asked for its own tab instead, so this list feeds
+ * the /extra-services page, the homepage band that points to it and the tick
+ * boxes on the booking form, which send the guest's choices with the request.
+ *
+ * Declared after `neighbourhood` because the airport line reads the measured
+ * drive time from it. A `const` cannot be read before it is declared.
+ *
+ * PRICES. Only self-drive hire has one (see `carHire`). Everything else leaves
+ * `priceZmw` out and the page says "Price on request". Put a figure in only
+ * when the owner gives one; the page picks it up with no other change.
+ *
+ * CONFIRM:
+ *   - a price for each service, once the owner has them
+ *   - the owner wrote "car hire in all major cities of lusaka". Lusaka is one
+ *     city, so it is read as Zambia's major cities
+ *   - laundry was not on the owner's list. It is here because the owner had
+ *     already confirmed it for the FAQ on 14 September 2026 and it is exactly
+ *     the kind of extra the list asks for ("things like this u add")
+ */
+export type ExtraService = {
+  /** Stable key. The page maps it to an icon. */
+  id: string;
+  title: string;
+  body: string;
+  /** Confirmed price in Kwacha. Leave out when the owner has not given one. */
+  priceZmw?: number;
+  priceUnit?: string;
+};
+
+export const extraServices: { heading: string; items: ExtraService[] }[] = [
+  {
+    heading: "Getting here and away",
+    items: [
+      {
+        id: "airport",
+        title: "Airport pick-up and drop-off",
+        body: `We meet you at Kenneth Kaunda International, bring you to the apartment and take you back for your flight home. The drive is about ${airportMinutes()} minutes.`,
+      },
+      {
+        id: "bus",
+        title: "Bus station pick-up and drop-off",
+        body: "Coming in by coach from another town? We collect you from the inter-city bus station and take you back when you leave.",
+      },
+    ],
+  },
+  {
+    heading: "Cars",
+    items: [
+      {
+        id: "self-drive",
+        title: "Self-drive car hire",
+        body: `A ${carHire.model} from our own pool of cars, yours to drive within Lusaka or beyond for as long as you hire it.`,
+        priceZmw: carHire.selfDriveZmw,
+        priceUnit: carHire.unit,
+      },
+      {
+        id: "driver",
+        title: "Car hire with a full-time driver",
+        body: "A car and a driver who stays with you for the whole hire. Useful for meetings across town, site visits or a long day of errands.",
+      },
+      {
+        id: "other-cities",
+        title: "Car hire in Zambia's major cities",
+        body: "Travelling on from Lusaka? We can have a car ready for you in the other major cities.",
+      },
+    ],
+  },
+  {
+    heading: "Seeing Lusaka and Zambia",
+    items: [
+      {
+        id: "shopping",
+        title: "Guided shopping trips in Lusaka",
+        body: "Someone who knows the city takes you to the markets, malls and shops worth your time.",
+      },
+      {
+        id: "tours",
+        title: "Tours of Lusaka and Zambia",
+        body: "Tour packages planned around your dates and what you want to see, from a day in Lusaka to a trip further into Zambia.",
+      },
+      {
+        id: "flights",
+        title: "Domestic flights",
+        body: "We book flights within Zambia for you, for a trip to another city during your stay.",
+      },
+    ],
+  },
+  {
+    heading: "At the apartment",
+    items: [
+      {
+        id: "laundry",
+        title: "Laundry",
+        body: "We hand wash your clothes for a charge. There are also laundry shops close by.",
+      },
+    ],
+  },
+];
+
+/** Every service in one flat list, in page order. */
+export const allExtraServices = extraServices.flatMap((g) => g.items);
+
+/** "K1,000 a day", or "Price on request" when no figure has been given. */
+export const extraPrice = (s: ExtraService) =>
+  s.priceZmw ? `${money(s.priceZmw)} a ${s.priceUnit ?? "day"}` : "Price on request";
+
+// ---------------------------------------------------------------------------
 // Reviews
 //
 // The Growth Proposal (§2.2) records that no listing currently carries a
@@ -781,16 +870,17 @@ export const faqs = [
     a: "MTN Mobile Money, Airtel Money or a bank transfer, to the accounts shown the moment you book and again on our payment page. The full amount is due up front and you see the whole total before you pay anything. If you can only pay by card, ask us and we will work something out.",
   },
   /*
-    Withdrawn 8 September 2026. There is no driver and no transfer any more, so
-    the honest answer is no, not the invented one this comment used to record.
+    Yes again, as of 24 September 2026. It was withdrawn on 8 September and the
+    answer here was "No, there is no airport transfer"; the owner has since
+    brought pick-ups back as a paid extra. See `extraServices`.
   */
   {
     q: "Can you pick me up from the airport?",
-    a: `No, there is no airport transfer. Kenneth Kaunda International is about ${airportMinutes()} minutes by road. If you would like a car for the stay, a ${fleet.model} is yours to hire separately, ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit}, picked up and dropped off at the apartment.`,
+    a: `Yes, for an additional fee. Tick it when you book or send us a message and we will meet you at Kenneth Kaunda International. The drive to the apartment is about ${airportMinutes()} minutes. We collect from the inter-city bus station too.`,
   },
   {
-    q: "Do I really get a car?",
-    a: `Each residence has its own ${fleet.model} and it is not shared with anyone, but it is not automatic. Hire it for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours to drive, within Lusaka or beyond, for as long as you have it booked.`,
+    q: "Can I hire a car?",
+    a: `Yes. Drive one of our own cars yourself for ${money(carHire.selfDriveZmw)} a ${carHire.unit}, within Lusaka or beyond, or have one with a full-time driver. Neither is part of the nightly rate and we agree the price with you before anything is booked.`,
   },
   {
     q: "Is there a pool?",
@@ -838,6 +928,12 @@ export const nav = [
     inside /rates instead, rather than leaving it where it was.
   */
   { href: "/long-stays", label: "Long stays" },
+  /*
+    Added on the owner's instruction, 24 September 2026 ("rather have another
+    tab called extra services"). Six with the Book button, against the brand
+    book's four: the same question for the custodian as the item above.
+  */
+  { href: "/extra-services", label: "Extra services" },
   { href: "/location", label: "Location" },
 ] as const;
 

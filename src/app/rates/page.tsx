@@ -5,7 +5,7 @@ import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Figure } from "@/components/ui/Figure";
-import { residences, rates, arrival, faqs, business, fleet } from "@/lib/content";
+import { residences, rates, arrival, faqs, business, carHire } from "@/lib/content";
 import { CurrencyConverter } from "@/components/ui/Currency";
 import { money, inWords } from "@/lib/format";
 import { directNightly, publishedNightly, longStayBand, rateLadder } from "@/lib/pricing";
@@ -192,8 +192,8 @@ export default function RatesPage() {
                 zmw: directNightly(r),
               })),
               {
-                label: `${fleet.model}, a ${fleet.hireFeeUnit}`,
-                zmw: fleet.hireFeeZmw,
+                label: `Self-drive car hire, a ${carHire.unit}`,
+                zmw: carHire.selfDriveZmw,
               },
             ]}
           />
@@ -288,6 +288,18 @@ export default function RatesPage() {
                   </li>
                 ))}
               </ul>
+
+              {/*
+                The one place a guest reads "what is included" is also where
+                they ask what is not. Answered here, with the way to it.
+              */}
+              <p className="mt-6 max-w-measure text-caption text-charcoal-80">
+                Airport pick-ups, car hire and tours are not in the nightly rate. They are{" "}
+                <Link href="/extra-services" className="underline underline-offset-4 hover:text-navy">
+                  extra services
+                </Link>
+                , priced for you before anything is booked.
+              </p>
 
               <dl className="mt-12 grid gap-8 sm:grid-cols-2">
                 <div>

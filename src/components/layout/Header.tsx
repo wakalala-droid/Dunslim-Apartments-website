@@ -23,8 +23,9 @@ import { cn } from "@/lib/cn";
  * over the image. A translucent bar would break that; a solid one is the
  * treatment the brand book actually prescribes and it reads as a sign plate.
  *
- * Navigation is the four items the guidelines specify for the website (p.16):
- * Residences, Rates, Location, Book.
+ * Navigation started as the four items the guidelines specify for the website
+ * (p.16): Residences, Rates, Location, Book. Long stays and Extra services were
+ * added since; see the notes on `nav` in content.ts.
  */
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -157,7 +158,14 @@ export default function Header() {
             </span>
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-2 lg:flex">
+          {/*
+            FROM XL, NOT LG, since 24 September 2026. The sixth item (Extra
+            services) no longer fits at 1024px: "Long stays" and "Extra
+            services" each broke onto two lines. Between 1024 and 1280 the menu
+            button takes over, the same floating card a phone gets, rather than
+            squeezing six labels together.
+          */}
+          <nav aria-label="Primary" className="hidden items-center gap-2 xl:flex">
             {nav.map((item) => {
               const active = pathname.startsWith(item.href);
               return (
@@ -166,7 +174,7 @@ export default function Header() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group relative inline-flex min-h-[44px] items-center px-4",
+                    "group relative inline-flex min-h-[44px] items-center whitespace-nowrap px-4",
                     "label-caps transition-colors duration-micro",
                     dark
                       ? active
@@ -224,7 +232,7 @@ export default function Header() {
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
             className={cn(
-              "-mr-2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm transition-colors duration-micro lg:hidden",
+              "-mr-2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm transition-colors duration-micro xl:hidden",
               dark ? "text-white" : "text-navy",
             )}
           >
@@ -265,7 +273,7 @@ export default function Header() {
         both durations, as it does everywhere else.
       */}
       <div
-        className={cn("fixed inset-0 z-40 lg:hidden", !open && "pointer-events-none")}
+        className={cn("fixed inset-0 z-40 xl:hidden", !open && "pointer-events-none")}
         aria-hidden={!open}
       >
         <button
@@ -281,7 +289,13 @@ export default function Header() {
           ref={panelRef}
           className={cn(
             "menu-panel absolute right-4 top-[calc(var(--header-h)-8px)] w-[min(19rem,calc(100vw-2rem))]",
-            "overflow-hidden rounded-lg bg-white p-2 shadow-3 ring-1 ring-navy/10",
+            /*
+              Scrolls rather than clips. Six items make the card about 430px
+              tall and a phone held sideways has less than that under the
+              header, while the page behind is locked. Clipped, the last links
+              and the Book button would be unreachable.
+            */
+            "max-h-[calc(100dvh-var(--header-h))] overflow-y-auto rounded-lg bg-white p-2 shadow-3 ring-1 ring-navy/10",
             open && "is-open",
           )}
         >

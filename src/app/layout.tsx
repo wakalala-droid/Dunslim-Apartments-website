@@ -40,13 +40,14 @@ export const metadata: Metadata = {
     template: "%s | Dunslim Apartments",
   },
   description:
-    "Serviced apartments on Makeni Road, Lusaka, for business and diplomatic travellers. Backup power, secure parking and a rate that is always lower booked direct. A Toyota Mark X is available to hire at each residence.",
+    "Serviced apartments on Makeni Road, Lusaka, for business and diplomatic travellers. Backup power, secure parking and a rate that is always lower booked direct. Airport pick-ups, car hire and tours arranged on request.",
   keywords: [
     "serviced apartments Lusaka",
     "Makeni Road accommodation",
     "business travel Lusaka",
     "long stay apartments Lusaka",
     "apartment with car hire Lusaka",
+    "airport pick-up Lusaka",
     "Dunslim Apartments",
   ],
   /*
@@ -59,7 +60,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Dunslim Apartments: Official Site",
     description:
-      "VIP serviced apartments on Makeni Road, Lusaka. Each one has its own Toyota Mark X available to hire. Always lower booked direct.",
+      "VIP serviced apartments on Makeni Road, Lusaka. Airport pick-ups, car hire and tours on request. Always lower booked direct.",
     type: "website",
     locale: "en_ZM",
     siteName: business.name,
@@ -77,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Dunslim Apartments: Official Site",
     description:
-      "Serviced apartments on Makeni Road, Lusaka. A Toyota Mark X available to hire. Best rate, booked direct.",
+      "Serviced apartments on Makeni Road, Lusaka. Airport pick-ups and car hire on request. Best rate, booked direct.",
     images: ["/og-default.jpg"],
   },
   alternates: { canonical: "/" },

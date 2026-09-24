@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
-import { business, rates, arrival, residences, fleet } from "@/lib/content";
+import { business, rates, arrival, residences, carHire } from "@/lib/content";
 import { money } from "@/lib/format";
 import { publishedNightly, directNightly } from "@/lib/pricing";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -32,9 +32,9 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
  *   - the licence number, so it can be quoted in full
  *   - the registered company name and address behind "Dunslim Group"
  *
- * AND THE CAR, which is the most urgent set on this list, because a guest is
- * being handed the keys to a vehicle and every one of these has a legal answer
- * whether or not this page states it:
+ * AND SELF-DRIVE HIRE, which is the most urgent set on this list, because a
+ * guest is being handed the keys to a vehicle and every one of these has a
+ * legal answer whether or not this page states it:
  *   - what licence is needed and whether an international permit is required
  *   - insurance: who is covered to drive and the excess on a claim
  *   - fuel: handed over full and returned full, or metered
@@ -44,6 +44,10 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
  * The page below describes only what the owner has confirmed and says openly
  * that the driving terms are agreed in writing before the keys change hands.
  * Do not fill these in with a guess.
+ *
+ * AND THE OTHER EXTRA SERVICES (24 September 2026): what each one costs, what
+ * happens if a flight is late for a pick-up and who is responsible on a tour.
+ * Until then the page says only that every extra is priced and agreed first.
  */
 export const metadata: Metadata = {
   title: "Booking terms",
@@ -148,19 +152,19 @@ export default function TermsPage() {
               through the ladder and we can invoice your employer for it.
             </p>
 
-            <h2 className="mt-12 text-h3 font-light text-navy">The car</h2>
+            <h2 className="mt-12 text-h3 font-light text-navy">Extra services</h2>
             <p className="mt-3 text-body text-charcoal">
-              Each residence has its own {fleet.model}. It is not a pool car and it is not shared
-              with the other apartments, but it is not automatic either: hire it separately and it
-              is yours for the length of your stay, to drive within Lusaka or beyond.
+              Airport and bus station pick-ups, car hire, shopping trips, tours and the other{" "}
+              <Link href="/extra-services" className="underline underline-offset-4 hover:text-navy">
+                extra services
+              </Link>{" "}
+              are not part of the nightly rate. Each one is priced for you before it is booked and
+              none of them is charged unless you have asked for it and agreed the price.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              We do not offer a driver or an airport transfer. You collect the car at the apartment
-              and drive it yourself, start to finish. It parks inside the gate with you.
-            </p>
-            <p className="mt-3 text-body text-charcoal">
-              Hiring it costs {money(fleet.hireFeeZmw)} a {fleet.hireFeeUnit}, on top of the room
-              rate. It is not part of the nightly rate and it is not charged unless you ask for it.
+              Self-drive car hire costs {money(carHire.selfDriveZmw)} a {carHire.unit}, on top of
+              the room rate. The car is yours to drive within Lusaka or beyond for as long as you
+              hire it and it parks inside the gate with you.
             </p>
             <p className="mt-3 text-body text-charcoal">
               The driving terms, which cover the licence we need to see, insurance and fuel, are

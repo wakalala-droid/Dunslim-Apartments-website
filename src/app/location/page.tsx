@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
-import { business, neighbourhood, arrival, assurances, fleet, airportMinutes, residences } from "@/lib/content";
+import { business, neighbourhood, arrival, assurances, airportMinutes, residences } from "@/lib/content";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -204,7 +205,7 @@ export default function LocationPage() {
                 onNavy
                 eyebrow="Arrival"
                 title="Getting here"
-                intro={`The distances below are measured by road, for planning your trip in. If you would like a car for the stay, a ${fleet.model} can be hired at the apartment for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit}.`}
+                intro="The distances below are measured by road, for planning your trip in. We can meet you at the airport or the bus station and have a car for the stay, with or without a driver, each for an additional fee."
               />
             </div>
 
@@ -226,10 +227,15 @@ export default function LocationPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="label-caps text-brass-60">Your car</dt>
+                  {/*
+                    Was "Your car: Toyota Mark X, available to hire". Since 24
+                    September 2026 the pick-up is the extra that matters most on
+                    a page about getting here, so it takes the slot.
+                  */}
+                  <dt className="label-caps text-brass-60">Airport pick-up</dt>
                   <dd className="mt-2 text-h3 font-light text-white">
-                    {fleet.model}
-                    <span className="mt-1 block text-caption text-navy-20">Available to hire</span>
+                    On request
+                    <span className="mt-1 block text-caption text-navy-20">Additional fee</span>
                   </dd>
                 </div>
               </dl>
@@ -260,8 +266,14 @@ export default function LocationPage() {
                   Check availability
                 </ButtonLink>
                 <p className="text-caption text-navy-20">
-                  From {money(directNightly(cheapest))} a night. A {fleet.model} can be hired
-                  separately.
+                  From {money(directNightly(cheapest))} a night. Pick-ups and car hire are{" "}
+                  <Link
+                    href="/extra-services"
+                    className="underline underline-offset-4 hover:text-white"
+                  >
+                    extra services
+                  </Link>
+                  .
                 </p>
               </div>
             </div>

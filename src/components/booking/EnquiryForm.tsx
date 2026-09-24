@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Textarea } from "@/components/ui/Field";
-import { business, fleet } from "@/lib/content";
+import { business } from "@/lib/content";
 import { makeReference } from "@/lib/availability";
 import { isoToday, isoPlusDays, prettyDate } from "@/lib/format";
 import { Honeypot } from "@/components/ui/Honeypot";
@@ -179,8 +179,8 @@ export default function EnquiryForm() {
         </dl>
 
         <p className="mt-6 max-w-measure text-caption text-charcoal-80">
-          A {fleet.model} can be hired separately for the whole engagement if you would like one.
-          Nothing is booked or charged until we have agreed the price with you.
+          A car, with or without a driver, can be hired for the whole engagement if you would like
+          one. Nothing is booked or charged until we have agreed the price with you.
         </p>
       </div>
     );

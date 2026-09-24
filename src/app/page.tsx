@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Clock, BadgeCheck, MessageCircle, Car, RotateCcw } from "lucide-react";
+import { ArrowRight, Clock, BadgeCheck } from "lucide-react";
 import Hero from "@/components/home/Hero";
 import SearchBar from "@/components/booking/SearchBar";
 import ResidenceCard from "@/components/residences/ResidenceCard";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Figure } from "@/components/ui/Figure";
+import { EXTRA_ICONS } from "@/components/ui/extraIcons";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
 import { RevealRule } from "@/components/ui/RevealText";
@@ -17,7 +18,7 @@ import {
   arrival,
   neighbourhood,
   audience,
-  fleet,
+  allExtraServices,
 } from "@/lib/content";
 import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
@@ -207,106 +208,68 @@ export default function HomePage() {
       </Section>
 
       {/* ---------------------------------------------------------------
-          THE CAR
+          EXTRA SERVICES
 
-          WHY IT SITS HERE AND NOT NEAR THE TOP.
+          This band used to sell one car: "A Toyota Mark X, yours to hire",
+          with three steps ending "Return it before you leave ... There is no
+          driver either way". The owner turned it down on 24 September 2026.
+          The cars are a shared pool now, pick-ups and drivers are offered at a
+          fee and the owner wanted the extras on a tab of their own. So this is
+          a signpost to that tab, not a second copy of it: the names only, one
+          line each and a way through.
 
-          It was the third thing on the page: named in the hero sentence, again
-          in the strip under the search card, then given a full band before a
-          single apartment had been shown. Three mentions before the product.
+          It keeps the car band's place for the car band's reason. It comes
+          after the things a guest worries about first (power, water, security)
+          and before long stays, whose guests are the ones most likely to want
+          a car or a driver for weeks.
 
-          An unusually generous claim made before any trust is built reads as a
-          gimmick, which is reason enough on its own to hold it back, car now
-          hired rather than included or not.
-          The order now is: what this place is, why booking direct is cheaper,
-          the three apartments, then the things a guest in Lusaka worries about
-          (power, water, security, Wi-Fi). Only then the car. By that point
-          it stops sounding like a hook and starts sounding like a reason.
-
-          It also sits directly above the long-stay section on purpose. A car
-          matters most to the guest who is here for six weeks. That is the
-          section written for them.
-
-          IT KEEPS A BAND RATHER THAN BECOMING A BULLET because it raises three
-          questions a list item cannot answer: how do I get here, do I drive it
-          myself, is it shared. Those are the three steps below.
-
-          NO PHOTOGRAPH, DELIBERATELY. There is no photograph of the actual
-          cars yet and the rule this whole codebase is built on is that nothing
-          is presented as fact until it is one. A stock saloon here would be the
-          same lie the stock interiors already are, on a claim far easier to
-          check. It is set typographically instead.
-
-          ON STONE, NOT NAVY. The band it now follows is navy. Two navy bands
-          running together read as one slab, which is the problem the
-          footer already carries a note about. Off navy the numerals go to
-          charcoal: brass measures 2.45:1 on stone and 13px text needs 4.5:1,
-          which is the brand book's own reason for saying brass is never a text
-          colour. The icons stay brass, as they do on the rate card, because an
-          aria-hidden mark beside its own label is decoration and not
-          information.
-
-          THE NUMBERS ARE A REAL SEQUENCE, not decoration. Landing, the stay and
-          the flight home happen in that order, which is the only thing that
-          licenses numbering a set.
+          ON STONE, NOT NAVY. The band above is navy and two navy bands running
+          together read as one slab. The icons stay brass: they are aria-hidden
+          marks beside their own labels, decoration and not information.
       ---------------------------------------------------------------- */}
       <Section ground="stone">
         <Container wide>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="self-start lg:sticky lg:top-24 lg:col-span-5">
               <SectionHead
-                eyebrow="The car"
-                title={`A ${fleet.model}, yours to hire.`}
-                intro={`Each residence has its own car. It is not a pool and it is not shared, but it is not part of the nightly rate either: hire it separately for ${money(fleet.hireFeeZmw)} a ${fleet.hireFeeUnit} and it is yours to drive, within Lusaka or beyond, for as long as you have it booked.`}
+                eyebrow="Extra services"
+                title="Pick-ups, cars and tours, arranged for you."
+                intro="From the airport to your door, a car with or without a driver, a guided day in Lusaka or a trip further into Zambia. Each one is an extra and we give you the price before anything is booked."
               />
+              <ButtonLink href="/extra-services" variant="secondary" className="mt-8">
+                See all extra services
+              </ButtonLink>
             </div>
 
-            <div className="lg:col-span-7">
-              <RevealGroup as="ol" className="divide-y divide-navy/10 border-y border-navy/10">
-                {[
-                  {
-                    icon: MessageCircle,
-                    title: "Ask when you book",
-                    body: `Let us know you would like the ${fleet.model} and we will have it ready and waiting at the apartment.`,
-                  },
-                  {
-                    icon: Car,
-                    title: "Collect it yourself",
-                    body: "Pick up the keys at the residence. From there it is yours to drive, within Lusaka or beyond, for as long as you have hired it.",
-                  },
-                  {
-                    icon: RotateCcw,
-                    title: "Return it before you leave",
-                    body: "Drop it back at the apartment before checkout. There is no driver either way, just the car.",
-                  },
-                ].map((step, i) => (
-                  <RevealItem as="li" key={step.title} index={i} className="flex gap-6 py-8">
-                    <span
-                      aria-hidden
-                      className="label-caps shrink-0 pt-1 tabular-nums text-charcoal-80"
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex-1">
-                      <span className="flex items-center gap-3">
-                        <step.icon size={20} strokeWidth={1.5} className="shrink-0 text-brass" aria-hidden />
-                        <span className="text-h3 font-light text-navy">{step.title}</span>
-                      </span>
-                      <span className="mt-3 block max-w-measure text-body text-charcoal">
-                        {step.body}
-                      </span>
-                    </span>
+            <RevealGroup
+              as="ul"
+              className="grid gap-px self-start bg-navy/10 sm:grid-cols-2 lg:col-span-7"
+            >
+              {allExtraServices.map((s, i) => {
+                const Icon = EXTRA_ICONS[s.id] ?? ArrowRight;
+                return (
+                  <RevealItem
+                    as="li"
+                    key={s.id}
+                    index={i}
+                    className={cn(
+                      "flex items-center gap-4 bg-stone p-6",
+                      /*
+                        The hairlines are a background showing through a 1px
+                        gap, so an odd count would leave the last cell of the
+                        grid as a grey block. The last service spans the row.
+                      */
+                      i === allExtraServices.length - 1 &&
+                        allExtraServices.length % 2 === 1 &&
+                        "sm:col-span-2",
+                    )}
+                  >
+                    <Icon size={20} strokeWidth={1.5} className="shrink-0 text-brass" aria-hidden />
+                    <span className="text-body text-charcoal">{s.title}</span>
                   </RevealItem>
-                ))}
-              </RevealGroup>
-
-              <Reveal>
-                <p className="mt-8 max-w-measure text-caption text-charcoal-80">
-                  Let us know when you book if you would like the {fleet.model} waiting for you.
-                  That is the only thing we need in advance.
-                </p>
-              </Reveal>
-            </div>
+                );
+              })}
+            </RevealGroup>
           </div>
         </Container>
       </Section>
