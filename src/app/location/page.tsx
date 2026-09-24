@@ -246,7 +246,7 @@ export default function LocationPage() {
                   <dd className="mt-2 text-h3 font-light text-white">
                     {pickUp?.priceZmw ? money(pickUp.priceZmw) : "On request"}
                     <span className="mt-1 block text-caption text-navy-20">
-                      {pickUp?.priceZmw ? "There and back" : "Additional fee"}
+                      {pickUp?.priceZmw ? pickUp.priceLabel : "Additional fee"}
                     </span>
                   </dd>
                 </div>

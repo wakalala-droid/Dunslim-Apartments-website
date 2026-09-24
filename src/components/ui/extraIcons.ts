@@ -5,8 +5,8 @@ import {
   UserRound,
   ShoppingBag,
   Compass,
+  MapPinned,
   PlaneTakeoff,
-  Shirt,
   type LucideIcon,
 } from "lucide-react";
 
@@ -25,5 +25,5 @@ export const EXTRA_ICONS: Record<string, LucideIcon> = {
   shopping: ShoppingBag,
   tours: Compass,
   flights: PlaneTakeoff,
-  laundry: Shirt,
+  "across-lusaka": MapPinned,
 };

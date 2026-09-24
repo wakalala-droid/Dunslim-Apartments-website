@@ -159,14 +159,13 @@ export default function TermsPage() {
               <Link href="/extra-services" className="underline underline-offset-4 hover:text-navy">
                 extra services
               </Link>{" "}
-              are not part of the nightly rate. The price of each is on that page. None of them is
+              are not part of the nightly rate. Each one is an additional fee and none of them is
               booked or charged unless you have asked for it and agreed the cost.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              Car hire costs {money(carHire.dailyZmw)} a {carHire.unit}, on top of the room rate,
-              whether you drive yourself or have a driver with it. Every car is a {carHire.model}.
-              The cars are for use in {carHire.area} only and a self-drive car parks inside the gate
-              with you.
+              Hiring a car to drive yourself costs {money(carHire.selfDriveZmw)} a {carHire.unit},
+              on top of the room rate. Every car is a {carHire.model}. The cars are for use in{" "}
+              {carHire.area} only and a self-drive car parks inside the gate with you.
             </p>
             <p className="mt-3 text-body text-charcoal">
               The driving terms, which cover the licence we need to see, insurance and fuel, are

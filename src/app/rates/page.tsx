@@ -192,8 +192,8 @@ export default function RatesPage() {
                 zmw: directNightly(r),
               })),
               {
-                label: `Car hire, a ${carHire.unit}`,
-                zmw: carHire.dailyZmw,
+                label: `Self-drive car hire, a ${carHire.unit}`,
+                zmw: carHire.selfDriveZmw,
               },
             ]}
           />

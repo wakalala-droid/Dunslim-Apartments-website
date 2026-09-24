@@ -100,9 +100,11 @@ export const audience = [
  * pick-ups are offered at a fee. See `extraServices` below, which is now where
  * a car is described.
  *
- * CONFIRMED BY THE OWNER, 24 September 2026: every car in the pool is a Toyota
- * Mark X, hire is K1,000 a day with or without a driver and the cars are for
- * Lusaka only. That last one REVERSES "within Lusaka or beyond" (11 September).
+ * CONFIRMED BY THE OWNER: self-drive hire is K1,000 a day (8 September 2026).
+ * Every car in the pool is a Toyota Mark X and the cars are for Lusaka only
+ * (24 September), which REVERSES "within Lusaka or beyond" (11 September).
+ * A car with a driver has no price yet: "K1,000 for all" was set on 24
+ * September and withdrawn on 25 September.
  *
  * CONFIRM. Until each of these is answered the site says nothing about it. Every
  * one is a question a guest will ask before they take the keys and inventing an
@@ -117,8 +119,8 @@ export const audience = [
 export const carHire = {
   /** Every car in the pool. Owner, 24 September 2026. */
   model: "Toyota Mark X",
-  /** A day, self-drive or with a driver, on top of the room. */
-  dailyZmw: 1000,
+  /** Self-drive, a day, on top of the room. Owner, 8 September 2026. */
+  selfDriveZmw: 1000,
   unit: "day",
   /** Where the cars may be driven. Lusaka only, owner, 24 September 2026. */
   area: "Lusaka",
@@ -724,24 +726,20 @@ export const neighbourhood: Place[] = [
  * Declared after `neighbourhood` because the airport line reads the measured
  * drive time from it. A `const` cannot be read before it is declared.
  *
- * PRICES. K1,000 for every extra. It is the price of the WHOLE booking of
- * that extra, not a rate per trip or per day: "overall booking is 1000",
- * owner, 25 September 2026. So a pick-up and the drop-off together are
- * K1,000, a tour is K1,000 and so is a shopping trip. Domestic flights and
- * laundry were held at "Price on request" for a day and came in at K1,000 on
- * the same instruction.
+ * THE LIST IS THE OWNER'S OWN, AS WRITTEN IN THEIR MESSAGE, AND NOTHING ELSE.
+ * On 25 September 2026 the owner said "we aren't sure about those services"
+ * and "just do as the screenshots say". So the eight services are the eight
+ * in that message, in its order and as near its wording as reads cleanly, and
+ * nothing is added to them. Laundry, which was added on the strength of an
+ * older FAQ, came off. The owner's "car hire in all major cities of lusaka"
+ * went back on as "Car hire across Lusaka", since the cars are Lusaka only.
  *
- * THE ONE EXCEPTION IS CAR HIRE, which stays K1,000 A DAY (`priceLabel`). The
- * owner set that per-day figure themselves on 8 September and repeated it on
- * 24 September; the "overall" answer was to a question about the pick-ups,
- * tours and shopping. Leave `priceZmw` out of any new service and the page
- * says "Price on request".
- *
- * "Car hire in all major cities of lusaka" was on the owner's list and came off
- * on 24 September: the cars are for Lusaka only, which the two car lines
- * already say. Laundry was not on the list. It is here because the owner had
- * already confirmed it for the FAQ on 14 September 2026 and it is the kind of
- * extra the list asks for ("things like this u add").
+ * PRICES. The owner's message said pick-ups come "at an additional fee" and
+ * gave no figures, so that is what the page says. A K1,000 flat fee was set
+ * and then withdrawn on 24 and 25 September. The one price that stands is
+ * self-drive hire at K1,000 a day, which the owner set on 8 September, before
+ * any of this. Add `priceZmw` to a service only when the owner gives a figure
+ * for it; the page picks it up with no other change.
  */
 export type ExtraService = {
   /** Stable key. The page maps it to an icon. */
@@ -750,15 +748,9 @@ export type ExtraService = {
   body: string;
   /** Confirmed price in Kwacha. Leave out when the owner has not given one. */
   priceZmw?: number;
-  /**
-   * Only for a price that is a rate, as it reads after the figure: "a day".
-   * Leave it out for a flat price, which is what every extra but car hire is.
-   */
+  /** What the price is for, as it reads after the figure: "a day". */
   priceLabel?: string;
 };
-
-/** The whole booking of any extra but car hire. Owner, 25 September 2026. */
-const EXTRA_FEE_ZMW = 1000;
 
 export const extraServices: { heading: string; items: ExtraService[] }[] = [
   {
@@ -768,13 +760,11 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
         id: "airport",
         title: "Airport pick-up and drop-off",
         body: `We meet you at Kenneth Kaunda International, bring you to the apartment and take you back for your flight home. The drive is about ${airportMinutes()} minutes.`,
-        priceZmw: EXTRA_FEE_ZMW,
       },
       {
         id: "bus",
-        title: "Bus station pick-up and drop-off",
-        body: "Coming in by coach from another town? We collect you from the inter-city bus station and take you back when you leave.",
-        priceZmw: EXTRA_FEE_ZMW,
+        title: "Inter-city bus station pick-up and drop-off",
+        body: "We collect you from the inter-city bus station and take you back when you leave.",
       },
     ],
   },
@@ -783,17 +773,20 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
     items: [
       {
         id: "self-drive",
-        title: "Self-drive car hire",
-        body: `A ${carHire.model} from our own pool of cars, yours to drive around ${carHire.area} for as long as you hire it.`,
-        priceZmw: carHire.dailyZmw,
+        title: "Car hire from our own pool of cars",
+        body: `Every car is a ${carHire.model}, yours to drive around ${carHire.area} for as long as you hire it.`,
+        priceZmw: carHire.selfDriveZmw,
         priceLabel: `a ${carHire.unit}`,
       },
       {
         id: "driver",
         title: "Car hire with a full-time driver",
-        body: `A ${carHire.model} and a driver who stays with you for the whole hire, around ${carHire.area}. Useful for meetings across town, site visits or a long day of errands.`,
-        priceZmw: carHire.dailyZmw,
-        priceLabel: `a ${carHire.unit}`,
+        body: `A ${carHire.model} with a driver who stays with you for the whole hire, around ${carHire.area}.`,
+      },
+      {
+        id: "across-lusaka",
+        title: "Car hire across Lusaka",
+        body: "We can arrange a car for you in any of the main parts of Lusaka.",
       },
     ],
   },
@@ -802,32 +795,18 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
     items: [
       {
         id: "shopping",
-        title: "Guided shopping trips in Lusaka",
+        title: "Guided shopping trips within Lusaka",
         body: "Someone who knows the city takes you to the markets, malls and shops worth your time.",
-        priceZmw: EXTRA_FEE_ZMW,
       },
       {
         id: "tours",
-        title: "Tours of Lusaka and Zambia",
-        body: "Tour packages planned around your dates and what you want to see, from a day in Lusaka to a trip further into Zambia.",
-        priceZmw: EXTRA_FEE_ZMW,
+        title: "Tailored tour packages of Lusaka and Zambia",
+        body: "Tours of Lusaka and further into Zambia, planned around your dates and what you want to see.",
       },
       {
         id: "flights",
-        title: "Domestic flights",
-        body: "We book flights within Zambia for you, for a trip to another city during your stay.",
-        priceZmw: EXTRA_FEE_ZMW,
-      },
-    ],
-  },
-  {
-    heading: "At the apartment",
-    items: [
-      {
-        id: "laundry",
-        title: "Laundry",
-        body: "We hand wash your clothes for you. There are also laundry shops close by.",
-        priceZmw: EXTRA_FEE_ZMW,
+        title: "Domestic flights within Zambia",
+        body: "We arrange flights within Zambia for you, for a trip to another city during your stay.",
       },
     ],
   },
@@ -836,9 +815,12 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
 /** Every service in one flat list, in page order. */
 export const allExtraServices = extraServices.flatMap((g) => g.items);
 
-/** "K1,000", "K1,000 a day", or "Price on request" when there is no figure. */
+/**
+ * "K1,000 a day", or "Additional fee" when the owner has given no figure,
+ * which is the owner's own wording for the pick-ups.
+ */
 export const extraPrice = (s: ExtraService) =>
-  s.priceZmw ? `${money(s.priceZmw)} ${s.priceLabel ?? ""}`.trim() : "Price on request";
+  s.priceZmw ? `${money(s.priceZmw)} ${s.priceLabel ?? ""}`.trim() : "Additional fee";
 
 // ---------------------------------------------------------------------------
 // Reviews
@@ -897,11 +879,11 @@ export const faqs = [
   */
   {
     q: "Can you pick me up from the airport?",
-    a: `Yes. It is ${money(EXTRA_FEE_ZMW)} for the pick-up and the drop-off together. Tick it when you book or send us a message and we will meet you at Kenneth Kaunda International. The drive to the apartment is about ${airportMinutes()} minutes. We collect from the inter-city bus station too, at the same price.`,
+    a: `Yes, at an additional fee. Tick it when you book or send us a message and we will meet you at Kenneth Kaunda International. The drive to the apartment is about ${airportMinutes()} minutes. We collect from the inter-city bus station too.`,
   },
   {
     q: "Can I hire a car?",
-    a: `Yes. Every car is a ${carHire.model} and it is ${money(carHire.dailyZmw)} a ${carHire.unit}, whether you drive it yourself or have a full-time driver with it. The cars are for use in ${carHire.area} only and are not part of the nightly rate.`,
+    a: `Yes. Every car is a ${carHire.model}. Drive one yourself for ${money(carHire.selfDriveZmw)} a ${carHire.unit} or have one with a full-time driver, at an additional fee. The cars are for use in ${carHire.area} only and are not part of the nightly rate.`,
   },
   {
     q: "Is there a pool?",
@@ -919,11 +901,11 @@ export const faqs = [
       Replaced "Can I stay for a month or longer?" on the owner's instruction,
       14 September 2026. The long-stay ladder is already on the rate card and
       has its own page, so nothing a guest needs went with it. The owner's
-      words: hand washing at a charge and laundry shops nearby. The charge is
-      K1,000, set with the other extras on 25 September 2026.
+      words: hand washing at a charge and laundry shops nearby. No price is
+      given because none has been.
     */
     q: "Do you offer laundry services?",
-    a: `Yes. We can hand wash your clothes for ${money(EXTRA_FEE_ZMW)}. There are also laundry shops close by.`,
+    a: "Yes. We can hand wash your clothes for a charge. There are also laundry shops close by.",
   },
   {
     q: "Is it cheaper to book here than on other platforms?",
