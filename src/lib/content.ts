@@ -724,15 +724,18 @@ export const neighbourhood: Place[] = [
  * Declared after `neighbourhood` because the airport line reads the measured
  * drive time from it. A `const` cannot be read before it is declared.
  *
- * PRICES. "K1,000 for all", owner, 24 September 2026. `priceLabel` is what
- * each figure is for and it is the one part of that answer that was not spelt
- * out: a day for the cars and tours, each way for a pick-up, a trip for
- * shopping. Leave `priceZmw` out and the page says "Price on request".
+ * PRICES. K1,000 for every extra. It is the price of the WHOLE booking of
+ * that extra, not a rate per trip or per day: "overall booking is 1000",
+ * owner, 25 September 2026. So a pick-up and the drop-off together are
+ * K1,000, a tour is K1,000 and so is a shopping trip. Domestic flights and
+ * laundry were held at "Price on request" for a day and came in at K1,000 on
+ * the same instruction.
  *
- * HELD BACK ON PURPOSE: domestic flights and laundry still say "Price on
- * request". A flight within Zambia costs several times K1,000 and K1,000 to
- * hand wash clothes would read as a mistake, so both wait for the owner to
- * say yes to that figure in so many words.
+ * THE ONE EXCEPTION IS CAR HIRE, which stays K1,000 A DAY (`priceLabel`). The
+ * owner set that per-day figure themselves on 8 September and repeated it on
+ * 24 September; the "overall" answer was to a question about the pick-ups,
+ * tours and shopping. Leave `priceZmw` out of any new service and the page
+ * says "Price on request".
  *
  * "Car hire in all major cities of lusaka" was on the owner's list and came off
  * on 24 September: the cars are for Lusaka only, which the two car lines
@@ -747,11 +750,14 @@ export type ExtraService = {
   body: string;
   /** Confirmed price in Kwacha. Leave out when the owner has not given one. */
   priceZmw?: number;
-  /** What the price is for, as it reads after the figure: "a day", "each way". */
+  /**
+   * Only for a price that is a rate, as it reads after the figure: "a day".
+   * Leave it out for a flat price, which is what every extra but car hire is.
+   */
   priceLabel?: string;
 };
 
-/** The owner's single figure for the extras, 24 September 2026. */
+/** The whole booking of any extra but car hire. Owner, 25 September 2026. */
 const EXTRA_FEE_ZMW = 1000;
 
 export const extraServices: { heading: string; items: ExtraService[] }[] = [
@@ -763,14 +769,12 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
         title: "Airport pick-up and drop-off",
         body: `We meet you at Kenneth Kaunda International, bring you to the apartment and take you back for your flight home. The drive is about ${airportMinutes()} minutes.`,
         priceZmw: EXTRA_FEE_ZMW,
-        priceLabel: "each way",
       },
       {
         id: "bus",
         title: "Bus station pick-up and drop-off",
         body: "Coming in by coach from another town? We collect you from the inter-city bus station and take you back when you leave.",
         priceZmw: EXTRA_FEE_ZMW,
-        priceLabel: "each way",
       },
     ],
   },
@@ -801,19 +805,18 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
         title: "Guided shopping trips in Lusaka",
         body: "Someone who knows the city takes you to the markets, malls and shops worth your time.",
         priceZmw: EXTRA_FEE_ZMW,
-        priceLabel: "a trip",
       },
       {
         id: "tours",
         title: "Tours of Lusaka and Zambia",
         body: "Tour packages planned around your dates and what you want to see, from a day in Lusaka to a trip further into Zambia.",
         priceZmw: EXTRA_FEE_ZMW,
-        priceLabel: "a day",
       },
       {
         id: "flights",
         title: "Domestic flights",
         body: "We book flights within Zambia for you, for a trip to another city during your stay.",
+        priceZmw: EXTRA_FEE_ZMW,
       },
     ],
   },
@@ -823,7 +826,8 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
       {
         id: "laundry",
         title: "Laundry",
-        body: "We hand wash your clothes for a charge. There are also laundry shops close by.",
+        body: "We hand wash your clothes for you. There are also laundry shops close by.",
+        priceZmw: EXTRA_FEE_ZMW,
       },
     ],
   },
@@ -832,7 +836,7 @@ export const extraServices: { heading: string; items: ExtraService[] }[] = [
 /** Every service in one flat list, in page order. */
 export const allExtraServices = extraServices.flatMap((g) => g.items);
 
-/** "K1,000 a day", or "Price on request" when no figure has been given. */
+/** "K1,000", "K1,000 a day", or "Price on request" when there is no figure. */
 export const extraPrice = (s: ExtraService) =>
   s.priceZmw ? `${money(s.priceZmw)} ${s.priceLabel ?? ""}`.trim() : "Price on request";
 
@@ -893,7 +897,7 @@ export const faqs = [
   */
   {
     q: "Can you pick me up from the airport?",
-    a: `Yes, for ${money(EXTRA_FEE_ZMW)} each way. Tick it when you book or send us a message and we will meet you at Kenneth Kaunda International. The drive to the apartment is about ${airportMinutes()} minutes. We collect from the inter-city bus station too, at the same price.`,
+    a: `Yes. It is ${money(EXTRA_FEE_ZMW)} for the pick-up and the drop-off together. Tick it when you book or send us a message and we will meet you at Kenneth Kaunda International. The drive to the apartment is about ${airportMinutes()} minutes. We collect from the inter-city bus station too, at the same price.`,
   },
   {
     q: "Can I hire a car?",
@@ -915,11 +919,11 @@ export const faqs = [
       Replaced "Can I stay for a month or longer?" on the owner's instruction,
       14 September 2026. The long-stay ladder is already on the rate card and
       has its own page, so nothing a guest needs went with it. The owner's
-      words: hand washing at a charge and laundry shops nearby. No price is
-      given because none has been.
+      words: hand washing at a charge and laundry shops nearby. The charge is
+      K1,000, set with the other extras on 25 September 2026.
     */
     q: "Do you offer laundry services?",
-    a: "Yes. We can hand wash your clothes for a charge. There are also laundry shops close by.",
+    a: `Yes. We can hand wash your clothes for ${money(EXTRA_FEE_ZMW)}. There are also laundry shops close by.`,
   },
   {
     q: "Is it cheaper to book here than on other platforms?",

@@ -14,8 +14,8 @@ import { business, extraServices, extraPrice, type ExtraService } from "@/lib/co
  * band that sold a single car. Everything on it comes from `extraServices` in
  * content.ts, so a new service or a confirmed price is one edit there.
  *
- * NO PRICE IS INVENTED. The owner set K1,000 for the extras on 24 September
- * 2026; the two with no figure (flights, laundry) say "Price on request". The
+ * NO PRICE IS INVENTED. The owner set K1,000 for each extra (25 September
+ * 2026); a service added without a figure says "Price on request". The
  * page also says plainly that the guest agrees the cost before anything is
  * booked. That is what keeps these extras from being the drip pricing
  * `rates.included` forbids: nothing is added to a stay the guest did not ask
