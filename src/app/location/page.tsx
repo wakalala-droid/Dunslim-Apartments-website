@@ -4,7 +4,15 @@ import Link from "next/link";
 import { Container, Section, SectionHead, Eyebrow } from "@/components/ui/Layout";
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
-import { business, neighbourhood, arrival, assurances, airportMinutes, residences } from "@/lib/content";
+import {
+  business,
+  neighbourhood,
+  arrival,
+  assurances,
+  airportMinutes,
+  residences,
+  allExtraServices,
+} from "@/lib/content";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -26,6 +34,8 @@ export default function LocationPage() {
   const cheapest = residences.reduce((a, b) =>
     a.directNightlyZmw <= b.directNightlyZmw ? a : b,
   );
+  /** Read from the extras list, so the arrival panel quotes the same price. */
+  const pickUp = allExtraServices.find((s) => s.id === "airport");
 
   return (
     <>
@@ -205,7 +215,7 @@ export default function LocationPage() {
                 onNavy
                 eyebrow="Arrival"
                 title="Getting here"
-                intro="The distances below are measured by road, for planning your trip in. We can meet you at the airport or the bus station and have a car for the stay, with or without a driver, each for an additional fee."
+                intro="The distances below are measured by road, for planning your trip in. We can meet you at the airport or the bus station and have a car for the stay, with or without a driver, each at an additional fee."
               />
             </div>
 
@@ -234,8 +244,10 @@ export default function LocationPage() {
                   */}
                   <dt className="label-caps text-brass-60">Airport pick-up</dt>
                   <dd className="mt-2 text-h3 font-light text-white">
-                    On request
-                    <span className="mt-1 block text-caption text-navy-20">Additional fee</span>
+                    {pickUp?.priceZmw ? money(pickUp.priceZmw) : "On request"}
+                    <span className="mt-1 block text-caption text-navy-20 first-letter:uppercase">
+                      {pickUp?.priceZmw ? pickUp.priceLabel : "Additional fee"}
+                    </span>
                   </dd>
                 </div>
               </dl>

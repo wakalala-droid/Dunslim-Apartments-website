@@ -234,7 +234,7 @@ export default function HomePage() {
               <SectionHead
                 eyebrow="Extra services"
                 title="Pick-ups, cars and tours, arranged for you."
-                intro="From the airport to your door, a car with or without a driver, a guided day in Lusaka or a trip further into Zambia. Each one is an extra and we give you the price before anything is booked."
+                intro="From the airport to your door, a Toyota Mark X with or without a driver, a guided day in Lusaka or a trip further into Zambia. Each one is an extra and we confirm the cost with you before anything is booked."
               />
               <ButtonLink href="/extra-services" variant="secondary" className="mt-8">
                 See all extra services

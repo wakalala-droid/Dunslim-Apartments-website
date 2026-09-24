@@ -26,6 +26,7 @@ import {
   maxGuests,
   canPayNow,
   allExtraServices,
+  extraPrice,
 } from "@/lib/content";
 import PayNow from "@/components/booking/PayNow";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
@@ -1156,8 +1157,8 @@ export default function BookingFlow() {
                   <fieldset className="sm:col-span-2">
                     <legend className="label-caps text-charcoal-80">Extra services</legend>
                     <p id="extras-hint" className="mt-2 text-caption text-charcoal-80">
-                      Optional. Tick anything you would like and we will send you the price. Nothing
-                      is added to your total here.{" "}
+                      Optional. Tick anything you would like and we will confirm the cost with you
+                      when we reply. Nothing is added to your total here.{" "}
                       <Link
                         href="/extra-services"
                         target="_blank"
@@ -1185,7 +1186,12 @@ export default function BookingFlow() {
                             }
                             className="h-4 w-4 shrink-0 accent-navy"
                           />
-                          <span className="text-body text-charcoal">{s.title}</span>
+                          <span className="text-body text-charcoal">
+                            {s.title}
+                            <span className="block text-caption text-charcoal-80">
+                              {extraPrice(s)}
+                            </span>
+                          </span>
                         </label>
                       ))}
                     </div>

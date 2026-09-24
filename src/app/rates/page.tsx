@@ -192,8 +192,8 @@ export default function RatesPage() {
                 zmw: directNightly(r),
               })),
               {
-                label: `Self-drive car hire, a ${carHire.unit}`,
-                zmw: carHire.selfDriveZmw,
+                label: `Car hire, a ${carHire.unit}`,
+                zmw: carHire.dailyZmw,
               },
             ]}
           />
@@ -298,7 +298,7 @@ export default function RatesPage() {
                 <Link href="/extra-services" className="underline underline-offset-4 hover:text-navy">
                   extra services
                 </Link>
-                , priced for you before anything is booked.
+                , each priced separately.
               </p>
 
               <dl className="mt-12 grid gap-8 sm:grid-cols-2">

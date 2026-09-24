@@ -14,11 +14,12 @@ import { business, extraServices, extraPrice, type ExtraService } from "@/lib/co
  * band that sold a single car. Everything on it comes from `extraServices` in
  * content.ts, so a new service or a confirmed price is one edit there.
  *
- * NO PRICE IS INVENTED. Only self-drive hire has a figure. Every other line
- * says "Price on request" and the page says plainly, twice, that the guest
- * agrees a price before anything is booked. That is what keeps these extras
- * from being the drip pricing `rates.included` forbids: nothing is added to a
- * stay the guest did not ask for and price first.
+ * NO PRICE IS INVENTED. The owner set K1,000 for the extras on 24 September
+ * 2026; the two with no figure (flights, laundry) say "Price on request". The
+ * page also says plainly that the guest agrees the cost before anything is
+ * booked. That is what keeps these extras from being the drip pricing
+ * `rates.included` forbids: nothing is added to a stay the guest did not ask
+ * for and see the price of first.
  *
  * EVERY SERVICE HAS ITS OWN WHATSAPP LINK with the question already typed, so
  * asking about a pick-up is one tap rather than finding the number and working
@@ -64,7 +65,7 @@ export default function ExtraServicesPage() {
             as="h1"
             eyebrow="Extra services"
             title="Everything around your stay, arranged."
-            intro="A pick-up from the airport, a car for the week, a driver who knows Lusaka, a trip further into Zambia. None of it is in the nightly rate and none of it is charged unless you ask. Tell us what you need and we will give you the price before anything is booked."
+            intro="A pick-up from the airport, a car for the week, a driver who knows Lusaka, a trip further into Zambia. None of it is in the nightly rate and none of it is charged unless you ask. Tell us what you need and we will confirm the cost with you before anything is booked."
           />
         </Container>
       </Section>
@@ -138,7 +139,7 @@ export default function ExtraServicesPage() {
               <SectionHead
                 eyebrow="How it works"
                 title="Ask, agree the price and it is done."
-                intro="Every extra is priced for you before anything is booked, so there is never a charge you did not see coming."
+                intro="The prices are on this page and we confirm the cost with you before anything is booked, so there is never a charge you did not see coming."
               />
             </div>
 
@@ -150,8 +151,8 @@ export default function ExtraServicesPage() {
                     body: "Tick it on the booking form when you book, or message us on WhatsApp any time before or during your stay.",
                   },
                   {
-                    title: "We send you the price",
-                    body: "You get the cost in writing first. Nothing is booked or charged until you have agreed to it.",
+                    title: "We confirm the cost",
+                    body: "You get the total in writing first. Nothing is booked or charged until you have agreed to it.",
                   },
                   {
                     title: "We arrange it",

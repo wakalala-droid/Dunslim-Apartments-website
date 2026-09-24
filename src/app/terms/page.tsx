@@ -38,7 +38,8 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
  *   - what licence is needed and whether an international permit is required
  *   - insurance: who is covered to drive and the excess on a claim
  *   - fuel: handed over full and returned full, or metered
- *   - any mileage limit. No boundary: within Lusaka or beyond, owner, 11 Sept 2026
+ *   - any mileage limit. The area is settled: Lusaka only, owner, 24 Sept 2026
+ *     (reversing "within Lusaka or beyond", 11 Sept)
  *   - a minimum driver age
  *   - whether a second guest on the booking may drive it
  * The page below describes only what the owner has confirmed and says openly
@@ -158,13 +159,14 @@ export default function TermsPage() {
               <Link href="/extra-services" className="underline underline-offset-4 hover:text-navy">
                 extra services
               </Link>{" "}
-              are not part of the nightly rate. Each one is priced for you before it is booked and
-              none of them is charged unless you have asked for it and agreed the price.
+              are not part of the nightly rate. The price of each is on that page. None of them is
+              booked or charged unless you have asked for it and agreed the cost.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              Self-drive car hire costs {money(carHire.selfDriveZmw)} a {carHire.unit}, on top of
-              the room rate. The car is yours to drive within Lusaka or beyond for as long as you
-              hire it and it parks inside the gate with you.
+              Car hire costs {money(carHire.dailyZmw)} a {carHire.unit}, on top of the room rate,
+              whether you drive yourself or have a driver with it. Every car is a {carHire.model}.
+              The cars are for use in {carHire.area} only and a self-drive car parks inside the gate
+              with you.
             </p>
             <p className="mt-3 text-body text-charcoal">
               The driving terms, which cover the licence we need to see, insurance and fuel, are
