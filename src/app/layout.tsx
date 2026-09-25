@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { business } from "@/lib/content";
-import { site } from "@/lib/site";
+import { site, ogImage, defaultShareImages } from "@/lib/site";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
@@ -36,7 +36,14 @@ export const metadata: Metadata = {
   */
   metadataBase: new URL(site.url),
   title: {
-    default: "Dunslim Apartments: Official Site | Best Rates, Booked Direct",
+    /*
+      "Lusaka" joined the name on 25 September 2026, when indexing was switched
+      on. A guest who half-remembers the place searches "Dunslim Lusaka" or
+      "apartments Makeni Lusaka" as often as the full name. The words a
+      title leads with carry the most weight. Kept under sixty characters so
+      Google shows it whole.
+    */
+    default: "Dunslim Apartments Lusaka: Official Site | Best Rates",
     template: "%s | Dunslim Apartments",
   },
   description:
@@ -65,21 +72,14 @@ export const metadata: Metadata = {
     locale: "en_ZM",
     siteName: business.name,
     url: site.url,
-    images: [
-      {
-        url: "/og-default.jpg",
-        width: 1200,
-        height: 630,
-        alt: "A Dunslim living room, with the Dunslim Apartments mark",
-      },
-    ],
+    images: defaultShareImages,
   },
   twitter: {
     card: "summary_large_image",
     title: "Dunslim Apartments: Official Site",
     description:
       "Serviced apartments on Makeni Road, Lusaka. Airport pick-ups and car hire on request. Best rate, booked direct.",
-    images: ["/og-default.jpg"],
+    images: [ogImage()],
   },
   alternates: { canonical: "/" },
   /*
@@ -94,8 +94,20 @@ export const metadata: Metadata = {
     Proposal set out to fix, made worse and harder to undo.
   */
   robots: site.allowIndexing
-    ? { index: true, follow: true }
+    ? {
+        index: true,
+        follow: true,
+        /*
+          Lets Google show the photographs at full size in image results and
+          Discover. Without it Google may fall back to a thumbnail. The
+          photographs are the strongest thing this site has.
+        */
+        googleBot: { index: true, follow: true, "max-image-preview": "large" },
+      }
     : { index: false, follow: false, nocache: true },
+  ...(site.googleVerification
+    ? { verification: { google: site.googleVerification } }
+    : {}),
   /*
     The .ico is what bookmarks, older browsers and most link-preview crawlers
     ask for first; the SVG is what modern browsers prefer. Both are served, so

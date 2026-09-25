@@ -10,6 +10,7 @@ import { CurrencyConverter } from "@/components/ui/Currency";
 import { money, inWords } from "@/lib/format";
 import { directNightly, publishedNightly, longStayBand, rateLadder } from "@/lib/pricing";
 import { BreadcrumbSchema, FaqSchema } from "@/components/seo/StructuredData";
+import { defaultShareImages } from "@/lib/site";
 
 /*
   ITS OWN CANONICAL AND ITS OWN SHARE CARD.
@@ -37,6 +38,7 @@ export const metadata: Metadata = {
     description:
       "What a night costs in each residence, how the long-stay rates step down and what booking direct saves. No booking fee.",
     url: "/rates",
+    images: defaultShareImages,
   },
 };
 

@@ -20,7 +20,7 @@ import {
   audience,
   allExtraServices,
 } from "@/lib/content";
-import { LodgingSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { LodgingSchema, WebSiteSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
 import { directNightly, quote as buildQuote, rateLadder } from "@/lib/pricing";
 import { isoPlusDays, isoToday } from "@/lib/format";
@@ -43,6 +43,7 @@ export default function HomePage() {
       {/* Machine-readable description of the business and its rates, so search
           can surface the offer rather than guessing at it from prose. */}
       <LodgingSchema />
+      <WebSiteSchema />
       <BreadcrumbSchema trail={[{ name: "Home", path: "/" }]} />
 
       {/* ---------------------------------------------------------------

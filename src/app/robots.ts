@@ -4,10 +4,9 @@ import { site } from "@/lib/site";
 /**
  * robots.txt
  *
- * Mirrors the same switch the page metadata uses. While the site is still
- * carrying placeholder photography and contact details, crawlers are turned
- * away at the door as well as in the page head: two independent signals, so
- * a mistake in one does not quietly let the other through.
+ * Mirrors the same switch the page metadata uses (`site.allowIndexing`), so
+ * the door and the page head always agree. On in production since 25
+ * September 2026; a preview deployment still turns every crawler away.
  */
 export default function robots(): MetadataRoute.Robots {
   if (!site.allowIndexing) {
@@ -21,11 +20,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // The booking flow is a form, not a page anyone should land on cold.
-        disallow: ["/book"],
+        /*
+          /api is not pages at all. /book used to be listed here too and is
+          left out on purpose: it and /pay carry noindex in their own heads,
+          and Google can only read that tag on a page it is allowed to fetch.
+          Blocked here, a linked /book could still turn up in results as a
+          bare address "blocked by robots.txt".
+        */
+        disallow: ["/api/"],
       },
     ],
     sitemap: `${site.url}/sitemap.xml`,
-    host: site.url,
   };
 }

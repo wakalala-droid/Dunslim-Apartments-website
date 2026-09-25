@@ -6,6 +6,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { EXTRA_ICONS } from "@/components/ui/extraIcons";
 import { business, extraServices, extraPrice, type ExtraService } from "@/lib/content";
+import { defaultShareImages } from "@/lib/site";
 
 /**
  * EXTRA SERVICES.
@@ -35,14 +36,15 @@ export const metadata: Metadata = {
     description:
       "Airport pick-ups, car hire with or without a driver, shopping trips, tours and domestic flights, arranged for you during your stay in Lusaka.",
     url: "/extra-services",
+    images: defaultShareImages,
   },
 };
 
 /**
  * A WhatsApp link with the question already written.
  *
- * Only the first letter is lowered, so "Car hire in Zambia's major cities"
- * reads naturally mid-sentence without turning Zambia into "zambia".
+ * Only the first letter is lowered, so "Tailored tour packages of Lusaka and Zambia"
+ * reads naturally mid-sentence without turning Lusaka into "lusaka".
  */
 const askLink = (s: ExtraService) =>
   `https://wa.me/${business.whatsapp}?text=${encodeURIComponent(

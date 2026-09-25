@@ -1,6 +1,6 @@
 import { business, rates, residences, arrival, type Residence } from "@/lib/content";
-import { site } from "@/lib/site";
-import { money } from "@/lib/format";
+import { site, ogImage } from "@/lib/site";
+import { money, inWords } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 
 /**
@@ -22,6 +22,8 @@ import { directNightly } from "@/lib/pricing";
 
 const CONFIRMED_PHONE = !/^\+?[\s0]+$/.test(business.phone.replace(/[^\d+]/g, "").replace(/^\+?260/, ""));
 
+const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 function json(data: unknown) {
   return (
     <script
@@ -36,8 +38,31 @@ const address = {
   "@type": "PostalAddress",
   streetAddress: business.street,
   addressLocality: business.city,
+  addressRegion: "Lusaka Province",
   addressCountry: "ZM",
 };
+
+/**
+ * The site's own name, for the line Google prints above every result.
+ *
+ * Without it Google guesses from the page. With the booking platforms
+ * listing the same name it can settle on "dunslim-apartments.com" or on
+ * something worse. `alternateName` covers the shorter forms people type.
+ * Google reads this from the homepage only, which is the only place it is
+ * rendered.
+ */
+export function WebSiteSchema() {
+  return json({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${site.url}/#website`,
+    name: business.name,
+    alternateName: ["Dunslim", `${business.name} ${business.city}`],
+    url: `${site.url}/`,
+    inLanguage: "en",
+    publisher: { "@id": `${site.url}/#lodging` },
+  });
+}
 
 /** The business itself. Rendered once, on the homepage. */
 export function LodgingSchema() {
@@ -50,10 +75,12 @@ export function LodgingSchema() {
     "@type": "LodgingBusiness",
     "@id": `${site.url}/#lodging`,
     name: business.name,
-    description:
-      "Serviced apartments on Makeni Road, Lusaka, for business and diplomatic travellers.",
-    url: site.url,
+    description: `${capitalise(inWords(residences.length))} furnished two-bedroom serviced apartments on ${business.street}, ${business.city}, for business and diplomatic travellers and families. Backup power, stored water, a guarded gate and a shared pool. Always cheaper booked direct.`,
+    url: `${site.url}/`,
     slogan: business.brandLine,
+    /* The monogram on its own ground, 180 pixels square: Google asks for at
+       least 112 and for a raster file it can crawl. */
+    logo: `${site.url}/apple-icon.png`,
     address,
     ...(CONFIRMED_PHONE ? { telephone: business.phone } : {}),
     email: business.email,
@@ -84,9 +111,15 @@ export function LodgingSchema() {
       pictures a result should show anyway. The front of the building went in
       first on 14 September 2026, when the owner's photograph of it arrived.
     */
+    /*
+      The front of the building leads, from 25 September 2026: it is the one
+      picture that shows a searcher which place this is. Google tends to
+      use the first. The share card follows, remade that day from the owner's
+      own photograph after a month of being a stock living room.
+    */
     image: [
-      `${site.url}/og-default.jpg`,
       `${site.url}/photos/grounds-front.jpg`,
+      ogImage(),
       ...residences.map((r) => `${site.url}/photos/${r.photos[0]?.id}.jpg`),
     ],
     // Kwacha only. This said "ZMW, USD" long after the dollar switch was removed.

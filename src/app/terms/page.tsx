@@ -6,6 +6,7 @@ import { business, rates, arrival, residences, carHire } from "@/lib/content";
 import { money } from "@/lib/format";
 import { publishedNightly, directNightly } from "@/lib/pricing";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { defaultShareImages } from "@/lib/site";
 
 /**
  * BOOKING TERMS.
@@ -60,6 +61,7 @@ export const metadata: Metadata = {
     description:
       "Cancelling, late checkout, how the long-stay rates work and what is included in the nightly rate.",
     url: "/terms",
+    images: defaultShareImages,
   },
 };
 

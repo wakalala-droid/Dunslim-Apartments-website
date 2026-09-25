@@ -7,6 +7,7 @@ import EnquiryForm from "@/components/booking/EnquiryForm";
 import { audience, residences, arrival } from "@/lib/content";
 import { money } from "@/lib/format";
 import { directNightly, longStayBand, rateLadder } from "@/lib/pricing";
+import { defaultShareImages } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Long stays",
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
     description:
       "A week, a month or a full engagement in Lusaka. The rate steps down with the length of the stay and we invoice your employer.",
     url: "/long-stays",
+    images: defaultShareImages,
   },
 };
 

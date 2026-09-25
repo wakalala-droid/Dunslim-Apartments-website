@@ -16,6 +16,7 @@ import {
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { defaultShareImages } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Location",
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
     description:
       "Where we are, measured by road: 37.6km from the airport, 12.4km from the city centre, 8.7km from Makeni Mall.",
     url: "/location",
+    images: defaultShareImages,
   },
 };
 

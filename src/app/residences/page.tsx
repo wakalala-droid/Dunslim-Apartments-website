@@ -6,6 +6,7 @@ import { Container, Section, SectionHead } from "@/components/ui/Layout";
 import { Reveal } from "@/components/ui/Reveal";
 import { residences, rates } from "@/lib/content";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { defaultShareImages } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Residences",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
     description:
       "Mandela, Mulima and Kaunda. VIP serviced apartments on Makeni Road, Lusaka, two bedrooms each.",
     url: "/residences",
+    images: defaultShareImages,
   },
 };
 

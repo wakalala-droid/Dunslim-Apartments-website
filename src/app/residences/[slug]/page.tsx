@@ -8,7 +8,7 @@ import { CoverFlow } from "@/components/ui/CoverFlow";
 import { Reveal } from "@/components/ui/Reveal";
 import ResidenceCard from "@/components/residences/ResidenceCard";
 import { residences, getResidence, rates, arrival, business, grounds } from "@/lib/content";
-import { site } from "@/lib/site";
+import { ogImage } from "@/lib/site";
 import { ResidenceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { money } from "@/lib/format";
 import { directNightly } from "@/lib/pricing";
@@ -42,7 +42,14 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 
   const path = `/residences/${r.slug}`;
   const cover = r.photos[0];
-  const image = cover ? `${site.url}/photos/${cover.id}.jpg` : "/og-default.jpg";
+  /*
+    The residence's own share card, built from this same first photograph by
+    scripts/build-og-image.py. The page used to point at the photograph itself,
+    which is 2560 pixels wide and over 300 KB, the size at which WhatsApp drops
+    the picture from a link preview. It also declared it 1400 by 1050, which it is
+    not.
+  */
+  const image = ogImage(r.slug);
 
   return {
     title: r.name,
@@ -56,8 +63,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       images: [
         {
           url: image,
-          width: 1400,
-          height: 1050,
+          width: 1200,
+          height: 630,
           alt: `${r.name}, ${cover?.caption ?? "interior"}`,
         },
       ],
