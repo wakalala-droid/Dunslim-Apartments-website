@@ -64,8 +64,16 @@ export const business = {
     Lusaka. A guest driving to it at night would not have found the gate.
   */
   coords: { lat: -15.4640271, lng: 28.2024538 },
-  /** The property's listing on Google Maps. */
-  mapsUrl: "https://maps.app.goo.gl/PBRGcWupxdCYe8ys8",
+  /**
+   * The property's listing on Google Maps, by its permanent listing ID (cid).
+   *
+   * Was the app's share link, maps.app.goo.gl/PBRGcWupxdCYe8ys8, until 25
+   * September 2026. That redirects to the right place but through an address
+   * the Google Maps website does not always read, and in some browsers it
+   * opened a blank map with no listing on it. The cid form opens the listing
+   * itself, on the website and in the app.
+   */
+  mapsUrl: "https://maps.google.com/?cid=5083806722093660146",
   /** Plus Code, which works as an address on its own anywhere Maps is used. */
   plusCode: "G6P2+9XP",
 } as const;
