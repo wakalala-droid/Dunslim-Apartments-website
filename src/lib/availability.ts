@@ -31,7 +31,7 @@ import { nightsBetween } from "./pricing";
  * while the code below sent `unit_slug`, which would have failed on the first
  * real request. It is settled as `unit_slug` because a slug is the only handle
  * this site has: the residences are identified here by `mandela`, `mulima` and
- * `kaunda` and nothing in the site knows an AI-BOS unit id. The public
+ * `rupiah-banda` and nothing in the site knows an AI-BOS unit id. The public
  * endpoint has to accept the slug, or the module must publish its ids through
  * the `units` route above and this file must map them.
  *

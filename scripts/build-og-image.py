@@ -44,8 +44,8 @@ COVER = "r1-living-4"
 # glass table, the plant and the armchairs.
 FOCUS_Y = 0.42
 # The same, per residence card, where the middle of the photograph is wrong.
-# Kaunda's frame is mostly bare wall above the sofa.
-RESIDENCE_FOCUS_Y = {"kaunda": 0.8}
+# Rupiah Banda's frame is mostly bare wall above the sofa.
+RESIDENCE_FOCUS_Y = {"rupiah-banda": 0.8}
 
 
 def cover_crop(img: Image.Image, w: int, h: int, focus_y: float) -> Image.Image:

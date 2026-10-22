@@ -44,6 +44,12 @@ QUALITY = 82
 
 WIDE = {"r1-door", "r2-door", "r3-door", "r1-living-4", "r2-living-2"}
 
+# Frames changed after import. Once one is in public/photos this script leaves
+# it alone, or a re-import would quietly undo the change. The door plaque in
+# r3-door was repainted from KAUNDA to RUPIAH BANDA by repaint-door-plaque.py;
+# to redo it, delete the file and run that script, not this one.
+EDITED = {"r3-door"}
+
 # key -> (folder, file). The key is what src/lib/content.ts refers to.
 #
 # Order inside each apartment is the order the gallery runs in: the room you
@@ -134,7 +140,9 @@ MAPPING = {
 
     "r2-detail-1": ("Mulima", "untitled-46.jpg"),
 
-    # ----------------------------------------------------------------- KAUNDA
+    # ----------------------------------------------------------- RUPIAH BANDA
+    # Shot while the apartment was still Kaunda, so the folder keeps that name
+    # and the door says KAUNDA. repaint-door-plaque.py repaints it; see EDITED.
     "r3-door": ("Kaunda", "Door K.jpg"),
 
     "r3-living-1": ("Kaunda", "untitled-106.jpg"),
@@ -221,6 +229,9 @@ def main() -> None:
 
     written = 0
     for key, (folder, filename) in MAPPING.items():
+        if key in EDITED and os.path.exists(os.path.join(PHOTOS, f"{key}.jpg")):
+            print(f"{key:15s} kept, edited after import")
+            continue
         image = Image.open(os.path.join(SOURCE, folder, filename))
         # Several frames are portrait and carry the rotation in EXIF only.
         image = ImageOps.exif_transpose(image).convert("RGB")

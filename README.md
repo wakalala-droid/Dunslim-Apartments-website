@@ -199,7 +199,7 @@ POST /public/stay/{site_token}/booking-request
 ```
 
 **`unit_slug` is the residence slug this site already uses** (`mandela`,
-`mulima`, `kaunda`). Set each one in AI-BOS under Hospitality -> Units -> "Web
+`mulima`, `rupiah-banda`). Set each one in AI-BOS under Hospitality -> Units -> "Web
 address on your own site". Leave it blank there and the unit's name is turned
 into a handle instead, so check the two agree before going live: a slug that
 does not match returns "That residence does not exist."

@@ -124,10 +124,14 @@ const nextConfig = {
   */
   /*
     The three apartments were named Residence One / Two / Three while the owner
-    confirmed the real ones. They are now Mandela, Mulima and Kaunda and the
+    confirmed the real ones. They became Mandela, Mulima and Kaunda and the
     addresses moved with them. Anything already sent to someone (a WhatsApp
     message, an email signature) still points at the old address, so those keep
     working instead of landing on "not found".
+
+    On 22 October 2026 Kaunda was renamed Rupiah Banda, after the site was open
+    to Google, so /residences/kaunda follows it. residence-three goes straight
+    to the new address rather than through a chain of two redirects.
 
     308, not 302: the move is permanent and a permanent redirect is the one that
     passes on any credit the old address had earned.
@@ -136,7 +140,9 @@ const nextConfig = {
     return [
       { source: "/residences/residence-one", destination: "/residences/mandela", permanent: true },
       { source: "/residences/residence-two", destination: "/residences/mulima", permanent: true },
-      { source: "/residences/residence-three", destination: "/residences/kaunda", permanent: true },
+      { source: "/residences/residence-three", destination: "/residences/rupiah-banda", permanent: true },
+      { source: "/residences/kaunda", destination: "/residences/rupiah-banda", permanent: true },
+      { source: "/og/kaunda.jpg", destination: "/og/rupiah-banda.jpg", permanent: true },
     ];
   },
 

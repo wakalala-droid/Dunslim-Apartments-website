@@ -295,9 +295,10 @@ export type Residence = {
    * A key in the photo manifest, exactly like the entries in `photos`, but held
    * apart from them because it does a different job. Each of the three doors
    * carries a brass plaque with the apartment's name on it, and that is the
-   * frame the owner asked to lead with: a guest arriving on /residences/kaunda
-   * sees the door they will actually stand in front of, with KAUNDA on it,
-   * before they see a single room.
+   * frame the owner asked to lead with: a guest arriving on
+   * /residences/rupiah-banda sees the door they will actually stand in front
+   * of, with RUPIAH BANDA on it, before they see a single room. (That plaque
+   * read KAUNDA when it was photographed; scripts/repaint-door-plaque.py.)
    *
    * It is a separate field rather than simply the first entry in `photos`
    * because `photos[0]` is not only the page hero. It is also the cover on
@@ -323,11 +324,14 @@ export type Residence = {
  * CONFIRM: areas and amenities. Bedrooms, sleeps and rates are confirmed:
  * two bedrooms in every apartment, four guests maximum, K2,000 a night direct.
  *
- * The names are confirmed: Mandela, Mulima and Kaunda. They replace the
+ * The names are confirmed: Mandela, Mulima and Rupiah Banda. They replace the
  * placeholder Residence One / Two / Three and the slugs follow them, so the
  * addresses read /residences/mandela rather than /residences/residence-one.
- * Changing them costs nothing today because the site is still behind noindex
- * and has never been linked publicly; it would be expensive after launch.
+ *
+ * The third was Kaunda until 22 October 2026, when the owner renamed it Rupiah
+ * Banda. The site was already open to Google by then, so /residences/kaunda
+ * redirects (next.config.mjs), and the slug is also the handle AI-BOS knows the
+ * unit by: its "Web address on your own site" must read rupiah-banda too.
  */
 export const residences: Residence[] = [
   {
@@ -443,8 +447,8 @@ export const residences: Residence[] = [
     ],
   },
   {
-    slug: "kaunda",
-    name: "Kaunda",
+    slug: "rupiah-banda",
+    name: "Rupiah Banda",
     summary: "Two bedrooms. Room for a team, or family visiting.",
     standout: "Parking for two vehicles and a wall of open shelving between the dining table and the hall",
     bedrooms: 2,
@@ -452,9 +456,9 @@ export const residences: Residence[] = [
     area: 0,
     directNightlyZmw: 2000,
     namedAfter: {
-      person: "Kenneth Kaunda",
-      lived: "1924 to 2021",
-      note: "Zambia's first president, who led the country to independence in 1964 and then governed it for twenty-seven years. A schoolteacher before he was a politician, he opened Lusaka to the liberation movements of southern Africa at a time when few other capitals would.",
+      person: "Rupiah Banda",
+      lived: "1937 to 2022",
+      note: "Zambia's fourth president, from 2008 to 2011. A diplomat before he was a politician, he was Zambia's first ambassador to Egypt at twenty-seven, then ambassador in Washington and the country's voice at the United Nations. When he lost the 2011 election he accepted the result and handed over power peacefully.",
     },
     description: [
       "Two bedrooms and a living room that seats everyone, whether that is a work team or family.",

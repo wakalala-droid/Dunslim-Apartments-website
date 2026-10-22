@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The residences | Dunslim Apartments",
     description:
-      "Mandela, Mulima and Kaunda. VIP serviced apartments on Makeni Road, Lusaka, two bedrooms each.",
+      "Mandela, Mulima and Rupiah Banda. VIP serviced apartments on Makeni Road, Lusaka, two bedrooms each.",
     url: "/residences",
     images: defaultShareImages,
   },
