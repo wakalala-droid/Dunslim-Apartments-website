@@ -17,7 +17,8 @@
  *                    a clickjacked booking form possible in the first place
  *   base-uri         no injected <base> tag can re-point every relative URL on
  *                    the page at somebody else's server
- *   form-action      a form on this site can only ever post back to this site
+ *   form-action      a form on this site can only ever post back to this site,
+ *                    or to Lenco for a card payment (see LENCO below)
  *   object-src       no plugins, ever
  *
  * `frame-ancestors` in the CSP and `X-Frame-Options` say the same thing twice,
@@ -48,18 +49,31 @@ const AIBOS_API_ORIGIN = (() => {
   }
 })();
 
+/*
+  LENCO, FOR PAYING ONLINE ON THE CONFIRMATION SCREEN.
+
+  Paying by bank card opens Lenco's own window: their script, loaded from
+  pay.lenco.co (pay.sandbox.lenco.co with a test key), draws their iframe over
+  the page, and the card number is typed inside that frame, so it never
+  touches this site. Each directive below names Lenco and nothing wider.
+  Without them the browser blocks the script and the "Pay by card" button does
+  nothing at all, which is the same quiet outage the comment above describes.
+*/
+const LENCO = "https://*.lenco.co";
+
 const SECURITY_HEADERS = [
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
       // Next's own bootstrap and the JSON-LD blocks are inline scripts.
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${LENCO}`,
+      `style-src 'self' 'unsafe-inline' ${LENCO}`,
+      `img-src 'self' data: blob: ${LENCO}`,
       "font-src 'self'",
-      ["connect-src 'self'", AIBOS_API_ORIGIN].filter(Boolean).join(" "),
-      "form-action 'self'",
+      ["connect-src 'self'", AIBOS_API_ORIGIN, LENCO].filter(Boolean).join(" "),
+      `frame-src 'self' ${LENCO}`,
+      `form-action 'self' ${LENCO}`,
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "object-src 'none'",
@@ -78,11 +92,14 @@ const SECURITY_HEADERS = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   /*
     Nothing on this site uses a camera, a microphone or a location, so nothing
-    embedded in it should be able to ask for one.
+    embedded in it should be able to ask for one. Payment is allowed to this
+    site and to Lenco's card window and nobody else, in case the window offers
+    a phone wallet.
   */
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+    value:
+      'camera=(), microphone=(), geolocation=(), payment=(self "https://pay.lenco.co" "https://pay.sandbox.lenco.co"), usb=(), interest-cohort=()',
   },
   // Two years, subdomains included. Vercel serves HTTPS only in any case.
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },

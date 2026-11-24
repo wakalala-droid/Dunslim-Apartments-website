@@ -58,9 +58,10 @@ export default function PayPage() {
                 <div>
                   <p className="text-body text-navy">Two things we will never do</p>
                   <p className="mt-2 max-w-measure text-body text-charcoal">
-                    We never ask for a card number, a PIN or a mobile money code, on this site or
-                    in a message. And the accounts on this page are the only ones we collect
-                    through. If anybody sends you different details in our name, ring{" "}
+                    We never ask for a card number, a PIN or a mobile money code in a message, an
+                    email or a call. And we only ever collect through the accounts on this page or
+                    the pay screen at the end of our own booking form. If anybody sends you
+                    different details in our name, ring{" "}
                     {business.phone} before you send a ngwee.
                   </p>
                 </div>

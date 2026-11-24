@@ -9,6 +9,7 @@ import {
   Check,
   AlertTriangle,
   CalendarX,
+  CreditCard,
   Smartphone,
   Landmark,
 } from "lucide-react";
@@ -29,6 +30,14 @@ import {
   extraPrice,
 } from "@/lib/content";
 import PayNow from "@/components/booking/PayNow";
+import PayOnline from "@/components/booking/PayOnline";
+import {
+  getOnlineOptions,
+  OFFLINE,
+  takesMobileMoney,
+  takesOnline,
+  type OnlineOptions,
+} from "@/lib/payOnline";
 import { quote as buildQuote, nightsBetween, directNightly } from "@/lib/pricing";
 import { money, isoToday, isoPlusDays, prettyDate, isValidIsoDate } from "@/lib/format";
 import { photo } from "@/lib/photos";
@@ -54,8 +63,8 @@ import { track, BOOKING_STEP } from "@/lib/analytics";
  *  - every field has a visible label, errors appear inline in words
  *  - the guest can always go back without losing what they entered
  *
- * Card details are never collected on this page. Choosing "card" hands off to
- * the payment provider's own hosted page, which is both the correct architecture
+ * Card details are never collected on this page. Paying by card opens Lenco's
+ * own secure window (lib/payOnline.ts), which is both the correct architecture
  * and the only way to stay out of PCI scope.
  */
 
@@ -128,30 +137,77 @@ const ERROR_ORDER = ["from", "to", "residence", "firstName", "lastName", "email"
  * the button. So each description now says the true thing, which is that we
  * confirm first and then send instructions for whichever method they picked.
  * Put the promises back one at a time, as each becomes real.
+ *
+ * TWO OF THEM ARE REAL NOW, WHEN AI-BOS SAYS SO. Once Dunslim's Lenco account
+ * is connected in AI-BOS, a mobile money prompt on the guest's phone and a bank
+ * card in Lenco's window both take the payment on the confirmation screen, and
+ * paying in full confirms the booking by itself. The form asks AI-BOS which of
+ * them are live before it offers them (getOnlineOptions), so until the account
+ * is connected, or if AI-BOS cannot be reached, this list and its words are
+ * exactly what they were.
  */
-const PAYMENT_METHODS: {
+type PayChoice = {
   id: PaymentMethod;
   label: string;
   detail: string;
   icon: typeof Smartphone;
-}[] = [
-  {
-    id: "mobile-money",
-    label: "Mobile money",
-    detail: canPayNow()
-      ? "MTN Mobile Money or Airtel Money. The number to pay to is on the next screen, so you can pay as soon as you send this."
-      : "MTN Mobile Money or Airtel Money. We send the number to pay to once your dates are confirmed.",
-    icon: Smartphone,
-  },
-  {
-    id: "bank-transfer",
-    label: "Bank transfer",
-    detail: canPayNow()
-      ? "Kwacha or US dollars, at Access Bank. The account details are on the next screen, with the reference to quote."
-      : "We send our account details once your dates are confirmed, with the reference to quote.",
-    icon: Landmark,
-  },
+};
+
+const NETWORK_NAMES: [keyof OnlineOptions["networks"], string][] = [
+  ["airtel", "Airtel"],
+  ["mtn", "MTN"],
+  ["zamtel", "Zamtel"],
 ];
+
+/** "Airtel, MTN or Zamtel", naming only the networks that are live. */
+function liveNetworks(online: OnlineOptions): string {
+  const names = NETWORK_NAMES.filter(([id]) => online.networks[id]).map(([, name]) => name);
+  return names.length > 1 ? `${names.slice(0, -1).join(", ")} or ${names[names.length - 1]}` : names[0] ?? "";
+}
+
+/** "mobile money or bank card", naming only what is live. */
+function onlineWays(online: OnlineOptions): string {
+  return [takesMobileMoney(online) ? "mobile money" : "", online.card ? "bank card" : ""]
+    .filter(Boolean)
+    .join(" or ");
+}
+
+function paymentMethods(online: OnlineOptions): PayChoice[] {
+  const momoLive = takesMobileMoney(online);
+  return [
+    {
+      id: "mobile-money",
+      label: "Mobile money",
+      detail: momoLive
+        ? `${liveNetworks(online)}. Pay on the next screen: a prompt comes up on your phone, you approve it with your PIN and your booking is confirmed the moment the payment arrives.`
+        : canPayNow()
+          ? "MTN Mobile Money or Airtel Money. The number to pay to is on the next screen, so you can pay as soon as you send this."
+          : "MTN Mobile Money or Airtel Money. We send the number to pay to once your dates are confirmed.",
+      icon: Smartphone,
+    },
+    ...(online.card
+      ? [
+          {
+            id: "card" as const,
+            label: "Bank card",
+            detail:
+              "Visa or Mastercard from any bank. Pay on the next screen, in the secure window of Lenco, our payment provider, and your booking is confirmed the moment the payment goes through.",
+            icon: CreditCard,
+          },
+        ]
+      : []),
+    {
+      id: "bank-transfer",
+      label: "Bank transfer",
+      detail: canPayNow()
+        ? takesOnline(online)
+          ? "Kwacha or US dollars, at Access Bank. The account details are on the next screen, with the reference to quote. We confirm your booking when we match the payment."
+          : "Kwacha or US dollars, at Access Bank. The account details are on the next screen, with the reference to quote."
+        : "We send our account details once your dates are confirmed, with the reference to quote.",
+      icon: Landmark,
+    },
+  ];
+}
 
 export default function BookingFlow() {
   const params = useSearchParams();
@@ -230,6 +286,30 @@ export default function BookingFlow() {
    * guest. See BookingOutcome in lib/availability.ts.
    */
   const [outcome, setOutcome] = useState<BookingOutcome | null>(null);
+
+  /*
+    Which ways to pay online are live, asked of AI-BOS once, on arrival, so the
+    payment step only offers what is really there. It never throws: anything
+    short of a clear answer reads as "none", and the form is exactly what it
+    was before online payment existed.
+  */
+  const [online, setOnline] = useState<OnlineOptions>(OFFLINE);
+  useEffect(() => {
+    let live = true;
+    void getOnlineOptions().then((o) => {
+      if (live) setOnline(o);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+  const methods = useMemo(() => paymentMethods(online), [online]);
+  const paysOnline = takesOnline(online);
+
+  /** Set by the pay panel once the money has arrived. */
+  const [paid, setPaid] = useState<{ how: "mobile-money" | "card"; confirmed: boolean | null } | null>(
+    null,
+  );
 
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -545,6 +625,13 @@ export default function BookingFlow() {
     const accepted = outcome.status === "accepted";
     const refused = outcome.status === "refused";
     const lostDates = refused && outcome.refusal === "dates";
+    /*
+      Paid online, on this screen, through the request's own link in AI-BOS.
+      Only when AI-BOS made one and said on arrival that it takes money online;
+      otherwise the screen is the one it always was, with the site's accounts.
+    */
+    const payToken = accepted && paysOnline ? outcome.payToken : undefined;
+    const settled = paid !== null && paid.confirmed !== false;
 
     return (
       <Container wide>
@@ -567,17 +654,29 @@ export default function BookingFlow() {
           {accepted ? (
             <>
               <h1 className="mt-8 text-h1 font-extralight text-navy">
-                Thank you, {firstName}. We have your request.
+                {settled
+                  ? `Thank you, ${firstName}. Your booking is confirmed.`
+                  : paid
+                    ? `Thank you, ${firstName}. We have your payment.`
+                    : `Thank you, ${firstName}. We have your request.`}
               </h1>
               <p className="mt-6 max-w-measure text-lead text-charcoal">
-                {canPayNow()
-                  ? "Your dates are held while we look at it. You can pay now, below, or wait until we confirm. Either way someone comes back to you within a few hours, sooner during the day."
-                  : "Your dates are held while we look at it. Someone will confirm your booking and send payment instructions within a few hours, sooner during the day."}
+                {settled
+                  ? "Your payment has arrived and the dates are yours."
+                  : paid
+                    ? "Your payment has arrived and someone will be in touch within a few hours, sooner during the day, to finish your booking."
+                    : payToken
+                      ? "Your dates are held while you pay. Pay below and your booking is confirmed the moment the payment arrives, or pay later and someone comes back to you within a few hours, sooner during the day."
+                      : canPayNow()
+                        ? "Your dates are held while we look at it. You can pay now, below, or wait until we confirm. Either way someone comes back to you within a few hours, sooner during the day."
+                        : "Your dates are held while we look at it. Someone will confirm your booking and send payment instructions within a few hours, sooner during the day."}
               </p>
               <p className="mt-4 max-w-measure text-body text-charcoal-80">
                 {arrivalTime
                   ? "We have your arrival time, so someone will be ready with the keys when you get here."
-                  : "When you reply, let us know roughly when you will arrive so someone can be ready with the keys."}
+                  : paid
+                    ? "Let us know on WhatsApp roughly when you will arrive, so someone can be ready with the keys."
+                    : "When you reply, let us know roughly when you will arrive so someone can be ready with the keys."}
               </p>
               {extras.length > 0 && (
                 <p className="mt-4 max-w-measure text-body text-charcoal-80">
@@ -653,7 +752,9 @@ export default function BookingFlow() {
                 ["Arrive", `${prettyDate(from)}, from ${arrival.checkIn}`],
                 ["Depart", `${prettyDate(to)}, by ${arrival.lateCheckOut}`],
                 ["Total", money(quote.totalZmw)],
-                ["Paying by", PAYMENT_METHODS.find((m) => m.id === payment)?.label ?? "Not chosen"],
+                paid
+                  ? (["Paid by", paid.how === "card" ? "Bank card" : "Mobile money"] as const)
+                  : (["Paying by", methods.find((m) => m.id === payment)?.label ?? "Not chosen"] as const),
                 ["Confirmation to", email],
               ] as ReadonlyArray<readonly [string, string]>
             ).map(([k, v]) => (
@@ -669,7 +770,20 @@ export default function BookingFlow() {
             Only when the request was actually accepted: a guest whose request
             never arrived must not be sent money into a booking nobody holds.
           */}
-          {accepted ? (
+          {payToken ? (
+            <PayOnline
+              className="mt-12"
+              token={payToken}
+              reference={outcome.reference}
+              fallbackAmountZmw={quote.totalZmw}
+              guest={{ firstName, lastName, email, phone }}
+              prefer={payment}
+              onPaid={(how, confirmed) => {
+                setPaid({ how, confirmed });
+                track("booking_paid", { residence: slug, method: how, confirmed: confirmed !== false });
+              }}
+            />
+          ) : accepted ? (
             <PayNow
               className="mt-12"
               amountZmw={quote.totalZmw}
@@ -719,7 +833,9 @@ export default function BookingFlow() {
                 */
                 href={`https://wa.me/${business.whatsapp}?text=${encodeURIComponent(
                   accepted
-                    ? `Hello, I have just requested a booking. Reference ${outcome.reference}.`
+                    ? paid
+                      ? `Hello, I have just booked and paid online. Reference ${outcome.reference}.`
+                      : `Hello, I have just requested a booking. Reference ${outcome.reference}.`
                     : refused
                       ? `Hello, I tried to book ${residence.name} for ${prettyDate(from)} to ${prettyDate(to)} ` +
                         `and the website said those dates are not available. Could you help me find something?`
@@ -752,7 +868,9 @@ export default function BookingFlow() {
 
           <p className="mt-8 text-caption text-charcoal-80">
             {accepted
-              ? "Nothing has been charged yet. Cancellation terms are confirmed in writing along with the rest of your booking."
+              ? paid
+                ? "Cancellation terms are confirmed in writing along with the rest of your booking."
+                : "Nothing has been charged yet. Cancellation terms are confirmed in writing along with the rest of your booking."
               : refused
                 ? "Nothing has been charged and nothing has been sent."
                 : "Nothing has been charged and nothing has been booked. Message us and we will sort it out."}
@@ -1224,14 +1342,15 @@ export default function BookingFlow() {
                   How would you like to pay?
                 </h1>
                 <p className="mt-6 max-w-measure text-lead text-charcoal">
-                  Nothing is charged now. We confirm your booking first, then send instructions for
-                  the method you choose.
+                  {paysOnline
+                    ? `Nothing is charged yet. Pay by ${onlineWays(online)} on the next screen and your booking is confirmed the moment the payment arrives.`
+                    : "Nothing is charged now. We confirm your booking first, then send instructions for the method you choose."}
                 </p>
 
                 <fieldset className="mt-12">
                   <legend className="sr-only">Payment method</legend>
                   <div className="space-y-4">
-                    {PAYMENT_METHODS.map((m) => {
+                    {methods.map((m) => {
                       const selected = payment === m.id;
                       return (
                         <label
@@ -1276,8 +1395,9 @@ export default function BookingFlow() {
                 ) : null}
 
                 <p className="mt-8 max-w-measure text-caption text-charcoal-80">
-                  We never ask for card details on this site. If you choose card, payment happens on
-                  the provider&rsquo;s own secure page.
+                  {online.card
+                    ? "If you pay by card, you type your card details into the secure window of Lenco, our payment provider, and they never reach us."
+                    : "We never ask for card details on this site."}
                 </p>
 
                 {datesUnchecked ? (
@@ -1297,7 +1417,10 @@ export default function BookingFlow() {
                 </Button>
 
                 <p className="mt-4 text-caption text-charcoal-80">
-                  Nothing is charged until your booking is confirmed. Full{" "}
+                  {paysOnline
+                    ? "Nothing is charged until you choose to pay."
+                    : "Nothing is charged until your booking is confirmed."}{" "}
+                  Full{" "}
                   <Link href="/terms" className="underline underline-offset-4 hover:text-navy">
                     Booking terms
                   </Link>

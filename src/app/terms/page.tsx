@@ -92,13 +92,13 @@ export default function TermsPage() {
           <div className="max-w-measure">
             <h2 className="text-h3 font-light text-navy">Cancelling</h2>
             <p className="mt-3 text-body text-charcoal">
-              Cancellation terms are confirmed with you in writing when we confirm your booking,
-              before anything is charged. Tell us by WhatsApp, by email or by phone as soon as you
-              know, and we will let you know exactly where you stand.
+              Cancellation terms are confirmed with you in writing along with your booking. Tell us
+              by WhatsApp, by email or by phone as soon as you know, and we will let you know
+              exactly where you stand.
             </p>
             <p className="mt-3 text-body text-charcoal">
-              Nothing is charged before we have confirmed your booking. We would rather hear from
-              you late than not hear from you.
+              Nothing is charged until you choose to pay. We would rather hear from you late than
+              not hear from you.
             </p>
 
             <h2 className="mt-12 text-h3 font-light text-navy">Arriving and leaving</h2>
@@ -122,13 +122,14 @@ export default function TermsPage() {
             </p>
             <p className="mt-3 text-body text-charcoal">
               The full amount is due up front. Your dates are confirmed once the payment reaches
-              us, and the accounts to pay into are shown the moment you finish the booking form and
-              again on our{" "}
+              us. The ways to pay are shown the moment you finish the booking form, and our
+              accounts are also on our{" "}
               <Link href="/pay" className="underline underline-offset-4 hover:text-navy">
                 payment page
               </Link>
-              . We never ask for a card number, a PIN or a mobile money code, on this site or in a
-              message.
+              . If you pay by card, you type it into the secure window of Lenco, our payment
+              provider, and it never reaches us. We never ask for a card number, a PIN or a mobile
+              money code in a message, an email or a call.
             </p>
             <p className="mt-3 text-body text-charcoal">
               Booking direct is {rates.directDiscountPct} per cent below the rate the same

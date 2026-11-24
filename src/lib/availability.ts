@@ -196,6 +196,14 @@ export type BookingOutcome = {
    * coming.
    */
   emailed?: boolean;
+  /**
+   * The request's own payment link in AI-BOS, when it made one. The
+   * confirmation screen pays through it (lib/payOnline.ts): a mobile money
+   * prompt or a bank card in Lenco's window, and paying in full confirms the
+   * booking. Absent when the request went by email instead, so nothing is
+   * offered that cannot be paid.
+   */
+  payToken?: string;
 };
 
 /**
@@ -290,13 +298,17 @@ export async function submitBookingRequest(req: BookingRequest): Promise<Booking
 
       if (res.ok) {
         let emailed = false;
+        let payToken: string | undefined;
         try {
-          const data = (await res.json()) as { guest_emailed?: boolean };
+          const data = (await res.json()) as { guest_emailed?: boolean; pay_token?: unknown };
           emailed = data.guest_emailed === true;
+          if (typeof data.pay_token === "string" && data.pay_token.length >= 20) {
+            payToken = data.pay_token;
+          }
         } catch {
           /* An answer without a body is still an accepted request. */
         }
-        return { status: "accepted", reference, emailed };
+        return { status: "accepted", reference, emailed, payToken };
       }
 
       if (res.status === 409) {

@@ -25,11 +25,12 @@ import { cn } from "@/lib/cn";
  * It does not take the payment. Nothing here charges a card or raises a mobile
  * money prompt: the guest pushes the money from their own phone or bank and
  * tells us. That is the honest description of what happens, so it is what the
- * words say. The automated version needs merchant credentials that do not
- * exist yet.
+ * words say. The automated version is PayOnline, which takes over on the
+ * confirmation screen once Dunslim's Lenco account is live in AI-BOS, and
+ * falls back to this panel whenever it is not.
  */
 
-function CopyField({
+export function CopyField({
   label,
   value,
   wide,
@@ -235,9 +236,8 @@ export default function PayNow({
 
       <p className="mt-6 max-w-measure text-caption text-navy-20">
         Send us the confirmation message from your phone or bank and we will match it to your
-        booking. Your dates are held while we do. Nothing on this site takes the money itself, so
-        you are never asked for a card number or a PIN here, and nobody from Dunslim will ever ask
-        you for one.
+        booking. Your dates are held while we do. Nobody from Dunslim will ever ask you for a card
+        number or a PIN in a message, an email or a call.
       </p>
     </section>
   );
